@@ -23,17 +23,28 @@ public class SecurityConfig {
                 Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
                 
                 if (roles.contains("ROLE_ADMIN")) {
-                    response.sendRedirect("/m-admin");
+                    response.sendRedirect("/admin/m-admin");
                 }else {
-                    response.sendRedirect("/s-user");
+                    response.sendRedirect("/user/s-user");
                 }
             })
             .failureUrl("/login?error")
             .permitAll() 
         ).logout(logout -> logout.logoutSuccessUrl("/login?logout")
-        ).authorizeHttpRequests(authz -> authz
-            .requestMatchers("/login", "/register", "/css/**").permitAll()
-            .anyRequest().authenticated() 
+        		).authorizeHttpRequests(authz -> authz
+        			    // ① 誰でもアクセスして良いエリア
+        			    .requestMatchers("/login", "/css/**", "/js/**").permitAll()
+        			    
+        			    // ② 👑 管理者専用エリア（ここは ADMIN しか入れない堅牢な金庫室のまま）
+        			    .requestMatchers("/admin/**").hasRole("ADMIN")
+        			    
+        			    // ③ 💼 一般ユーザーエリア（💡 ここを修正！）
+        			    // USER または ADMIN のどちらかのロールを持っていれば、誰でも通れるようになります！
+        			    .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+        			    
+        			    // ④ それ以外のURLは、最低限「ログインしていること」
+        			    .anyRequest().authenticated() 
+ 
         ).exceptionHandling(exceptionHandling -> exceptionHandling
             .accessDeniedPage("/error-denied") 
         );

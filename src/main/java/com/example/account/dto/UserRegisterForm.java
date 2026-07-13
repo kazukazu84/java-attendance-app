@@ -1,0 +1,20 @@
+package com.example.account.dto;
+
+import java.time.LocalDate;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import lombok.Data;
+
+@Data
+public class UserRegisterForm {
+	private String userId;
+    private String password;
+    private String userName;
+    private String position; 
+    private int wage;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate birthDate; 
+    private boolean isEmploymentInsurance;
+    private int isActive;
+}
