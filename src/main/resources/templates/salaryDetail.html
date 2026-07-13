@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>給与詳細</title>
+    <link rel="stylesheet" th:href="@{/css/salaryDetail.css}">
+</head>
+<body>
+
+<div class="container">
+
+    <h1 class="page-title">給与詳細</h1>
+
+    <h2 class="page-subtitle">
+        <span th:text="${targetYear}"></span>年
+        <span th:text="${targetMonth}"></span>月 の給与
+    </h2>
+
+    <div class="card">
+        <table class="salary-table">
+            <tbody>
+                <tr>
+                    <th>勤務時間</th>
+                    <td><span th:text="${detail.workingHours}"></span> 時間</td>
+                </tr>
+                <tr>
+                    <th>時給</th>
+                    <td><span th:text="${detail.wageValue}"></span> 円</td>
+                </tr>
+                <tr>
+                    <th>総支給額</th>
+                    <td><span th:text="${detail.grossSalary}"></span> 円</td>
+                </tr>
+                <tr>
+                    <th>雇用保険料</th>
+                    <td class="minus">- <span th:text="${detail.employmentInsurance}"></span> 円</td>
+                </tr>
+                <tr class="highlight">
+                    <th>差引支給額</th>
+                    <td><span th:text="${detail.netSalary}"></span> 円</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a th:href="@{/salary/confirm}" class="back-link">← 給与一覧へ戻る</a>
+
+</div>
+
+</body>
+</html>
