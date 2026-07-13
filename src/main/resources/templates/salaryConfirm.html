@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>給与一覧</title>
+    <link rel="stylesheet" th:href="@{/css/salaryConfirm.css}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- タイトル -->
+    <h1 class="page-title">給与一覧</h1>
+
+    <!-- ① 年度選択（中央寄せ） -->
+    <div class="card center">
+        <form th:action="@{/salary/confirm}" method="post" class="form-area">
+
+            <label class="form-label">年度選択</label>
+
+            <!-- ★ GET でセットされた targetYear を初期選択 -->
+            <select name="targetYear" class="form-select"
+                    th:value="${salaryConfirmForm.targetYear}">
+                <option th:each="year : ${yearList}"
+                        th:value="${year}"
+                        th:text="${year}"></option>
+            </select>
+
+            <!-- ★ GET でセットされた userId を hidden に確実に反映 -->
+            <input type="hidden" name="userId" th:value="${salaryConfirmForm.userId}">
+
+            <button type="submit" class="submit-btn">表示</button>
+        </form>
+    </div>
+
+    <!-- ②③ 年間集計（中央寄せ） -->
+    <div th:if="${salaryList}" class="summary-box">
+        <p>年間勤務時間：<span th:text="${totalWorkingHours}"></span> 時間</p>
+        <p>年間給与総額：<span th:text="${totalNetSalary}"></span> 円</p>
+    </div>
+
+    <!-- ④⑤⑥ 月別給与一覧 -->
+    <div th:if="${salaryList}" class="card">
+        <table class="salary-table">
+            <thead>
+                <tr>
+                    <th class="left">対象月</th>
+                    <th class="right">給与額</th>
+                    <th class="right">詳細</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${salaryList}">
+                    <!-- 対象月 -->
+                    <td class="left">
+                        <span th:text="${item.targetMonth}"></span> 月
+                    </td>
+
+                    <!-- 給与額（DTOの totalSalary） -->
+                    <td class="right">
+                        <span th:text="${item.totalSalary}"></span> 円
+                    </td>
+
+                    <!-- 詳細ボタン（DTOの userId / targetYear / targetMonth） -->
+                    <td class="right">
+                        <a th:href="@{/salary/detail(
+                            userId=${item.userId},
+                            targetYear=${item.targetYear},
+                            targetMonth=${item.targetMonth}
+                        )}" class="detail-btn">詳細</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ⑦ メイン画面リンク（中央寄せ） -->
+    <div class="actions">
+        <a th:href="@{/main}" class="back-link">メイン画面へ</a>
+    </div>
+
+</div>
+
+</body>
+</html>

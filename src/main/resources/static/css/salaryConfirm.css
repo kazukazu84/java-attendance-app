@@ -1,0 +1,143 @@
+:root {
+    --bg-color: #f4f6f9;
+    --card-bg: #ffffff;
+    --text-primary: #333;
+    --text-secondary: #666;
+    --border-color: #e2e8f0;
+    --accent-color: #2b6cb0;
+}
+
+body {
+    background: var(--bg-color);
+    font-family: "Helvetica Neue", Arial, Meiryo, sans-serif;
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 700px;
+}
+
+/* タイトル */
+.page-title {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+/* カード */
+.card {
+    background: var(--card-bg);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 24px;
+}
+
+.card.center {
+    text-align: center;
+}
+
+/* フォーム */
+.form-area {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.form-select {
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.submit-btn {
+    padding: 12px;
+    background: var(--accent-color);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.submit-btn:hover {
+    opacity: 0.9;
+}
+
+/* 年間集計 */
+.summary-box {
+    background: #f7fafc;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* 一覧テーブル */
+.salary-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.salary-table th {
+    background: #f0f4f8;
+    padding: 12px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.salary-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.left { text-align: left; }
+.right { text-align: right; }
+
+/* 詳細ボタン */
+.detail-btn {
+    background: #fefcbf;
+    color: #333;
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.detail-btn:hover {
+    background: #faf089;
+}
+
+/* メイン画面リンク */
+.actions {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.back-link {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
