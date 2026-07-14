@@ -1,10 +1,187 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <meta charset="UTF-8">
+    <title>メイン画面</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f4f6f9; }
+        .main-container { max-width: 1100px; margin: 30px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .time-display { font-size: 1.3rem; font-weight: bold; color: #495057; }
+        .log-box { height: 250px; overflow-y: auto; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 10px; font-family: monospace; text-align: left; }
+        .shift-box { height: 350px; background-color: #fff; border: 2px dashed #dee2e6; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #6c757d; }
+        
+        /* 押し込まれる立体ボタンの設定 */
+        button, .btn { display: inline-block; font-weight: bold; cursor: pointer; border: none; border-radius: 4px; outline: none; transition: all 0.1s ease; box-shadow: 0 4px 0 #b3b3b3; }
+        .btn-clock-in { background-color: #28a745; color: white; box-shadow: 0 4px 0 #1e7e34; padding-top: 20px; padding-bottom: 20px; }
+        .btn-clock-out { background-color: #dc3545; color: white; box-shadow: 0 4px 0 #bd2130; padding-top: 20px; padding-bottom: 20px; }
+        button:active, .btn:active { box-shadow: 0 1px 0 transparent; transform: translateY(3px); }
+        button:disabled, .btn:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none !important; transform: none !important; }
+    </style>
 </head>
 <body>
 
+<div class="container">
+    <div class="main-container">
+        
+        <!-- 【上部ヘッダーエリア：ボタンとユーザー情報】 -->
+        <div class="row align-items-center mb-4">
+            <div class="col-6 text-start">
+                <a th:href="@{/user/attendance}" class="btn btn-outline-primary btn-sm me-2">簡易勤怠画面へ</a>
+                <a th:href="@{/logout}" class="btn btn-outline-danger btn-sm">ログアウト</a>
+            </div>
+            <div class="col-6 text-end">
+                <div class="fw-bold text-secondary">
+                    ユーザーID: <span th:text="${user.userId}">0</span> | 
+                    氏名: <span th:text="${user.userName}">ゲスト</span>
+                </div>
+            </div>
+        </div>
+
+        <hr class="mb-4">
+
+        <!-- 【メインコンテンツエリア（左右分割）】 -->
+        <div class="row g-4">
+            
+            <!-- ⬅️ 左側：ミニ勤怠 & ログ表示部 -->
+            <div class="col-md-6">
+                <h5 class="mb-3 text-start fw-bold">■ ミニ勤怠</h5>
+                
+                <!-- 【時刻表示部】 -->
+                <div class="time-display mb-3 text-center bg-light py-2 rounded" id="realTimeDisplay">
+                    yyyy/MM/dd HH:mm:ss
+                </div>
+
+                <!-- ボタンエリア -->
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <button type="button" id="btnClockIn" class="btn btn-clock-in w-100" 
+                                th:disabled="${!status.canClockIn}">出勤</button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" id="btnClockOut" class="btn btn-clock-out w-100" 
+                                th:disabled="${!status.canClockOut}">退勤</button>
+                    </div>
+                </div>
+
+                <h5 class="mb-3 text-start fw-bold">■ ログ表示部</h5>
+                <!-- 【ログ表示スクロールエリア】 -->
+                <div class="log-box" id="logDisplayBox">
+                    <div th:each="log : ${logList}" th:text="${log.formattedLogMessage}" class="mb-1 text-dark"></div>
+                </div>
+            </div>
+
+            <!-- ➡️ 右側：給与確認・シフト申請・シフト表示 -->
+            <div class="col-md-6 text-start">
+                <div class="d-flex justify-content-between mb-3">
+                    <h5 class="fw-bold my-auto">■ シフト情報</h5>
+                    <div>
+                        <a th:href="@{/user/salary}" class="btn btn-outline-success btn-sm me-2">給与確認</a>
+                        <a th:href="@{/user/shift-request}" class="btn btn-outline-info btn-sm">シフト申請</a>
+                    </div>
+                </div>
+                
+                <!-- 【シフト表示部枠】 -->
+                <div class="shift-box">
+                    <span>※ここにシフト表が配置されます（現状は枠のみ）</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- 1. リアルタイム時計の表示処理（変更なし） ---
+    function updateClock() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const date = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        document.getElementById('realTimeDisplay').innerText = `${year}/${month}/${date} ${hours}:${minutes}:${seconds}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+
+    // --- 2. 完全にSPA化された打刻処理 ---
+    
+    // サーバーから打刻完了データ（DTO）を受け取って、画面のボタン状態をその場で更新する
+    function updateDOM(data) {
+        // 出勤・退勤ボタンの活性・非活性を即座に切り替え
+        document.getElementById('btnClockIn').disabled = !data.canClockIn;
+        document.getElementById('btnClockOut').disabled = !data.canClockOut;
+        
+        // 💡 ログ表示部をSPAで更新するために、一度最新のログ一覧をサーバーから取得し直す
+        fetchLatestLogs();
+    }
+
+    // ログ表示部だけを裏で最新にする関数
+    function fetchLatestLogs() {
+        // メイン画面のHTMLを裏でもう一度取得し、ログの入っている箱（#logDisplayBox）の中身だけを引っこ抜いて差し替える
+        fetch('/main')
+            .then(response => response.text())
+            .then(htmlText => {
+                // 文字列から仮のDOM（画面構造）を作る
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlText, 'text/html');
+                // 新しいログの箱を取得
+                const newLogBox = doc.getElementById('logDisplayBox');
+                
+                // 現在の画面のログの箱を、新しい中身にガサッと差し替える
+                if (newLogBox) {
+                    document.getElementById('logDisplayBox').innerHTML = newLogBox.innerHTML;
+                }
+            })
+            .catch(error => console.error('Log update error:', error));
+    }
+
+	// 【出勤ボタン】クリック時の処理
+	document.getElementById('btnClockIn').addEventListener('click', () => {
+    fetch('/api/attendance/clock-in', { method: 'POST' })
+        .then(response => {
+            // 💡 サーバーから400エラーが返ってきた場合
+            if (!response.ok) {
+                // テキスト（エラーメッセージ）を読み込んで、次のcatchにそのまま引き渡す
+                return response.text().then(errorMessage => {
+                    return Promise.reject(errorMessage); 
+                });
+            }
+            return response.json(); // 正常時はJSONとしてパース
+        })
+        .then(data => {
+            // 正常にDTOが戻ってきたら画面を更新
+            updateDOM(data);
+        })
+        .catch(errorText => {
+            // 💡 サーバーから返ってきた日本語のテキストがそのまま「errorText」に入ります
+            alert("【打刻エラー】\n" + errorText);
+        });
+});
+
+	// 【退勤ボタン】クリック時の処理
+	document.getElementById('btnClockOut').addEventListener('click', () => {
+    fetch('/api/attendance/clock-out', { method: 'POST' })
+        .then(response => {
+            // 💡 サーバーから400エラーが返ってきた場合
+            if (!response.ok) {
+                // テキスト（エラーメッセージ）を読み込んで、次のcatchにそのまま引き受ける
+                return response.text().then(errorMessage => {
+                    return Promise.reject(errorMessage);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            updateDOM(data);
+        })
+        .catch(errorText => {
+            alert("【打刻エラー】\n" + errorText);
+        });
+});
+</script>
 </body>
 </html>
