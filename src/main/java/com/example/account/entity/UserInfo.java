@@ -1,3 +1,8 @@
+/*
+ * ファイルパス: src/main/java/com/example/account/entity/UserInfo.java
+ */
+
+
 package com.example.account.entity;
 
 import java.util.Date;

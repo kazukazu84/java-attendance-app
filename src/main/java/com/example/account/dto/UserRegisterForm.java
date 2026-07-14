@@ -1,3 +1,8 @@
+/*
+ * ファイルパス: src/main/java/com/example/account/dto/UserRegisterForm.java
+ */
+
+
 package com.example.account.dto;
 
 import java.time.LocalDate;

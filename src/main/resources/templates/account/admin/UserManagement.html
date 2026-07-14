@@ -74,8 +74,8 @@
                     
                     <td>
                         <div th:if="${#authentication.name != user.userId}">
-                            <a th:href="@{/users/edit/{id}(id=${user.userId})}" class="btn btn-mono btn-sm py-0 px-2" style="font-size: 0.85rem;">編集</a>
-                            <a th:href="@{/users/delete/{id}(id=${user.userId})}" class="btn btn-mono-del btn-sm py-0 px-2" style="font-size: 0.85rem;" onclick="return confirm('本当に削除しますか？')">削除</a>
+                            <a th:href="@{/admin/edit/{id}(id=${user.userId})}" class="btn btn-mono btn-sm py-0 px-2" style="font-size: 0.85rem;">編集</a>
+                            <a th:href="@{/admin/delete/{id}(id=${user.userId})}" class="btn btn-mono-del btn-sm py-0 px-2" style="font-size: 0.85rem;" onclick="return confirm('本当に削除しますか？')">削除</a>
                         </div>
                         <span th:if="${#authentication.name == user.userId}" class="text-muted-mono small fw-bold">ログイン中</span>
                     </td>
