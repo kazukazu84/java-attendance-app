@@ -9,11 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.example.account.entity.UserInfo;
 import com.example.account.repository.UserInfoRepository;
-import com.example.account.service.AccountService;
 
 @Controller
 public class UserManagementController {
-	@Autowired private AccountService accountService;
+
 	@Autowired private UserInfoRepository userInfoRepository;
 	
 	@GetMapping("/admin/UserManagement")
