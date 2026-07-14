@@ -33,4 +33,7 @@ public class Attendance {
 
     @Column(name = "clock_out")
     private LocalTime clockOut;
+    
+    @Column(name = "rest_time", nullable = false)
+    private Integer restTime = 0; // 初期値を0にしておくと安全です
 }
