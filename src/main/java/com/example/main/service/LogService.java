@@ -72,4 +72,22 @@ public class LogService {
 
         return dtoList;
     }
+    
+    /**
+     * ログ登録
+     * 
+     * @param messageId ログメッセージID
+     * @param targetUserId 対象ユーザーID
+     */
+    public void saveLog(Integer messageId, Integer targetUserId) {
+
+        Log log = new Log();
+
+        log.setCreatedAt(java.time.LocalDateTime.now());
+        log.setMessageId(messageId);
+        log.setTargetUserId(targetUserId);
+
+        logRepository.save(log);
+    }
+    
 }
