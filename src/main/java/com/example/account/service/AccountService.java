@@ -1,9 +1,8 @@
 package com.example.account.service;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +19,102 @@ public class AccountService {
 	@Autowired private UserInfoRepository userRepo;
 	@Autowired private PasswordEncoder passwordEncoder;
 
+	 /**
+     * IDによるユーザー検索
+     */
+    public Optional<UserInfo> findUserById(String id) {
+        return userRepo.findById(id);
+    }
+
+    /**
+     * 新規アカウント登録
+     */
+    @Transactional
+    public void registerAccount(
+        String id, 
+        String rawPassword, 
+        String userName, 
+        Position position, 
+        int wage, 
+        Date birthDate, 
+        int attendanceStatus, 
+        boolean isEmploymentInsurance, 
+        int isActive
+    ) {
+        UserInfo user = new UserInfo();
+        
+        user.setUserId(id);
+        user.setPassword(passwordEncoder.encode(rawPassword));
+        user.setUserName(userName);
+        user.setPosition(position);
+        user.setWage(wage);
+        user.setBirthDate(birthDate);
+        user.setAttendanceStatus(attendanceStatus);
+        user.setEmploymentInsurance(isEmploymentInsurance);
+        user.setIsActive(isActive);
+        userRepo.save(user);
+    }
+
+    /**
+     * 既存アカウント更新
+     * @return 更新成否 (対象ユーザーが存在しなかった場合はfalse)
+     */
+    @Transactional
+    public boolean updateAccount(UserRegisterForm form) {
+        Optional<UserInfo> userOpt = userRepo.findById(form.getUserId());
+        if (userOpt.isEmpty()) {
+            return false;
+        }
+
+        UserInfo user = userOpt.get();
+        
+        // 1. 各項目の更新（パスワード以外）
+        user.setUserName(form.getUserName());
+        user.setPosition(Position.valueOf(form.getPosition()));
+        user.setWage(form.getWage());
+        
+        if (form.getBirthDate() != null) {
+            user.setBirthDate(java.sql.Date.valueOf(form.getBirthDate()));
+        }
+        
+        user.setEmploymentInsurance(form.isEmploymentInsurance());
+        user.setIsActive(form.getIsActive());
+
+        // 2. パスワードの更新（画面で新しいパスワードが入力されている場合のみ暗号化して更新）
+        if (form.getPassword() != null && !form.getPassword().trim().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(form.getPassword()));
+        }
+
+        userRepo.save(user);
+        return true;
+    }
+
+	@Transactional // 💡 複数データを一括更新するため、トランザクション管理下におくのが鉄則！
+	public void deactivateUsers(List<String> userIds) {
+		// 1. 対象のユーザーをデータベースから一括で取得する
+		List<UserInfo> users = userRepo.findAllById(userIds);
+
+		// 2. 取得したユーザーの在籍ステータス（active）をすべて「0 (無効/退職)」に書き換える
+		for (UserInfo user : users) {
+			user.setIsActive(0);
+		}
+
+		// 3. 変更内容をデータベースに一括保存（更新）する
+		userRepo.saveAll(users);
+	}
+
+	public List<UserInfo> searchUsers(String keyword, String type) { // 💡 戻り値を UserInfo に変更
+		if ("id".equals(type)) {
+			return userRepo.findByUserIdContaining(keyword);
+		} else if ("name".equals(type)) {
+			return userRepo.findByUserNameContaining(keyword);
+		}
+		return userRepo.findAll();
+	}
+
+	
+    
+	/*
 	@Transactional
 	public void registerAccount(
 			String id, 
@@ -51,28 +146,7 @@ public class AccountService {
 		userRepo.save(user);
 	}
 
-	public List<UserInfo> searchUsers(String keyword, String type) { // 💡 戻り値を UserInfo に変更
-		if ("id".equals(type)) {
-			return userRepo.findByUserIdContaining(keyword);
-		} else if ("name".equals(type)) {
-			return userRepo.findByUserNameContaining(keyword);
-		}
-		return userRepo.findAll();
-	}
 
-	@Transactional // 💡 複数データを一括更新するため、トランザクション管理下におくのが鉄則！
-	public void deactivateUsers(List<String> userIds) {
-		// 1. 対象のユーザーをデータベースから一括で取得する
-		List<UserInfo> users = userRepo.findAllById(userIds);
-
-		// 2. 取得したユーザーの在籍ステータス（active）をすべて「0 (無効/退職)」に書き換える
-		for (UserInfo user : users) {
-			user.setIsActive(0);
-		}
-
-		// 3. 変更内容をデータベースに一括保存（更新）する
-		userRepo.saveAll(users);
-	}
 	
 	public UserInfo findUserById(String userId) {
         return userRepo.findById(userId)
@@ -82,6 +156,7 @@ public class AccountService {
 	/**
      * 🔍 編集画面用に、UserInfo を UserRegisterForm に詰め替えて取得する
      */
+	/*
     public UserRegisterForm getUserRegisterFormById(String userId) {
         UserInfo user = userRepo.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("ユーザー不在: " + userId));
@@ -109,6 +184,7 @@ public class AccountService {
     /**
      * 💾 画面からの入力を既存のエンティティに安全に詰め替えて更新する
      */
+	/*
     @Transactional
     public void updateUser(UserRegisterForm form) {
         // 1. まずはDBから既存の完全なデータを引き抜く（防衛陣）
@@ -140,5 +216,5 @@ public class AccountService {
         // トランザクション（@Transactional）の結界内なので、
         // このままメソッドが終了すれば自動的にDBにUPDATE文が放たれるぜ！
     }
-
+*/
 }

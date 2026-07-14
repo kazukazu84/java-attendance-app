@@ -1,8 +1,10 @@
 <!DOCTYPE html>
+<!-- テンプレートファイルパス: src/main/resources/templates/account/admin/register.html -->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${isEdit} ? 'ユーザー情報編集' : '新規アカウント作成'">新規アカウント作成</title>
+    <!-- IDの有無でタイトルを動的に変更 -->
+    <title th:text="${userRegisterForm.userId == null || userRegisterForm.userId == ''} ? '新規アカウント作成' : 'アカウント編集'"></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
         /* 徹底的なモノクロとミニマリズム */
@@ -36,62 +38,85 @@
     </style>
 </head>
 <body class="container mt-4" style="max-width: 500px;"> 
+    <!-- IDの有無で見出しを動的に変更 -->
+    <h3 class="fw-bold text-black mb-4 border-bottom pb-2" 
+        style="border-color: #000 !important;"
+        th:text="${userRegisterForm.userId == null || userRegisterForm.userId == ''} ? '📋 新規アカウント作成' : '📋 アカウント情報の編集'">
+    </h3>
     
-    <h3 class="fw-bold text-black mb-4 border-bottom pb-2" style="border-color: #000 !important;"
-        th:text="${isEdit} ? '📋 ユーザー情報編集' : '📋 新規アカウント作成'">📋 新規アカウント作成</h3>
-    
-    <form th:action="${isEdit} ? @{/admin/users/update} : @{/admin/register}" method="post" class="needs-validation">
+    <!-- 
+      th:object でコントローラーから渡された DTO (userRegisterForm) と紐付け。
+      IDの有無によって送信先のURLを登録(/admin/register)と更新(/admin/update)で切り替える。
+    -->
+    <form th:action="${userRegisterForm.userId == null || userRegisterForm.userId == ''} ? @{/admin/register} : @{/admin/update}" 
+          th:object="${userRegisterForm}" 
+          method="post" 
+          class="needs-validation">
         
         <div class="mb-3">
             <label class="form-label fw-bold">ユーザーID</label>
-            <input type="text" name="userId" th:value="${userInfo.userId}" class="form-control form-control-sm" th:readonly="${isEdit}" required />
+            <!-- 編集時はユーザーIDを変更不可 (readonly) にする -->
+            <input type="text" th:field="*{userId}" class="form-control form-control-sm" 
+                   th:readonly="${userRegisterForm.userId != null && userRegisterForm.userId != ''}" required />
         </div>
         
         <div class="mb-3">
             <label class="form-label fw-bold">パスワード</label>
-            <input type="password" name="password" th:value="${userInfo.password}" class="form-control form-control-sm" required />
+            <!-- 編集時は空欄のまま送信可能にするため、新規登録時のみ required にする -->
+            <input type="password" th:field="*{password}" class="form-control form-control-sm" 
+                   th:required="${userRegisterForm.userId == null || userRegisterForm.userId == ''}" />
+            <small th:if="${userRegisterForm.userId != null && userRegisterForm.userId != ''}" class="text-muted">
+                ※変更する場合のみ入力してください。
+            </small>
         </div>
 
         <div class="mb-3">
             <label class="form-label fw-bold">名前</label>
-            <input type="text" name="userName" th:value="${userInfo.userName}" class="form-control form-control-sm" required />
+            <input type="text" th:field="*{userName}" class="form-control form-control-sm" required />
         </div>
         
         <div class="mb-3">
             <label class="form-label fw-bold">役職</label>
-            <select name="position" class="form-select form-select-sm" required>
-                <option value="USER" th:selected="${userInfo.position == 'USER'}">ユーザ</option>
-                <option value="ADMIN" th:selected="${userInfo.position == 'ADMIN'}">管理者</option>
+            <select th:field="*{position}" class="form-select form-select-sm" required>
+                <!-- DTOの値に基づいて自動的に selected が付与されます -->
+                <option value="USER">ユーザ</option>
+                <option value="ADMIN">管理者</option>
             </select>
         </div>
 
         <div class="mb-3">
             <label class="form-label fw-bold">時給（円）</label>
-            <input type="number" name="wage" th:value="${userInfo.wage != 0} ? ${userInfo.wage} : '1200'" min="0" required />
+            <input type="number" th:field="*{wage}" class="form-control form-control-sm" min="0" required />
         </div>
 
         <div class="mb-3">
             <label class="form-label fw-bold">生年月日</label>
-            <input type="date" name="birthDate" th:value="${userInfo.birthDate != null} ? ${#temporals.format(userInfo.birthDate, 'yyyy-MM-dd')} : ''" class="form-control form-control-sm" required />
+            <input type="date" th:field="*{birthDate}" class="form-control form-control-sm" required />
         </div>
 
-        <input type="hidden" name="attendanceStatus" th:value="${userInfo.isActive != null} ? 0 : 0" />
+        <input type="hidden" name="attendanceStatus" value="0" />
 
         <div class="mb-3 form-check">
-            <input type="checkbox" name="isEmploymentInsurance" value="true" th:checked="${userInfo.isEmploymentInsurance}" class="form-check-input" id="insuranceCheck">
+            <!-- チェックボックスも th:field で状態を自動マッピング -->
+            <input type="checkbox" th:field="*{employmentInsurance}" class="form-check-input" id="insuranceCheck">
             <label class="form-check-label fw-bold" for="insuranceCheck">雇用保険の対象とする</label>
         </div>
 
         <div class="mb-3">
             <label class="form-label fw-bold">在籍ステータス</label>
-            <select name="isActive" class="form-select form-select-sm" required>
-                <option value="1" th:selected="${userInfo.isActive == 1}">有効（ログイン可）</option>
-                <option value="0" th:selected="${userInfo.isActive == 0}">無効（ログイン不可）</option>
+            <select th:field="*{isActive}" class="form-select form-select-sm" required>
+                <!-- DTOの値に基づいて自動的に selected が付与されます -->
+                <option value="1">有効（ログイン可）</option>
+                
+                <option value="0">無効（ログイン不可）</option>
             </select>
         </div>
 
         <div class="pt-2">
-            <button type="submit" class="btn btn-mono btn-sm me-2 fw-bold" th:text="${isEdit} ? '変更を保存' : 'アカウント登録'">アカウント登録</button>
+            <!-- 状況に応じてボタンのテキストを「アカウント登録」または「更新」に変更 -->
+            <button type="submit" class="btn btn-mono btn-sm me-2 fw-bold"
+                    th:text="${userRegisterForm.userId == null || userRegisterForm.userId == ''} ? 'アカウント登録' : '更新'">
+            </button>
             <a th:href="@{/admin/UserManagement}" class="btn btn-mono-outline btn-sm">戻る</a>
         </div>
     </form>

@@ -6,13 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.account.dto.UserRegisterForm;
-import com.example.account.entity.Position;
 import com.example.account.entity.UserInfo;
 import com.example.account.repository.UserInfoRepository;
 import com.example.account.service.AccountService;
@@ -60,6 +56,7 @@ public class UserManagementController {
     /**
      * 👥 ユーザー編集画面を表示する (既存の UserRegisterForm を使用)
      */
+    /*
     @GetMapping("/users/edit/{id}")
     public String showEditForm(@PathVariable("id") String userId, Model model) {
         // 💡 サービスから、UserInfo を UserRegisterForm に詰め替えたデータを取得する
@@ -75,6 +72,7 @@ public class UserManagementController {
     /**
      * 💾 ユーザー情報の更新処理（UserRegisterForm 直受け）
      */
+    /* 
     @PostMapping("/admin/users/update")
     public String updateUser(@ModelAttribute("userInfo") UserRegisterForm form) {
         // 💡 既存のDTOをそのままサービスへ流し込む！
@@ -85,33 +83,33 @@ public class UserManagementController {
     
     
     //詳細画面のコントローラに意向する予定。
-    @GetMapping("/admin/register")
-    public String showRegisterForm(Model model) {
+    //@GetMapping("/admin/register")
+    //public String showRegisterForm(Model model) {
         // 💡 新規登録の時も、空のUserInfoオブジェクトを入れておくことで画面のクラッシュを防ぐ！
-        UserInfo userInfo = new UserInfo();
-        userInfo.setWage(1200); // 初期値の時給1200円をここでセットするぜ！
-        userInfo.setIsActive(1); // 初期ステータス「在籍」
+    //    UserInfo userInfo = new UserInfo();
+    //    userInfo.setWage(1200); // 初期値の時給1200円をここでセットするぜ！
+    //    userInfo.setIsActive(1); // 初期ステータス「在籍」
         
-        model.addAttribute("userInfo", userInfo);
-        model.addAttribute("isEdit", false); // 編集モードではないフラグ
-        return "account/admin/register";
-    }
+    //    model.addAttribute("userInfo", userInfo);
+    //    model.addAttribute("isEdit", false); // 編集モードではないフラグ
+    //   return "account/admin/register";
+    //}
     
-	@PostMapping("/admin/register")
-	public String register(@ModelAttribute UserRegisterForm form) {
-		accountService.registerAccount(
-		        form.getUserId(), 
-		        form.getPassword(), 
-		        form.getUserName(), 
+	//@PostMapping("/admin/register")
+	//public String register(@ModelAttribute UserRegisterForm form) {
+	//	accountService.registerAccount(
+	//	        form.getUserId(), 
+	//	        form.getPassword(), 
+	//	        form.getUserName(), 
 		        // 💡 DTOのStringから、Serviceが求めている「Position（Enum）」に変換してぶち込む！
-		        Position.valueOf(form.getPosition()), 
-		        form.getWage(), 
+	//	        Position.valueOf(form.getPosition()), 
+	//	        form.getWage(), 
 		        // 💡 DTOのLocalDateから、Serviceが求めている「java.util.Date」に変換してぶち込む！
-		        java.sql.Date.valueOf(form.getBirthDate()), 
-		        0, // 💡 勤怠状況（attendanceStatus）は初期値「0（退勤）」固定で安全にセット！
-		        form.isEmploymentInsurance(), // 💡 Lombokが作ったゲッターで綺麗に渡せる！
-		        form.getIsActive()
-		    );
-	    return "redirect:/admin/UserManagement";
-	}
+	//	        java.sql.Date.valueOf(form.getBirthDate()), 
+	//	        0, // 💡 勤怠状況（attendanceStatus）は初期値「0（退勤）」固定で安全にセット！
+	//	        form.isEmploymentInsurance(), // 💡 Lombokが作ったゲッターで綺麗に渡せる！
+	//	        form.getIsActive()
+	//	    );
+	//    return "redirect:/admin/UserManagement";
+	//}*/
 }

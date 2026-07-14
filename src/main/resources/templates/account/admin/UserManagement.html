@@ -92,7 +92,7 @@
                         
                         <td>
                             <div th:if="${#authentication.name != user.userId}">
-                                <a th:href="@{/users/edit/{id}(id=${user.userId})}" class="btn btn-mono btn-sm py-0 px-2" style="font-size: 0.85rem;">編集</a>
+                                <a th:href="@{/admin/edit/{id}(id=${user.userId})}" class="btn btn-mono btn-sm py-0 px-2" style="font-size: 0.85rem;">編集</a>
                             </div>
                             <div th:if="${#authentication.name == user.userId}" class="d-flex align-items-center justify-content-center" style="height: 24px;">
                                 <span class="text-muted-mono small fw-bold">ログイン中</span>
