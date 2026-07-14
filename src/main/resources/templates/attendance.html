@@ -70,6 +70,9 @@
 	    transform: none !important;
 	}
 	</style>
+	<!-- 👇 CSRF対策のため、以下の2行を追加 -->
+	<meta th:name="_csrf" th:content="${_csrf.token}"/>
+	<meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <body>
 
@@ -154,7 +157,15 @@
 
 	// 【出勤ボタン】クリック時の処理
 	document.getElementById('btnClockIn').addEventListener('click', () => {
-    fetch('/api/attendance/clock-in', { method: 'POST' })
+	// 👇 追加：HTMLのmetaタグからCSRFトークンの情報を取得する
+	const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+	const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    fetch('/api/attendance/clock-in', { method: 'POST',
+		// 👇 追加：ヘッダーにCSRFトークンをセットして送信する
+		headers: {
+			[header]: token
+		}		
+	 })
         .then(response => {
             // 💡 サーバーから400エラーが返ってきた場合
             if (!response.ok) {
@@ -177,7 +188,15 @@
 
 	// 【退勤ボタン】クリック時の処理
 	document.getElementById('btnClockOut').addEventListener('click', () => {
-    fetch('/api/attendance/clock-out', { method: 'POST' })
+	// 👇 追加
+	const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+	const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    fetch('/api/attendance/clock-out', { method: 'POST',
+		// 👇 追加
+		headers: {
+			[header]: token
+		}
+	 })
         .then(response => {
             // 💡 サーバーから400エラーが返ってきた場合
             if (!response.ok) {
