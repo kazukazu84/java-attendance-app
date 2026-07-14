@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>新規アカウント作成</title>
+    <title th:text="${isEdit} ? 'ユーザー情報編集' : '新規アカウント作成'">新規アカウント作成</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
         /* 徹底的なモノクロとミニマリズム */
@@ -35,61 +35,63 @@
         .form-check-input:checked { background-color: #000 !important; border-color: #000 !important; }
     </style>
 </head>
-<body class="container mt-4" style="max-width: 500px;"> <h3 class="fw-bold text-black mb-4 border-bottom pb-2" style="border-color: #000 !important;">📋 新規アカウント作成</h3>
+<body class="container mt-4" style="max-width: 500px;"> 
     
-    <form th:action="@{/register}" method="post" class="needs-validation">
+    <h3 class="fw-bold text-black mb-4 border-bottom pb-2" style="border-color: #000 !important;"
+        th:text="${isEdit} ? '📋 ユーザー情報編集' : '📋 新規アカウント作成'">📋 新規アカウント作成</h3>
+    
+    <form th:action="${isEdit} ? @{/admin/users/update} : @{/admin/register}" method="post" class="needs-validation">
         
         <div class="mb-3">
             <label class="form-label fw-bold">ユーザーID</label>
-            <input type="text" name="userId" class="form-control form-control-sm" required />
+            <input type="text" name="userId" th:value="${userInfo.userId}" class="form-control form-control-sm" th:readonly="${isEdit}" required />
         </div>
         
         <div class="mb-3">
             <label class="form-label fw-bold">パスワード</label>
-            <input type="password" name="password" class="form-control form-control-sm" required />
+            <input type="password" name="password" th:value="${userInfo.password}" class="form-control form-control-sm" required />
         </div>
 
         <div class="mb-3">
             <label class="form-label fw-bold">名前</label>
-            <input type="text" name="userName" class="form-control form-control-sm" required />
+            <input type="text" name="userName" th:value="${userInfo.userName}" class="form-control form-control-sm" required />
         </div>
         
         <div class="mb-3">
             <label class="form-label fw-bold">役職</label>
             <select name="position" class="form-select form-select-sm" required>
-                <option value="USER">ユーザ</option>
-                <option value="ADMIN">管理者</option>
+                <option value="USER" th:selected="${userInfo.position == 'USER'}">ユーザ</option>
+                <option value="ADMIN" th:selected="${userInfo.position == 'ADMIN'}">管理者</option>
             </select>
         </div>
 
         <div class="mb-3">
             <label class="form-label fw-bold">時給（円）</label>
-            <input type="number" name="wage" class="form-control form-control-sm" value="1200" min="0" required />
+            <input type="number" name="wage" th:value="${userInfo.wage != 0} ? ${userInfo.wage} : '1200'" min="0" required />
         </div>
 
         <div class="mb-3">
             <label class="form-label fw-bold">生年月日</label>
-            <input type="date" name="birthDate" class="form-control form-control-sm" required />
+            <input type="date" name="birthDate" th:value="${userInfo.birthDate != null} ? ${#temporals.format(userInfo.birthDate, 'yyyy-MM-dd')} : ''" class="form-control form-control-sm" required />
         </div>
 
-        <input type="hidden" name="attendanceStatus" value="0" />
+        <input type="hidden" name="attendanceStatus" th:value="${userInfo.isActive != null} ? 0 : 0" />
 
         <div class="mb-3 form-check">
-            <input type="checkbox" name="isEmploymentInsurance" value="true" class="form-check-input" id="insuranceCheck">
+            <input type="checkbox" name="isEmploymentInsurance" value="true" th:checked="${userInfo.isEmploymentInsurance}" class="form-check-input" id="insuranceCheck">
             <label class="form-check-label fw-bold" for="insuranceCheck">雇用保険の対象とする</label>
         </div>
 
-		<div class="mb-3">
-		            <label class="form-label fw-bold">在籍ステータス</label>
-		            <select name="isActive" class="form-select form-select-sm" required>
-		                <option value="1" selected>在籍（ログイン可）</option>
-		                <option value="2">休職中（ログイン不可）</option>
-		                <option value="3">退職（ログイン不可）</option>
-		            </select>
-		        </div>
+        <div class="mb-3">
+            <label class="form-label fw-bold">在籍ステータス</label>
+            <select name="isActive" class="form-select form-select-sm" required>
+                <option value="1" th:selected="${userInfo.isActive == 1}">有効（ログイン可）</option>
+                <option value="0" th:selected="${userInfo.isActive == 0}">無効（ログイン不可）</option>
+            </select>
+        </div>
 
         <div class="pt-2">
-            <button type="submit" class="btn btn-mono btn-sm me-2 fw-bold">アカウント登録</button>
+            <button type="submit" class="btn btn-mono btn-sm me-2 fw-bold" th:text="${isEdit} ? '変更を保存' : 'アカウント登録'">アカウント登録</button>
             <a th:href="@{/admin/UserManagement}" class="btn btn-mono-outline btn-sm">戻る</a>
         </div>
     </form>

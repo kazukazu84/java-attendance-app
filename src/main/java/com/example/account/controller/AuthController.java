@@ -34,6 +34,6 @@ public class AuthController {
             model.addAttribute("errorMsg", errorMessage);
         }
         
-        return "kumeda/login";
+        return "account/login";
     }
 }
