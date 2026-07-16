@@ -79,6 +79,7 @@ public class LogService {
      * @param messageId ログメッセージID
      * @param targetUserId 対象ユーザーID
      */
+    
     public void saveLog(Integer messageId, Integer targetUserId) {
 
         Log log = new Log();
