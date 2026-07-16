@@ -37,12 +37,23 @@ public class UserManagementController {
 		List<UserInfo> searchResults = accountService.searchUsers(keyword, type); // 💡 UserInfo に変更
 
 		model.addAttribute("users", searchResults);
-		return "redirect:/admin/UserManagement"; 
+		return "account/admin/UserManagement";
 	}
 
 	@PostMapping("/admin/users/batch-deactivate")
 	public String batchDeactivate(@RequestParam(value = "userIds", required = false) List<String> userIds) {
 
+		// 💡 オブジェクト（SecurityContext）からログイン中のユーザーIDを抽出！
+        String loginUserId = org.springframework.security.core.context.SecurityContextHolder
+            .getContext()
+            .getAuthentication()
+            .getName();
+
+        // 🛡️ 【鉄壁の防壁】無効化リストの中に自分がいたら即座に中止！
+        if (userIds.contains(loginUserId)) {
+        	return "account/error-denied";
+        }
+		
 		// 💡 何もチェックされずに届いた場合の安全ガード
 		if (userIds != null && !userIds.isEmpty()) {
 			// 次のステップで作る「サービス」の無効化メソッドを呼び出す

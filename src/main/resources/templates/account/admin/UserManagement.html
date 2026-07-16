@@ -84,7 +84,7 @@
                         <td th:text="${user.userId}" class="fw-bold"></td>
                         <td th:text="${user.userName}"></td>
                         <td th:text="${user.position}"></td>
-                        <td th:text="${user.wage + '円'}"></td>
+                        <td th:text="${user.wage.wageValue + '円'}"></td>
                         <td th:text="${#dates.format(user.birthDate, 'yyyy/MM/dd')}"></td>                    
                         <td th:text="${user.attendanceStatusStr}" th:classappend="${user.attendanceStatus == 1 ? 'fw-bold' : ''}"></td>
                         <td th:text="${user.employmentInsuranceStr}"></td>

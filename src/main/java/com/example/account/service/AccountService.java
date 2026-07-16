@@ -12,13 +12,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.account.dto.UserRegisterForm;
 import com.example.account.entity.Position;
 import com.example.account.entity.UserInfo;
+import com.example.account.entity.Wage;
 import com.example.account.repository.UserInfoRepository;
+import com.example.account.repository.WageRepository;
 
 @Service
 public class AccountService {
 	@Autowired private UserInfoRepository userRepo;
 	@Autowired private PasswordEncoder passwordEncoder;
-
+	@Autowired private WageRepository wageRepo; // 💡 賃金マスタ検索用にリポジトリを追加
+	
 	 /**
      * IDによるユーザー検索
      */
@@ -35,7 +38,7 @@ public class AccountService {
         String rawPassword, 
         String userName, 
         Position position, 
-        int wage, 
+        int wageId, 
         Date birthDate, 
         int attendanceStatus, 
         boolean isEmploymentInsurance, 
@@ -47,7 +50,10 @@ public class AccountService {
         user.setPassword(passwordEncoder.encode(rawPassword));
         user.setUserName(userName);
         user.setPosition(position);
-        user.setWage(wage);
+        // 💡 画面から渡された wageId を元に、賃金マスタ（Wageエンティティ）を検索してセット
+        Wage wage = wageRepo.findById(wageId)
+            .orElseThrow(() -> new IllegalArgumentException("指定された賃金IDが存在しません: " + wageId));
+        user.setWage(wage); // 💡 user.setWage(wage) でオブジェクトをセット
         user.setBirthDate(birthDate);
         user.setAttendanceStatus(attendanceStatus);
         user.setEmploymentInsurance(isEmploymentInsurance);
@@ -65,13 +71,16 @@ public class AccountService {
         if (userOpt.isEmpty()) {
             return false;
         }
-
+        
         UserInfo user = userOpt.get();
         
         // 1. 各項目の更新（パスワード以外）
         user.setUserName(form.getUserName());
         user.setPosition(Position.valueOf(form.getPosition()));
-        user.setWage(form.getWage());
+        // 💡 更新時も同様に、formの wageId からWageエンティティを取得してセット
+        Wage wage = wageRepo.findById(form.getWageId())
+            .orElseThrow(() -> new IllegalArgumentException("指定された賃金IDが存在しません: " + form.getWageId()));
+        user.setWage(wage);
         
         if (form.getBirthDate() != null) {
             user.setBirthDate(java.sql.Date.valueOf(form.getBirthDate()));
@@ -91,6 +100,7 @@ public class AccountService {
 
 	@Transactional // 💡 複数データを一括更新するため、トランザクション管理下におくのが鉄則！
 	public void deactivateUsers(List<String> userIds) {
+		
 		// 1. 対象のユーザーをデータベースから一括で取得する
 		List<UserInfo> users = userRepo.findAllById(userIds);
 

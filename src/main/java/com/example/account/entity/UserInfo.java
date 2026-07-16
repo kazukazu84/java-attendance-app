@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import lombok.Data;
@@ -28,9 +30,15 @@ public class UserInfo {
 	@Column(name = "position", nullable = false)
 	private Position position;
 
-	@Column(name = "wage", nullable = false)
-	private int wage;
+	//@Column(name = "wage", nullable = false)
+	//private int wage;
 
+    // ================= [リレーションシップの追加] =================
+    @ManyToOne // 💡 複数のUserInfoに対して、1つのWageが紐付く（多対一）
+    @JoinColumn(name = "wage_id", nullable = false) // 💡 データベース上の外部キー列「wage_id」を指定
+    private Wage wage; // 💡 単なるID数値ではなく、Wageエンティティオブジェクトとして保持する
+    // ==========================================================
+	
 	@Column(name = "birth_date", nullable = false)
 	private Date birthDate;								
 
@@ -40,7 +48,7 @@ public class UserInfo {
 	public String getAttendanceStatusStr() {
 		return this.attendanceStatus == 1 ? "出勤" : "退勤";
 	}
-
+	
 	@Column(name = "is_employment_insurance", nullable = false)
 	private boolean isEmploymentInsurance;
 

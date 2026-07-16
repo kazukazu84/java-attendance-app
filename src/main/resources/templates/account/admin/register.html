@@ -83,11 +83,21 @@
                 <option value="ADMIN">管理者</option>
             </select>
         </div>
-
-        <div class="mb-3">
-            <label class="form-label fw-bold">時給（円）</label>
-            <input type="number" th:field="*{wage}" class="form-control form-control-sm" min="0" required />
-        </div>
+		
+		<!-- 💡 変更後 -->
+		<div class="mb-3">
+		    <label class="form-label fw-bold">時給（選択）</label>
+		    <!-- th:field を *{wageId} に変更し、スタイルを form-select に指定 -->
+		    <select th:field="*{wageId}" class="form-select form-select-sm" required>
+		        <!-- 未選択状態のデフォルトプロンプト（必要に応じて） -->
+		        <option value="" disabled selected hidden>時給を選択してください</option>
+		        <!-- コントローラーから送られた wages のリストをループ回送 -->
+		        <option th:each="w : ${wages}" 
+		                th:value="${w.wageId}" 
+		                th:text="${w.wageValue} + '円'">
+		        </option>
+		    </select>
+		</div>
 
         <div class="mb-3">
             <label class="form-label fw-bold">生年月日</label>
