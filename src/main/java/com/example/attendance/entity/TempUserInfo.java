@@ -4,21 +4,19 @@ import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import lombok.Data;
 
 @Entity
-@Table(name = "user_table") // 「user」はPostgreSQLの予約語（使えない名前）のため、安全のためにテーブル名を指定します
+@Table(name = "user_info")
 @Data
 public class TempUserInfo {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer userId;
+	@Id
+	@Column(name = "user_id") // テーブルの物理名と合わせる
+	private String userId;
 
     @Column(nullable = false)
     private String password;

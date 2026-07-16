@@ -25,7 +25,7 @@ public class UserMainController {
     @Autowired
     private TempUserInfoRepository userRepository;
 
-    private final Integer TEST_USER_ID = 1;
+    private final String TEST_USER_ID = "1";
 
     /**
      * メイン画面の表示（URLと名前が完全に一致して分かりやすくなります）
