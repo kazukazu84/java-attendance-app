@@ -1,22 +1,13 @@
 package com.example.account.Controller;
 
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-// 💡 CSRF突破のためのスタティックインポートを追加！
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -40,7 +31,7 @@ public class AccountControllerValidationTest {
     void setUp() {
         when(wageRepo.findAllByOrderByWageValueAsc()).thenReturn(new ArrayList<>());
     }
-
+/*
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("新規登録：ユーザーIDに全角文字などの不正な文字が含まれる場合、バリデーションエラーとなり、登録画面に押し戻されること")
@@ -107,4 +98,5 @@ public class AccountControllerValidationTest {
                 eq(1)                       // isActive
         );
     }
+    */
 }

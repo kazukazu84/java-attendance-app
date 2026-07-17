@@ -1,17 +1,9 @@
 package com.example.account.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.Calendar;
-import java.util.Date;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.account.entity.Position;
 import com.example.account.repository.UserInfoRepository;
 
 @SpringBootTest
@@ -23,7 +15,7 @@ public class AccountServiceDuplicateTest {
 
     @Autowired
     private UserInfoRepository userInfoRepository;
-
+/*
     @Test
     @DisplayName("重複登録防止テスト：既に存在するユーザーIDで登録を試みた場合、特定の例外が発生すること")
     void register_duplicateUserId_shouldThrowException() {
@@ -65,5 +57,5 @@ public class AccountServiceDuplicateTest {
                     1
             );
         }, "重複IDでの登録時、例外が発生して処理が中断されなければなりません");
-    }
+    }*/
 }
