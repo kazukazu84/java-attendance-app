@@ -1,0 +1,263 @@
+<!DOCTYPE html> <!--このファイルはHTML5です-->
+<html xmlns:th="http://www.thymeleaf.org"><!--thymeleafを使います-->
+
+<head><!--画面には表示されない情報を書く-->
+    <meta charset="UTF-8">
+    <title>シフト受付期間設定</title><!--タブに表示する-->
+    <link rel="stylesheet"
+          th:href="@{/css/shift-application-event.css}"><!--CSSを読み込んでいます-->
+</head>
+
+<body>
+
+<h1>シフト受付期間設定</h1>
+
+<!-- ========================= -->
+<!-- 新規イベント作成 -->
+<!-- ========================= -->
+
+<form th:action="@{/admin/shift-application-event/create}"
+      th:object="${CreateShiftApplicationEventForm}"
+      method="post"><!--createにformを送る--><!--shiftapplicationeventformをひっぱってきてる-->
+
+    <label>対象期間</label>
+
+    <select th:field="*{targetWeeks}"
+            th:disabled="${editingEventId != null}"><!--formのtargetweeksと結びつける-->
+
+        <option value="1">1週間</option><!--プルダウン-->
+        <option value="2">2週間</option>
+        <option value="3">3週間</option>
+        <option value="4">4週間</option>
+
+    </select>
+
+    <label>受付開始</label>
+
+    <select th:field="*{applicationStartDays}"
+            th:disabled="${editingEventId != null}"><!--編集ボタンをおしたときのid-->
+
+        <option
+            th:each="i : ${#numbers.sequence(30,1)}"
+            th:value="${i}"
+            th:text="${i + '日前'}">
+        </option>
+
+    </select>
+
+    <label>受付締切</label>
+
+    <select th:field="*{applicationEndDays}"
+            th:disabled="${editingEventId != null}">
+
+        <option
+            th:each="i : ${#numbers.sequence(14,1)}"
+            th:value="${i}"
+            th:text="${i + '日前'}">
+        </option>
+
+    </select>
+
+    <button type="submit"
+            th:disabled="${editingEventId != null}">
+        新規作成
+    </button>
+
+</form>
+
+<br>
+
+<!-- ========================= -->
+<!-- イベント一覧 -->
+<!-- ========================= -->
+
+<table border="1"><!--テーブルの作成-->
+
+    <thead>
+
+    <tr><!--１行という意味-->
+
+        <th>対象期間開始</th>
+        <th>対象期間終了</th>
+        <th>受付開始</th>
+        <th>受付終了</th>
+        <th>編集</th>
+        <th>削除</th>
+
+    </tr>
+
+    </thead>
+
+    <tbody>
+
+    <tr th:each="event : ${eventList}"><!--forと同じ-->
+
+        <!-- ====================== -->
+        <!-- 通常表示 -->
+        <!-- ====================== -->
+
+        <th:block th:if="${editingEventId != event.eventId}"><!--編集中の行だけ表示しない-->
+
+            <td th:text="${event.targetStartDate}"></td><!--eventのtargetStartDateを表示してください-->
+
+            <td th:text="${event.targetEndDate}"></td>
+
+            <td th:text="${event.applicationStartDate}"></td>
+
+            <td th:text="${event.applicationEndDate}"></td>
+
+            <td>
+
+                <form
+                        th:action="@{/admin/shift-application-event/edit}"
+                        method="post">
+
+                    <input type="hidden"
+                           name="eventId"
+                           th:value="${event.eventId}"><!--見えない入力欄-->
+						   
+						   
+
+						       					       
+						  
+						   
+						   
+
+                    <button type="submit"><!--送信ボタン-->
+
+                        編集
+
+                    </button>
+
+                </form>
+
+            </td>
+
+            <td>
+
+                <form
+                        th:action="@{/admin/shift-application-event/delete}"
+                        method="post">
+
+                    <input type="hidden"
+                           name="eventId"
+                           th:value="${event.eventId}">
+						   
+						  
+
+
+                    <button type="submit"
+                            th:disabled="${editingEventId != null}"><!--編集中は削除禁止-->
+
+                        削除
+
+                    </button>
+
+                </form>
+
+            </td>
+
+        </th:block>
+
+        <!-- ====================== -->
+        <!-- 編集モード -->
+        <!-- ====================== -->
+
+        <th:block th:if="${editingEventId == event.eventId}">
+
+            <td colspan="6"><!--6列をまとめる？-->
+
+                <form
+                        th:action="@{/admin/shift-application-event/update}"
+                        th:object="${UpdateShiftApplicationEventForm}"
+                        method="post">
+
+                    <input
+                            type="hidden"
+                            th:field="*{eventId}">
+
+                    <table>
+
+                        <tr>
+
+                            <td>
+
+                                <input
+                                        type="date"
+                                        th:field="*{targetStartDate}">
+
+                            </td>
+
+                            <td>
+
+                                <input
+                                        type="date"
+                                        th:field="*{targetEndDate}">
+
+                            </td>
+
+                            <td>
+
+                                <input
+                                        type="date"
+                                        th:field="*{applicationStartDate}">
+
+                            </td>
+
+                            <td>
+
+                                <input
+                                        type="date"
+                                        th:field="*{applicationEndDate}">
+
+                            </td>
+
+                            <td>
+								
+								
+								
+
+                                <button type="submit">
+
+                                    完了
+
+                                </button>
+
+                            </td>
+
+                            <td>
+
+                                <!-- 空欄 -->
+
+                            </td>
+
+                        </tr>
+
+                    </table>
+
+                </form>
+
+            </td>
+
+        </th:block>
+
+    </tr>
+
+    </tbody>
+
+</table>
+
+<br>
+
+<button
+        type="button"
+        th:onclick="|location.href='@{/admin/shift-management}'|"
+        th:disabled="${editingEventId != null}"><!--URLを変更してくださいという意味-->
+
+    戻る
+
+</button>
+
+</body>
+
+</html>
