@@ -34,7 +34,7 @@ public class TempUserInfo {
     private LocalDate birthDate;
 
     @Column(nullable = false)
-    private Integer attendanceStatus; // 0: 出勤状態, 1: 退勤状態
+    private Integer attendanceStatus; // 0: 退勤状態, 1: 出勤状態
 
     @Column(nullable = false)
     private Boolean isEmploymentInsurance;

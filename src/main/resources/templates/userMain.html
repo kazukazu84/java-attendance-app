@@ -125,7 +125,7 @@
     // ログ表示部だけを裏で最新にする関数
     function fetchLatestLogs() {
         // メイン画面のHTMLを裏でもう一度取得し、ログの入っている箱（#logDisplayBox）の中身だけを引っこ抜いて差し替える
-        fetch('/main')
+        fetch('/user/main')
             .then(response => response.text())
             .then(htmlText => {
                 // 文字列から仮のDOM（画面構造）を作る
