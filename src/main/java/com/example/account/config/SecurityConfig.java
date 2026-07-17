@@ -11,39 +11,51 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-@Configuration @EnableWebSecurity
+@Configuration 
+@EnableWebSecurity
 public class SecurityConfig {
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.formLogin(form -> form
             .loginPage("/login")
             .loginProcessingUrl("/authenticate")
             .successHandler((request, response, authentication) -> {
-                // ここで直接、権限に応じた遷移先を変える！
+                // 💡 ログインしたユーザーの持つ権限（ロール）をセットとして取得
                 Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
+                
+                // 🛡️ ロールに応じて遷移先を切り替える処理を完遂させる！
+                if (roles.contains("ROLE_ADMIN")) {
+                    response.sendRedirect("/admin/register"); // 👑 管理者は管理画面（登録画面など）へ
+                } else {
+                    response.sendRedirect("/user/top");       // 💼 一般ユーザーはマイページ/トップへ（※実際のパスに合わせて調整してください）
+                }
             })
             .failureUrl("/login?error")
             .permitAll() 
-        ).logout(logout -> logout.logoutSuccessUrl("/login?logout")
-        		).authorizeHttpRequests(authz -> authz
-        			    // ① 誰でもアクセスして良いエリア
-        			    .requestMatchers("/login", "/css/**", "/js/**").permitAll()
-        			    
-        			    // ② 👑 管理者専用エリア（ここは ADMIN しか入れない堅牢な金庫室のまま）
-        			    .requestMatchers("/admin/**").hasRole("ADMIN")
-        			    
-        			    // ③ 💼 一般ユーザーエリア（💡 ここを修正！）
-        			    // USER または ADMIN のどちらかのロールを持っていれば、誰でも通れるようになります！
-        			    .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-        			    
-        			    // ④ それ以外のURLは、最低限「ログインしていること」
-        			    .anyRequest().authenticated() 
- 
+        ).logout(logout -> logout
+            .logoutSuccessUrl("/login?logout")
+        ).authorizeHttpRequests(authz -> authz
+            // ① 誰でもアクセスして良いエリア
+            .requestMatchers("/login", "/css/**", "/js/**").permitAll()
+            
+            // ② 👑 管理者専用エリア
+            .requestMatchers("/admin/**").hasRole("ADMIN")
+            
+            // ③ 💼 一般ユーザーエリア
+            .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+            
+            // ④ それ以外のURLはログイン必須
+            .anyRequest().authenticated() 
         ).exceptionHandling(exceptionHandling -> exceptionHandling
             .accessDeniedPage("/error-denied") 
         );
+        
         return http.build();
     }
+
     @Bean
-    public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
+    public PasswordEncoder passwordEncoder() { 
+        return new BCryptPasswordEncoder(); 
+    }
 }
