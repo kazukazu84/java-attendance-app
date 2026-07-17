@@ -25,7 +25,7 @@
                 </tr>
                 <tr>
                     <th>時給</th>
-                    <td><span th:text="${detail.wageValue}"></span> 円</td>
+                    <td><span th:text="${detail.appliedHourlyWage}"></span> 円</td>
                 </tr>
                 <tr>
                     <th>総支給額</th>
@@ -33,7 +33,7 @@
                 </tr>
                 <tr>
                     <th>雇用保険料</th>
-                    <td class="minus">- <span th:text="${detail.employmentInsurance}"></span> 円</td>
+                    <td class="minus">- <span th:text="${detail.insuranceFee}"></span> 円</td>
                 </tr>
                 <tr class="highlight">
                     <th>差引支給額</th>
