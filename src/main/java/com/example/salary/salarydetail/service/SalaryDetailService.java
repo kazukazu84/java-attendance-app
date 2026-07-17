@@ -5,13 +5,18 @@ import org.springframework.stereotype.Service;
 
 import com.example.salary.salarydetail.dto.SalaryDetailDto;
 import com.example.salary.salarydetail.entity.SalaryEntity;
+import com.example.salary.salarydetail.entity.WageEntity;
 import com.example.salary.salarydetail.repository.SalaryDetailRepository;
+import com.example.salary.salarydetail.repository.WageRepository;
 
 @Service
 public class SalaryDetailService {
 
     @Autowired
     private SalaryDetailRepository salaryDetailRepository;
+
+    @Autowired
+    private WageRepository wageRepository;
 
     public SalaryDetailDto getSalaryDetail(int userId, int targetYear, int targetMonth) {
 
@@ -23,28 +28,27 @@ public class SalaryDetailService {
             return null; // データなしの場合
         }
 
-        // ② 時給は SalaryEntity の appliedHourlyWage を直接使用
-        int appliedHourlyWage = salary.getAppliedHourlyWage();
+        // ② wageテーブルから時給を取得
+        WageEntity wage = wageRepository.findByWageId(salary.getWageId());
+        int wageValue = wage.getWageValue();
 
-        // ③ 総支給額（勤務時間 × 時給）→ 小数点以下不要なので整数化
-        int grossSalary = (int) (salary.getWorkingHours() * appliedHourlyWage);
+        // ③ 総支給額（勤務時間 × 時給）
+        double grossSalary = salary.getWorkingHours() * wageValue;
 
-        // ④ 雇用保険料（適用時のみ）→ 小数点以下不要なので整数化
-        int insuranceFee = salary.isAppliedEmploymentInsurance()
-                ? (int) (grossSalary * 0.005)
-                : 0;
+        // ④ 雇用保険料（適用時のみ）
+        double employmentInsurance = salary.isAppliedEmploymentInsurance()
+                ? grossSalary * 0.005
+                : 0.0;
 
-        // ⑤ 差引支給額 → 小数点以下不要なので整数化
-        int netSalary = grossSalary - insuranceFee;
+        // ⑤ 差引支給額
+        double netSalary = grossSalary - employmentInsurance;
 
-        // ⑥ DTOに詰めて返却（画面状態は Controller がセットする）
+        // ⑥ DTOに詰めて返却
         return new SalaryDetailDto(
-                salary.getTargetYear(),
-                salary.getTargetMonth(),
                 salary.getWorkingHours(),
-                appliedHourlyWage,
+                wageValue,
                 grossSalary,
-                insuranceFee,
+                employmentInsurance,
                 netSalary
         );
     }
