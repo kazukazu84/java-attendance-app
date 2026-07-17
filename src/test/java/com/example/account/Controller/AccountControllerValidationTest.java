@@ -1,16 +1,25 @@
 package com.example.account.Controller;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.example.account.dto.UserRegisterForm;
 import com.example.account.repository.WageRepository;
 import com.example.account.service.AccountService;
 
@@ -31,7 +40,6 @@ public class AccountControllerValidationTest {
     void setUp() {
         when(wageRepo.findAllByOrderByWageValueAsc()).thenReturn(new ArrayList<>());
     }
-/*
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("新規登録：ユーザーIDに全角文字などの不正な文字が含まれる場合、バリデーションエラーとなり、登録画面に押し戻されること")
@@ -53,17 +61,7 @@ public class AccountControllerValidationTest {
                 .andExpect(view().name("account/admin/register"))
                 .andExpect(model().attributeHasFieldErrors("userRegisterForm", "userId"));
 
-        verify(accountService, times(1)).registerAccount(
-                eq("testUser123"), 
-                any(String.class),          // password
-                eq("テスト太郎"),            // userName
-                any(com.example.account.entity.Position.class), // position (Enum)
-                eq(1),                      // wageId
-                any(java.util.Date.class),  // birthDate
-                eq(0),                      // (何らかのint値)
-                eq(true),                   // isEmploymentInsurance
-                eq(1)                       // isActive
-        );
+        verify(accountService, never()).registerAccount(any(UserRegisterForm.class));
     }
 
     @Test
@@ -86,17 +84,5 @@ public class AccountControllerValidationTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/UserManagement"));
 
-        verify(accountService, times(1)).registerAccount(
-                eq("testUser123"), 
-                any(String.class),          // password
-                eq("テスト太郎"),            // userName
-                any(com.example.account.entity.Position.class), // position (Enum)
-                eq(1),                      // wageId
-                any(java.util.Date.class),  // birthDate
-                eq(0),                      // (何らかのint値)
-                eq(true),                   // isEmploymentInsurance
-                eq(1)                       // isActive
-        );
-    }
-    */
+        verify(accountService, times(1)).registerAccount(any(UserRegisterForm.class));    }
 }
