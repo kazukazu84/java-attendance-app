@@ -26,8 +26,6 @@ public class SalaryDetailConsistencyValidatorTest {
     @Test
     void 整合性が正常ならエラーなし() {
 
-        System.out.println("★ テスト: 整合性が正常ならエラーなし");
-
         SalaryDetailDto dto = new SalaryDetailDto(
                 2024,
                 5,
@@ -38,24 +36,14 @@ public class SalaryDetailConsistencyValidatorTest {
                 99500   // net = gross - insuranceFee
         );
 
-        System.out.println("★ DTO 作成完了: " + dto);
-
         Set<ConstraintViolation<SalaryDetailDto>> violations =
                 validator.validate(dto, ConsistencyGroup.class);
-
-        System.out.println("★ violations.size=" + violations.size());
-        violations.forEach(v ->
-                System.out.println("★ violation: property=" + v.getPropertyPath() +
-                        ", message=" + v.getMessage()));
 
         assertTrue(violations.isEmpty());
     }
 
-
     @Test
     void 総支給額が計算と一致しなければエラー() {
-
-        System.out.println("★ テスト: 総支給額が計算と一致しなければエラー");
 
         SalaryDetailDto dto = new SalaryDetailDto(
                 2024,
@@ -67,24 +55,14 @@ public class SalaryDetailConsistencyValidatorTest {
                 99500
         );
 
-        System.out.println("★ DTO 作成完了: " + dto);
-
         Set<ConstraintViolation<SalaryDetailDto>> violations =
                 validator.validate(dto, ConsistencyGroup.class);
-
-        System.out.println("★ violations.size=" + violations.size());
-        violations.forEach(v ->
-                System.out.println("★ violation: property=" + v.getPropertyPath() +
-                        ", message=" + v.getMessage()));
 
         assertFalse(violations.isEmpty());
     }
 
-
     @Test
     void 差引支給額が計算と一致しなければエラー() {
-
-        System.out.println("★ テスト: 差引支給額が計算と一致しなければエラー");
 
         SalaryDetailDto dto = new SalaryDetailDto(
                 2024,
@@ -96,17 +74,9 @@ public class SalaryDetailConsistencyValidatorTest {
                 99000 // net が誤り
         );
 
-        System.out.println("★ DTO 作成完了: " + dto);
-
         Set<ConstraintViolation<SalaryDetailDto>> violations =
                 validator.validate(dto, ConsistencyGroup.class);
 
-        System.out.println("★ violations.size=" + violations.size());
-        violations.forEach(v ->
-                System.out.println("★ violation: property=" + v.getPropertyPath() +
-                        ", message=" + v.getMessage()));
-
         assertFalse(violations.isEmpty());
     }
-
 }

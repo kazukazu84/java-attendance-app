@@ -55,15 +55,6 @@ public class SalaryDetailDto {
             Integer insuranceFee,
             Integer netSalary
     ) {
-        System.out.println("★ SalaryDetailDto コンストラクタ呼び出し: " +
-                "year=" + targetYear +
-                ", month=" + targetMonth +
-                ", hours=" + workingHours +
-                ", wage=" + appliedHourlyWage +
-                ", gross=" + grossSalary +
-                ", insurance=" + insuranceFee +
-                ", net=" + netSalary);
-
         this.targetYear = targetYear;
         this.targetMonth = targetMonth;
         this.workingHours = workingHours;
