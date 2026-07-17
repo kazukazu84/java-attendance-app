@@ -21,12 +21,6 @@ public class SecurityConfig {
             .successHandler((request, response, authentication) -> {
                 // ここで直接、権限に応じた遷移先を変える！
                 Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
-                
-                if (roles.contains("ROLE_ADMIN")) {
-                    response.sendRedirect("/admin/m-admin");
-                }else {
-                    response.sendRedirect("/user/s-user");
-                }
             })
             .failureUrl("/login?error")
             .permitAll() 

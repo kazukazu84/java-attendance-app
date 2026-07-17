@@ -1,0 +1,85 @@
+/* 全体レイアウト */
+body {
+    background: #f4f6f9;
+    font-family: "Helvetica Neue", Arial, Meiryo, sans-serif;
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+}
+
+/* タイトル */
+.page-title {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.page-subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* カード */
+.card {
+    background: #fff;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* テーブル */
+.salary-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.salary-table th {
+    text-align: left;
+    padding: 12px;
+    width: 40%;
+    color: #555;
+    font-weight: 600;
+}
+
+.salary-table td {
+    padding: 12px;
+    color: #222;
+    font-weight: 600;
+}
+
+/* マイナス項目（控除） */
+.minus {
+    color: #c53030;
+}
+
+/* 差引支給額（強調） */
+.highlight td,
+.highlight th {
+    background: #ebf8ff;
+    color: #2b6cb0;
+    font-weight: 700;
+    border-radius: 6px;
+}
+
+/* 戻るリンク */
+.back-link {
+    display: block;
+    margin-top: 20px;
+    text-align: center;
+    color: #2b6cb0;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
