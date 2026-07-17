@@ -1,9 +1,11 @@
 package com.example.account.ini;
 
+import java.time.LocalDate;
+
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.example.account.dto.UserRegisterForm;
 import com.example.account.entity.Position;
 import com.example.account.entity.Wage;
 import com.example.account.repository.UserInfoRepository;
@@ -13,16 +15,15 @@ import com.example.account.service.AccountService;
 @Component
 public class DataInitializer implements CommandLineRunner {
     private final UserInfoRepository userInfoRepository;
-    private final WageRepository wageRepository; // 💡 追加
+    private final WageRepository wageRepository;
     private final AccountService accountService;
 
-    // コンストラクタ注入（引数に wageRepository を追加）
+    // コンストラクタ注入（不要な PasswordEncoder を引数から削除）
     public DataInitializer(UserInfoRepository userInfoRepository, 
-            WageRepository wageRepository, // 💡 追加
-            PasswordEncoder passwordEncoder,
+            WageRepository wageRepository,
             AccountService accountService) {
         this.userInfoRepository = userInfoRepository;
-        this.wageRepository = wageRepository; // 💡 追加
+        this.wageRepository = wageRepository;
         this.accountService = accountService;
     }
 
@@ -59,18 +60,20 @@ public class DataInitializer implements CommandLineRunner {
             }
         }
         
-		// 2. 原初ユーザーの作成
-		if (userInfoRepository.count() == 0) {
-			accountService.registerAccount(
-					"alpha",
-				    "hello.world",
-				    "神",
-				    Position.ADMIN,
-				    0,
-				    java.sql.Date.valueOf("2026-07-13"),
-				    0,
-				    false,
-				    1);
-		}
-	}
+        // 2. 原初ユーザーの作成
+        if (userInfoRepository.count() == 0) {
+            // 💡 Dto（UserRegisterForm）オブジェクトを組み立ててサービスに渡す
+            UserRegisterForm initUserForm = new UserRegisterForm();
+            initUserForm.setUserId("alpha");
+            initUserForm.setPassword("hello.world");
+            initUserForm.setUserName("神");
+            initUserForm.setPosition(Position.ADMIN.name()); // PositionのEnum名（"ADMIN"）をセット
+            initUserForm.setWageId(0);                       // 上記で作成した1177円（ID:0）を指定
+            initUserForm.setBirthDate(LocalDate.parse("2026-07-13"));
+            initUserForm.setEmploymentInsurance(false);
+            initUserForm.setIsActive(1);
+
+            accountService.registerAccount(initUserForm);
+        }
+    }
 }

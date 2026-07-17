@@ -1,6 +1,5 @@
 package com.example.account.service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,11 +17,11 @@ import com.example.account.repository.WageRepository;
 
 @Service
 public class AccountService {
-	@Autowired private UserInfoRepository userRepo;
-	@Autowired private PasswordEncoder passwordEncoder;
-	@Autowired private WageRepository wageRepo; // 💡 賃金マスタ検索用にリポジトリを追加
-	
-	 /**
+    @Autowired private UserInfoRepository userRepo;
+    @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired private WageRepository wageRepo;
+    
+    /**
      * IDによるユーザー検索
      */
     public Optional<UserInfo> findUserById(String id) {
@@ -30,40 +29,42 @@ public class AccountService {
     }
 
     /**
-     * 新規アカウント登録
+     * 💡 ユーザーIDが既に存在するか確認する
+     */
+    public boolean existsByUserId(String id) {
+        return userRepo.existsById(id);
+    }
+
+    /**
+     * 💡 新規アカウント登録（UserRegisterFormを直接受け取るように修正）
      */
     @Transactional
-    public void registerAccount(
-        String id, 
-        String rawPassword, 
-        String userName, 
-        Position position, 
-        int wageId, 
-        Date birthDate, 
-        int attendanceStatus, 
-        boolean isEmploymentInsurance, 
-        int isActive
-    ) {
+    public void registerAccount(UserRegisterForm form) {
         UserInfo user = new UserInfo();
         
-        user.setUserId(id);
-        user.setPassword(passwordEncoder.encode(rawPassword));
-        user.setUserName(userName);
-        user.setPosition(position);
-        // 💡 画面から渡された wageId を元に、賃金マスタ（Wageエンティティ）を検索してセット
-        Wage wage = wageRepo.findById(wageId)
-            .orElseThrow(() -> new IllegalArgumentException("指定された賃金IDが存在しません: " + wageId));
-        user.setWage(wage); // 💡 user.setWage(wage) でオブジェクトをセット
-        user.setBirthDate(birthDate);
-        user.setAttendanceStatus(attendanceStatus);
-        user.setEmploymentInsurance(isEmploymentInsurance);
-        user.setIsActive(isActive);
+        user.setUserId(form.getUserId());
+        user.setPassword(passwordEncoder.encode(form.getPassword()));
+        user.setUserName(form.getUserName());
+        user.setPosition(Position.valueOf(form.getPosition()));
+        
+        Wage wage = wageRepo.findById(form.getWageId())
+            .orElseThrow(() -> new IllegalArgumentException("指定された賃金IDが存在しません: " + form.getWageId()));
+        user.setWage(wage);
+        
+        if (form.getBirthDate() != null) {
+            user.setBirthDate(java.sql.Date.valueOf(form.getBirthDate()));
+        }
+        
+        user.setAttendanceStatus(0); // 勤怠状況の初期値
+        user.setEmploymentInsurance(form.isEmploymentInsurance());
+        user.setIsActive(form.getIsActive());
+        
         userRepo.save(user);
     }
 
     /**
      * 既存アカウント更新
-     * @return 更新成否 (対象ユーザーが存在しなかった場合はfalse)
+     * @return 更新成否
      */
     @Transactional
     public boolean updateAccount(UserRegisterForm form) {
@@ -74,10 +75,9 @@ public class AccountService {
         
         UserInfo user = userOpt.get();
         
-        // 1. 各項目の更新（パスワード以外）
         user.setUserName(form.getUserName());
         user.setPosition(Position.valueOf(form.getPosition()));
-        // 💡 更新時も同様に、formの wageId からWageエンティティを取得してセット
+        
         Wage wage = wageRepo.findById(form.getWageId())
             .orElseThrow(() -> new IllegalArgumentException("指定された賃金IDが存在しません: " + form.getWageId()));
         user.setWage(wage);
@@ -89,8 +89,8 @@ public class AccountService {
         user.setEmploymentInsurance(form.isEmploymentInsurance());
         user.setIsActive(form.getIsActive());
 
-        // 2. パスワードの更新（画面で新しいパスワードが入力されている場合のみ暗号化して更新）
-        if (form.getPassword() != null && !form.getPassword().trim().isEmpty()) {
+        // 💡 空文字、または初期表示の「＊＊＊＊＊＊＊＊」のままの場合はパスワード更新をスキップする
+        if (form.getPassword() != null && !form.getPassword().trim().isEmpty() && !form.getPassword().equals("＊＊＊＊＊＊＊＊")) {
             user.setPassword(passwordEncoder.encode(form.getPassword()));
         }
 
@@ -98,27 +98,21 @@ public class AccountService {
         return true;
     }
 
-	@Transactional // 💡 複数データを一括更新するため、トランザクション管理下におくのが鉄則！
-	public void deactivateUsers(List<String> userIds) {
-		
-		// 1. 対象のユーザーをデータベースから一括で取得する
-		List<UserInfo> users = userRepo.findAllById(userIds);
+    @Transactional
+    public void deactivateUsers(List<String> userIds) {
+        List<UserInfo> users = userRepo.findAllById(userIds);
+        for (UserInfo user : users) {
+            user.setIsActive(0);
+        }
+        userRepo.saveAll(users);
+    }
 
-		// 2. 取得したユーザーの在籍ステータス（active）をすべて「0 (無効/退職)」に書き換える
-		for (UserInfo user : users) {
-			user.setIsActive(0);
-		}
-
-		// 3. 変更内容をデータベースに一括保存（更新）する
-		userRepo.saveAll(users);
-	}
-
-	public List<UserInfo> searchUsers(String keyword, String type) { // 💡 戻り値を UserInfo に変更
-		if ("id".equals(type)) {
-			return userRepo.findByUserIdContaining(keyword);
-		} else if ("name".equals(type)) {
-			return userRepo.findByUserNameContaining(keyword);
-		}
-		return userRepo.findAll();
-	}
+    public List<UserInfo> searchUsers(String keyword, String type) {
+        if ("id".equals(type)) {
+            return userRepo.findByUserIdContaining(keyword);
+        } else if ("name".equals(type)) {
+            return userRepo.findByUserNameContaining(keyword);
+        }
+        return userRepo.findAll();
+    }
 }
