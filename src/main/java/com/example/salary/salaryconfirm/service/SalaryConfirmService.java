@@ -9,17 +9,12 @@ import org.springframework.stereotype.Service;
 import com.example.salary.salaryconfirm.dto.SalaryConfirmDto;
 import com.example.salary.salaryconfirm.repository.SalaryConfirmRepository;
 import com.example.salary.salarydetail.entity.SalaryEntity;
-import com.example.salary.salarydetail.entity.WageEntity;
-import com.example.salary.salarydetail.repository.WageRepository;
 
 @Service
 public class SalaryConfirmService {
 
     @Autowired
     private SalaryConfirmRepository salaryConfirmRepository;
-
-    @Autowired
-    private WageRepository wageRepository;
 
     /**
      * 給与一覧（DTO）を取得
@@ -33,27 +28,25 @@ public class SalaryConfirmService {
 
         for (SalaryEntity s : list) {
 
-            // 時給取得
-            WageEntity wage = wageRepository.findByWageId(s.getWageId());
-            int wageValue = wage.getWageValue();
+            int appliedHourlyWage = s.getAppliedHourlyWage();
 
-            // 総支給額
-            double grossSalary = s.getWorkingHours() * wageValue;
+            // 総支給額 → 小数点以下不要なので整数化
+            int grossSalary = (int) (s.getWorkingHours() * appliedHourlyWage);
 
-            // 雇用保険料（boolean → 0.5%）
-            double employmentInsurance = s.isAppliedEmploymentInsurance()
-                    ? grossSalary * 0.005
-                    : 0.0;
+            // 雇用保険料 → 小数点以下不要なので整数化
+            int insuranceFee = s.isAppliedEmploymentInsurance()
+                    ? (int) (grossSalary * 0.005)
+                    : 0;
 
-            // 差引支給額
-            double netSalary = grossSalary - employmentInsurance;
+            // 差引支給額 → 小数点以下不要なので整数化
+            int netSalary = grossSalary - insuranceFee;
 
-            // DTOへ詰める（最小構成）
+            // ★ DTO は純粋なデータのみを保持（画面状態は Controller がセット）
             SalaryConfirmDto dto = new SalaryConfirmDto(
-                    s.getTargetMonth(),     // 対象月
-                    (int) netSalary,        // 給与額（計算済み）
-                    s.getUserId(),          // 詳細画面遷移用
-                    s.getTargetYear()       // 詳細画面遷移用
+                    s.getTargetMonth(),
+                    netSalary,
+                    s.getUserId(),
+                    s.getTargetYear()
             );
 
             dtoList.add(dto);
@@ -67,12 +60,10 @@ public class SalaryConfirmService {
      */
     public double getTotalWorkingHours(int userId, int targetYear) {
 
-        double total = salaryConfirmRepository.findByUserIdAndTargetYear(userId, targetYear)
+        return salaryConfirmRepository.findByUserIdAndTargetYear(userId, targetYear)
                 .stream()
                 .mapToDouble(SalaryEntity::getWorkingHours)
                 .sum();
-
-        return total;
     }
 
     /**
@@ -83,20 +74,19 @@ public class SalaryConfirmService {
         List<SalaryEntity> list =
                 salaryConfirmRepository.findByUserIdAndTargetYear(userId, targetYear);
 
-        double total = 0;
+        int total = 0;
 
         for (SalaryEntity s : list) {
 
-            WageEntity wage = wageRepository.findByWageId(s.getWageId());
-            int wageValue = wage.getWageValue();
+            int appliedHourlyWage = s.getAppliedHourlyWage();
 
-            double grossSalary = s.getWorkingHours() * wageValue;
+            int grossSalary = (int) (s.getWorkingHours() * appliedHourlyWage);
 
-            double employmentInsurance = s.isAppliedEmploymentInsurance()
-                    ? grossSalary * 0.005
-                    : 0.0;
+            int insuranceFee = s.isAppliedEmploymentInsurance()
+                    ? (int) (grossSalary * 0.005)
+                    : 0;
 
-            double netSalary = grossSalary - employmentInsurance;
+            int netSalary = grossSalary - insuranceFee;
 
             total += netSalary;
         }

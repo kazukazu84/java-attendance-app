@@ -1,4 +1,4 @@
-package com.example.salary.salarydetail.validation;
+package com.example.salary.salaryconfirm.validation;
 
 import static java.lang.annotation.ElementType.*;
 
@@ -9,12 +9,12 @@ import java.lang.annotation.Target;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-@Constraint(validatedBy = SalaryDetailRequiredValidator.class)
-@Target({ FIELD })
+@Constraint(validatedBy = SalaryConfirmScreenStateValidator.class)
+@Target({ TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SalaryDetailRequired {
+public @interface SalaryConfirmScreenStateValid {
 
-    String message() default "必須項目です";
+    String message() default "画面状態が不正です";
 
     Class<?>[] groups() default {};
 
