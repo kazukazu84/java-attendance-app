@@ -14,6 +14,4 @@ public class PageController {
     @GetMapping("/admin/m-admin")
     public String madminPage() { return "account/admin/m-admin"; }
 
-    @GetMapping("/error-denied")
-    public String deniedPage() { return "account/error-denied"; }
 }

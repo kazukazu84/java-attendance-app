@@ -36,4 +36,7 @@ public class AuthController {
         
         return "account/login";
     }
+	
+    @GetMapping("/error-denied")
+    public String deniedPage() { return "account/error-denied"; }
 }
