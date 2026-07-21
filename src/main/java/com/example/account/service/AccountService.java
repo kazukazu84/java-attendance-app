@@ -40,7 +40,10 @@ public class AccountService {
      */
     @Transactional
     public void registerAccount(UserRegisterForm form) {
-        UserInfo user = new UserInfo();
+        if (existsByUserId(form.getUserId())) {
+            throw new IllegalArgumentException("このユーザーIDは既に登録されています。");
+        }
+    	UserInfo user = new UserInfo();
         
         user.setUserId(form.getUserId());
         user.setPassword(passwordEncoder.encode(form.getPassword()));

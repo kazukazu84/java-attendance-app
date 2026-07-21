@@ -1,4 +1,4 @@
-package com.example.account.Controller;
+package com.example.account.controller;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
