@@ -13,6 +13,7 @@ import com.example.attendance.repository.TempUserInfoRepository;
 import com.example.attendance.service.AttendanceService;
 import com.example.main.dto.LogDto;
 import com.example.main.service.LogService;
+import com.example.main.service.UserShiftService;
 
 @Controller
 public class UserMainController {
@@ -23,9 +24,12 @@ public class UserMainController {
     private AttendanceService attendanceService;
 
     @Autowired
+    private UserShiftService userShiftService;
+    
+    @Autowired
     private TempUserInfoRepository userRepository;
 
-    private final Integer TEST_USER_ID = 1;
+    private final String TEST_USER_ID = "1";
 
     /**
      * メイン画面の表示（URLと名前が完全に一致して分かりやすくなります）
@@ -47,7 +51,19 @@ public class UserMainController {
         List<LogDto> logList = logService.getLogListForMain(TEST_USER_ID);
         model.addAttribute("logList", logList);
 
+        /*
+         * シフト表示処理
+         * ShiftScheduleRepository完成後に実装予定
+         *
+         * 月間表示
+         * userShiftService.getMonthlyShift()
+         *
+         * 週間表示
+         * userShiftService.getWeeklyShift()
+         */
+        
         return "userMain";
+        
     }
     
     // 👈 【追加】給与確認画面（仮）

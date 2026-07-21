@@ -17,6 +17,13 @@
         .btn-clock-out { background-color: #dc3545; color: white; box-shadow: 0 4px 0 #bd2130; padding-top: 20px; padding-bottom: 20px; }
         button:active, .btn:active { box-shadow: 0 1px 0 transparent; transform: translateY(3px); }
         button:disabled, .btn:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none !important; transform: none !important; }
+		
+		/* シフト表示エリアの中身 */
+		.shift-content { width: 100%; padding: 10px;   align-self: flex-start;}
+		
+		/* シフトヘッダー */
+		.shift-header { position: relative;text-align: center; margin-bottom: 15px;}
+        .toggle-area { position: absolute;right: 0; top: 0;}
     </style>
 	<!-- 👇 この2行を追加 -->
 	<meta th:name="_csrf" th:content="${_csrf.token}"/>
@@ -84,16 +91,179 @@
                     </div>
                 </div>
                 
-                <!-- 【シフト表示部枠】 -->
-                <div class="shift-box">
-                    <span>※ここにシフト表が配置されます（現状は枠のみ）</span>
-                </div>
-            </div>
+				<!-- 【シフト表示部枠】 -->
+				<div class="shift-box">
 
-        </div>
-    </div>
-</div>
+				    <div class="shift-content">
 
+				      
+				        <!-- 月間シフト表示エリア（初期表示） -->
+				       
+				        <div id="monthlyShiftArea">
+
+				            <!-- ヘッダー -->
+				            <div class="shift-header">
+
+				                <div>
+
+				                    <!--
+				                        月選択プルダウン
+
+				                        【現在】
+				                        固定表示
+
+				                        【シフト班完成後】
+				                        monthList を Controller から受け取り
+				                        Thymeleafで表示する
+				                    -->
+				                    <span class="fw-bold">
+				                        月間シフト
+				                    </span>
+
+				                    <select id="monthSelect">
+
+				                        <option>2026年7月</option>
+				                        <option>2026年6月</option>
+				                        <option>2026年5月</option>
+				                        <option>2026年4月</option>
+
+				                    </select>
+
+				                </div>
+
+				                <div class="toggle-area">
+
+				                    <!--
+				                        月間表示
+				                        ↓
+				                        週間表示へ切替
+				                    -->
+				                    <button
+				                        id="toWeeklyButton"
+				                        type="button">
+
+				                        週間シフト表示
+
+				                    </button>
+
+				                </div>
+
+				            </div>
+
+				            <!--
+				                月間カレンダー
+
+				                【シフト班完成後】
+				                shiftList を受け取り表示
+
+				                workDate
+				                startTime
+				                endTime
+				            -->
+							<div class="mt-3">
+
+							    月間のシフト情報を表示
+
+							</div>
+
+				            <!--ここへThymeleafで月間カレンダー表示-->
+
+				             
+
+				        </div>
+
+				        <!-- 週間シフト表示エリア -->
+				       
+				        <div
+				            id="weeklyShiftArea"
+				            style="display:none;">
+
+				            <!-- ヘッダー -->
+				            <div class="shift-header">
+
+				                <div>
+
+				                    <span class="fw-bold">
+				                        週間シフト
+				                    </span>
+
+				                    <!--
+				                        週間表示用
+
+				                        1週目：1日～7日
+				                        2週目：8日～14日
+				                        3週目：15日～21日
+				                        4週目：22日～28日
+				                        5週目：29日～月末
+				                    -->
+				                    <select id="weekSelect">
+
+				                        <option value="1">
+				                            7月 1週目
+				                        </option>
+
+				                        <option value="2">
+				                            7月 2週目
+				                        </option>
+
+				                        <option value="3">
+				                            7月 3週目
+				                        </option>
+
+				                        <option value="4">
+				                            7月 4週目
+				                        </option>
+
+				                        <option value="5">
+				                            7月 5週目
+				                        </option>
+
+				                    </select>
+
+				                </div>
+
+				                <div class="toggle-area">
+
+				                    <!--
+				                        週間表示
+				                        ↓
+				                        月間表示へ切替
+				                    -->
+				                    <button
+				                        id="toMonthlyButton"
+				                        type="button">
+
+				                        月間シフト表示
+
+				                    </button>
+
+				                </div>
+
+				            </div>
+
+				            <!--
+				                【シフト班完成後】
+
+				                weekShiftList を受け取る
+								日付、曜日、勤務時間、休みの情報を表示する
+				            -->
+				            <table>
+
+				                <tbody>
+									
+									１週間ごとのシフト情報を表示
+
+				               <!--ここへThymeleafで週間表示 -->
+
+				                </tbody>
+
+				            </table>
+
+				        </div>
+
+				    </div>
+
+				</div>
 <script>
     // --- 1. リアルタイム時計の表示処理（変更なし） ---
     function updateClock() {
@@ -201,6 +371,33 @@
             alert("【打刻エラー】\n" + errorText);
         });
 });
+
+/*
+ * 月間 → 週間
+ */
+document.getElementById("toWeeklyButton")
+    .addEventListener("click", function() {
+
+    document.getElementById("monthlyShiftArea")
+        .style.display = "none";
+
+    document.getElementById("weeklyShiftArea")
+        .style.display = "block";
+});
+
+/*
+ * 週間 → 月間
+ */
+document.getElementById("toMonthlyButton")
+    .addEventListener("click", function() {
+
+    document.getElementById("weeklyShiftArea")
+        .style.display = "none";
+
+    document.getElementById("monthlyShiftArea")
+        .style.display = "block";
+});
+
 </script>
 </body>
 </html>

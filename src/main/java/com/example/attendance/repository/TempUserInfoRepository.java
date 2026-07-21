@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.example.attendance.entity.TempUserInfo;
 
 @Repository
-public interface TempUserInfoRepository extends JpaRepository<TempUserInfo, Integer> {
+public interface TempUserInfoRepository extends JpaRepository<TempUserInfo, String> {
 }

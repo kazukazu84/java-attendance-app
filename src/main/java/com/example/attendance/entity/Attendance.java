@@ -23,7 +23,7 @@ public class Attendance {
     private Integer attendanceId;
 
     @Column(name = "user_id", nullable = false)
-    private Integer userId;
+    private String userId;
 
     @Column(name = "work_date", nullable = false)
     private LocalDate workDate;

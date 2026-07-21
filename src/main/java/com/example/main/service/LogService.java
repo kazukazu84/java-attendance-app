@@ -32,7 +32,7 @@ public class LogService {
     /**
      * メイン画面に表示する全ログの一覧を取得し、表示用メッセージを組み立てて返す
      */
-    public List<LogDto> getLogListForMain(Integer currentUserId) {
+    public List<LogDto> getLogListForMain(String currentUserId) {
         // 全てのログ履歴を新着順で取得
         List<Log> logs = logRepository.findAllByOrderByCreatedAtDesc();
         List<LogDto> dtoList = new ArrayList<>();
@@ -73,14 +73,14 @@ public class LogService {
         return dtoList;
     }
     
-    /**
-     * ログ登録
+     /* ログ登録
      * 
      * @param messageId ログメッセージID
      * @param targetUserId 対象ユーザーID
      */
-    
-    public void saveLog(Integer messageId, Integer targetUserId) {
+
+    public void saveLog(Integer messageId, String targetUserId) {
+
 
         Log log = new Log();
 

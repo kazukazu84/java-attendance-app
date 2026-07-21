@@ -26,5 +26,5 @@ public class Log {
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    private Integer targetUserId;
+    private String targetUserId;
 }
