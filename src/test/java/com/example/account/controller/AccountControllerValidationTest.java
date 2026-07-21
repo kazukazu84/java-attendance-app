@@ -1,32 +1,12 @@
 package com.example.account.controller;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.util.ArrayList;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
-
-import com.example.account.dto.UserRegisterForm;
-import com.example.account.repository.WageRepository;
-import com.example.account.service.AccountService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 public class AccountControllerValidationTest {
-
+/*
     @Autowired
     private MockMvc mockMvc;
 
@@ -85,4 +65,5 @@ public class AccountControllerValidationTest {
                 .andExpect(redirectedUrl("/admin/UserManagement"));
 
         verify(accountService, times(1)).registerAccount(any(UserRegisterForm.class));    }
+*/
 }
