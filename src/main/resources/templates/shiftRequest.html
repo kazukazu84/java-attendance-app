@@ -1,12 +1,75 @@
 <!DOCTYPE html>
-<html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ja">
+	
 <head>
+	
 <meta charset="UTF-8">
+
 <title>シフト申請画面</title>
+
+
+    <link rel="stylesheet" th:href="@{/css/shiftRequest.css} " href="/css/shiftRequest.css">
+
 </head>
+
+
+
 <body>
 
-<h1>シフト申請画面</h1>
+	<div class="period-box">
 
+	    <div class="period-title">
+	        対象期間
+	    </div>
+
+	    <div class="period-value"
+			th:text = "${form.targetPeriod}">
+	    </div>
+
+	</div>
+	
+	
+
+    <br>
+
+    <table>
+
+        <tr>
+            <th>日付</th>
+            <th>可否</th>
+            <th>出勤</th>
+            <th>退勤</th>
+        </tr>
+
+		<tr th:each="shift : ${form.shiftList}">
+
+		    <td th:text="${shift.workDate}"></td>
+
+		    <td th:text="${shift.available}"></td>
+
+		    <td th:text="${shift.startTime}"></td>
+
+		    <td th:text="${shift.endTime}"></td>
+
+		</tr>
+
+    </table>
+
+    <br>
+
+<div class = "button-area">
+	
+    <button type="button">
+        キャンセル
+    </button>
+
+    <button type="submit">
+        申請
+    </button>
+
+</div>	
+	
 </body>
 </html>
