@@ -45,14 +45,44 @@
         select { border: 2px solid #333; border-radius: 4px; padding: 2px 6px; font-weight: bold; }
         
         /* 押し込まれる立体ボタンの設定 */
-        button, .btn { display: inline-flex; justify-content: center; align-items: center; font-weight: bold; cursor: pointer; border: 2px solid #333 !important; border-radius: 4px; outline: none; transition: all 0.1s ease; box-shadow: 0 4px 0 #333; }
+        button, .btn { 
+            display: inline-flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-weight: bold; 
+            cursor: pointer; 
+            border: 2px solid #333 !important; 
+            border-radius: 4px; 
+            outline: none; 
+            transition: all 0.15s ease; 
+            box-shadow: 0 4px 0 #333; 
+        }
+
         .btn-clock-in { background-color: #fff; color: #000; padding: 25px 0; font-size: 1.2rem; }
         .btn-clock-out { background-color: #fff; color: #000; padding: 25px 0; font-size: 1.2rem; }
         .btn-nav { background-color: #fff; color: #000; font-size: 1.1rem; padding: 12px 0; width: 100%; text-decoration: none; }
         .btn-sm-custom { padding: 2px 8px; font-size: 0.85rem; background-color: #fff; color: #000; }
         
-        button:active, .btn:active { box-shadow: 0 1px 0 transparent !important; transform: translateY(3px); }
-        button:disabled, .btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none !important; transform: none !important; }
+        /* 🎨【追加】マウスホバー時の色変化スタイル */
+        button:hover:not(:disabled), .btn:hover:not(:disabled) {
+            background-color: #e9ecef !important; /* 薄いグレーへ変化 */
+            color: #000 !important;
+        }
+
+        /* クリック（押し込み）時 */
+        button:active, .btn:active { 
+            box-shadow: 0 1px 0 transparent !important; 
+            transform: translateY(3px); 
+        }
+
+        /* 無効化（disabled）時：ホバー時も変化させない */
+        button:disabled, .btn:disabled { 
+            opacity: 0.5; 
+            cursor: not-allowed; 
+            box-shadow: none !important; 
+            transform: none !important; 
+            background-color: #fff !important;
+        }
     </style>
     <!-- CSRFトークン -->
     <meta th:name="_csrf" th:content="${_csrf.token}"/>
@@ -70,10 +100,10 @@
                 <!-- ①② 簡易ボタン & ログアウト -->
                 <div class="panel-box mb-3">
                     <div class="row g-2">
-						<div class="col-6">
-						    <!-- 単一のリンクにする（管理者が押しても Controller が /admin/attendance に補正してくれる） -->
-						    <a th:href="@{/user/attendance}" class="btn btn-nav text-dark py-1" style="font-size: 0.9rem;">簡易</a>
-						</div>
+                        <div class="col-6">
+                            <!-- 単一のリンクにする（管理者が押しても Controller が /admin/attendance に補正してくれる） -->
+                            <a th:href="@{/user/attendance}" class="btn btn-nav py-1" style="font-size: 0.9rem;">簡易</a>
+                        </div>
                         <div class="col-6">
                             <form th:action="@{/logout}" method="post" class="w-100">
                                 <button type="submit" class="btn btn-nav py-1" style="font-size: 0.9rem;">ログアウト</button>
