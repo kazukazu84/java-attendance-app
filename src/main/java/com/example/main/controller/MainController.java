@@ -2,6 +2,8 @@ package com.example.main.controller;
 
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,7 +20,7 @@ import com.example.main.service.LogService;
 import com.example.main.service.UserShiftService;
 
 @Controller
-public class UserMainController {
+public class MainController {
     @Autowired
     private LogService logService;
 
@@ -32,28 +34,38 @@ public class UserMainController {
     private UserInfoRepository userRepository;
 
     /**
-     * メイン画面の表示（URLと名前が完全に一致して分かりやすくなります）
+     * メイン画面の表示（一般ユーザー用・管理者用の両方のURLを受け付けます）
      */
-    @GetMapping("/user/main")
-    public String mainView(@AuthenticationPrincipal UserDetails loginUser, Model model) {
+    @GetMapping({"/user/main", "/admin/main"})
+    public String mainView(@AuthenticationPrincipal UserDetails loginUser, 
+                           HttpServletRequest request, 
+                           Model model) {
         
         if (loginUser == null) {
             // 未認証（未ログイン）状態の場合はログイン画面へリダイレクト
             return "redirect:/login";
         }
 
-        // 💡 1. 権限チェック：管理者の場合は /admin/main へ強制リダイレクト
+        // 1. 権限チェック＆URL正規化リダイレクト
         boolean isAdmin = loginUser.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         
-        if (isAdmin) {
+        String requestUri = request.getRequestURI();
+
+        // 管理者が /user/main に直打ちアクセスした場合 ➔ /admin/main へ転送
+        if (isAdmin && requestUri.endsWith("/user/main")) {
             return "redirect:/admin/main";
+        }
+
+        // 一般ユーザーが /admin/main に直打ちアクセスした場合 ➔ /user/main へ転送
+        if (!isAdmin && requestUri.endsWith("/admin/main")) {
+            return "redirect:/user/main";
         }
 
         // 2. ログイン中のユーザーIDを取得
         String currentUserId = loginUser.getUsername();
 
-        // 2. DBから UserInfo テーブルのレコードを取得（ここで username も取得されます）
+        // 3. DBから UserInfo テーブルのレコードを取得
         UserInfo currentUser = userRepository.findById(currentUserId).orElse(null);
         if (currentUser == null) {
             // 【デバッグ用】DBからユーザーが見つからなかった場合のログ出力
@@ -85,7 +97,7 @@ public class UserMainController {
          * userShiftService.getWeeklyShift()
          */
         
-        return "userMain";
+        return "main";
     }
     
     // 👈 【追加】給与確認画面（仮）
