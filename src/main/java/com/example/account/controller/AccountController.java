@@ -120,14 +120,14 @@ public class AccountController {
         form.setUserName(userInfo.getUserName());
         form.setPosition(userInfo.getPosition().name());
         
-        if (userInfo.getWage() != null) {
+        //if (userInfo.getWage() != null) {
             form.setWageId(userInfo.getWage().getWageId());
-        }
+        //}
         
-        if (userInfo.getBirthDate() != null) {
+        //if (userInfo.getBirthDate() != null) {
             java.sql.Date sqlDate = new java.sql.Date(userInfo.getBirthDate().getTime());
             form.setBirthDate(sqlDate.toLocalDate());
-        }
+        //}
         
         form.setEmploymentInsurance(userInfo.isEmploymentInsurance());
         form.setIsActive(userInfo.getIsActive());
@@ -186,4 +186,6 @@ public class AccountController {
         redirectAttributes.addFlashAttribute("successMessage", "アカウント情報を更新しました。");
         return "redirect:/admin/UserManagement";
     }
+    
+    
 }

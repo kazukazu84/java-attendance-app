@@ -85,9 +85,9 @@ public class AccountService {
             .orElseThrow(() -> new IllegalArgumentException("指定された賃金IDが存在しません: " + form.getWageId()));
         user.setWage(wage);
         
-        if (form.getBirthDate() != null) {
+        //if (form.getBirthDate() != null) {
             user.setBirthDate(java.sql.Date.valueOf(form.getBirthDate()));
-        }
+        //}
         
         user.setEmploymentInsurance(form.isEmploymentInsurance());
         user.setIsActive(form.getIsActive());

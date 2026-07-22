@@ -14,6 +14,10 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.example.account.entity.Position;
+import com.example.account.entity.UserInfo;
+import com.example.account.service.CustomUserDetails;
+
 @SpringBootTest
 @AutoConfigureMockMvc // 💡 ブラウザを使わずにリクエストを擬似送信する無敵のツール
 public class SecurityTest {
@@ -83,26 +87,24 @@ public class SecurityTest {
     }
     
     @Test
-    @DisplayName("💡 無効化ユーザー（休職/退職）でログインを試みると DisabledException が発生して /login?error へリダイレクトされること")
+    @DisplayName("💡 無効化ユーザー（isActive = 0）でログインを試みると DisabledException が発生して /login?error へリダイレクトされること")
     void testDisabledUserLoginFailsWithDisabledException() throws Exception {
         
-        // 1. 無効化された（enabled = false）ユーザーを Mock で準備
-        // ※ もし H2 などのテスト用 DB にデータがある場合は UserDetailsService の Mock は不要です
-        org.springframework.security.core.userdetails.UserDetails disabledUser = 
-            org.springframework.security.core.userdetails.User.builder()
-                .username("disabled_user")
-                .password("{noop}password123") // 平文比較用の {noop} プレフィックス
-                .roles("USER")
-                .disabled(true) // 💡 明示的にアカウントを無効化（enabled = false）
-                .build();
+        // 1. このシステムの UserInfo エンティティを作成 (isActive = 0: 無効アカウント)
+        UserInfo disabledUserInfo = new UserInfo();
+        disabledUserInfo.setUserId("disabled_user");
+        disabledUserInfo.setPassword("$2a$10$e.g.HashedPassword..."); // BCrypt等の形式
+        disabledUserInfo.setPosition(Position.USER);
+        disabledUserInfo.setIsActive(0); // 💡 ここでアカウント無効（enabled = false に変換される）を設定！
 
-        // UserDetailsService が呼ばれたら無効化ユーザーを返すように設定
+        // 2. 自作の CustomUserDetails に渡して UserDetailsService から返させる
+        CustomUserDetails customUserDetails = new CustomUserDetails(disabledUserInfo);
         org.mockito.Mockito.when(userDetailsService.loadUserByUsername("disabled_user"))
-               .thenReturn(disabledUser);
+               .thenReturn(customUserDetails);
 
-        // 2. ログイン実行と検証
+        // 3. SecurityConfig の loginProcessingUrl ("/authenticate") へログイン実行
         mockMvc.perform(
-            post("/authenticate")
+            post("/authenticate") // 💡 設定通り /authenticate でOK！
                 .param("username", "disabled_user")
                 .param("password", "password123")
                 .with(csrf())
@@ -110,10 +112,10 @@ public class SecurityTest {
         // ① 302 リダイレクトされること
         .andExpect(status().is3xxRedirection())
         
-        // ② エラーパラメータ付きのログイン画面へ遷移すること
+        // ② SecurityConfig の failureUrl ("/login?error") へ遷移すること
         .andExpect(redirectedUrl("/login?error"))
         
-        // ③ セッションに DisabledException（無効化例外）が記録されていることを厳密に検証！
+        // ③ セッションに DisabledException（無効化例外）が記録されていることを検証
         .andExpect(result -> {
             Object lastException = result.getRequest()
                 .getSession()
@@ -127,7 +129,7 @@ public class SecurityTest {
             org.junit.jupiter.api.Assertions.assertInstanceOf(
                 org.springframework.security.authentication.DisabledException.class, 
                 lastException,
-                "失敗理由が DisabledException ではありません（単なるID/パスワード間違いの可能性があります）"
+                "失敗理由が DisabledException ではありません（CustomUserDetails の isEnabled() が false になっているか確認してください）"
             );
         });
     }

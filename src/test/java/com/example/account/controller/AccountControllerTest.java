@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.example.account.dto.UserRegisterForm;
 import com.example.account.entity.Position;
 import com.example.account.entity.UserInfo;
+import com.example.account.entity.Wage;
 import com.example.account.repository.WageRepository;
 import com.example.account.service.AccountService;
 
@@ -103,10 +104,9 @@ public class AccountControllerTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    // 👇 「引数が不正（ユーザーID重複など）」と明記して直感的に！
     @DisplayName("新規登録：ユーザーID重複などの不正な値（IllegalArgumentException）の場合、エラーメッセージ付きで画面に戻ること")
     void register_duplicateUser_shouldCatchExceptionAndReturnView() throws Exception {
-        // Serviceが重複（不正な引数）例外を投げるようモック化
+        // Serviceが重複例外を投げるようモック化
         doThrow(new IllegalArgumentException("このユーザーIDは既に登録されています。"))
                 .when(accountService).registerAccount(any());
 
@@ -176,13 +176,22 @@ public class AccountControllerTest {
     @WithMockUser(username = "admin_user", roles = {"ADMIN"})
     @DisplayName("編集表示：正常に他のユーザー情報を読み込んで編集画面が表示されること")
     void showEditForm_validUser_shouldReturnRegisterViewWithIsNewFalse() throws Exception {
-        UserInfo dummyUser = new UserInfo();
-        dummyUser.setUserId("target_user");
-        dummyUser.setUserName("ターゲット太郎");
-        dummyUser.setPosition(Position.ADMIN);
-        dummyUser.setIsActive(1);
+        // 💡 関連エンティティのダミーを作成
+    	Wage dummyWage = new Wage();
+    	dummyWage.setWageId(1);
+    	dummyWage.setWageValue(1000);
 
-        when(accountService.findUserById("target_user")).thenReturn(Optional.of(dummyUser));
+    	UserInfo dummyUser = new UserInfo();
+    	dummyUser.setUserId("target_user");
+    	dummyUser.setUserName("ターゲット太郎");
+    	dummyUser.setPosition(Position.ADMIN);
+    	dummyUser.setIsActive(1);
+
+    	// 必須項目のセット
+    	dummyUser.setWage(dummyWage);
+    	dummyUser.setBirthDate(java.sql.Date.valueOf("1990-01-01"));
+ 
+    	when(accountService.findUserById("target_user")).thenReturn(Optional.of(dummyUser));
 
         mockMvc.perform(get("/admin/edit/target_user"))
                 .andExpect(status().isOk())
@@ -205,6 +214,21 @@ public class AccountControllerTest {
                 .param("userName", "更新名前"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/error-denied"));
+    }
+
+    @Test
+    @WithMockUser(username = "admin_user", roles = {"ADMIN"})
+    @DisplayName("更新処理：パスワードに空白文字のみが入力された場合、エラーで登録画面に戻ること")
+    void updateAccount_blankPassword_shouldReturnRegisterViewWithErrors() throws Exception {
+        mockMvc.perform(post("/admin/update")
+                .with(csrf())
+                .param("userId", "other_user")
+                .param("userName", "テスト太郎")
+                .param("password", "   ")) // 💡 更新時の空白パスワードチェック
+                .andExpect(status().isOk())
+                .andExpect(view().name("account/admin/register"))
+                .andExpect(model().attributeHasFieldErrors("userRegisterForm", "password"))
+                .andExpect(model().attribute("isNew", false));
     }
 
     @Test
