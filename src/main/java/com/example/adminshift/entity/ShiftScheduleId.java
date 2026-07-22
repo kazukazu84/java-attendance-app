@@ -11,7 +11,7 @@ import lombok.Data;
 @Embeddable
 public class ShiftScheduleId implements Serializable {
 
-    private Integer userId;
+    private String userId;
 
     private Integer eventId;
 

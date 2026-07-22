@@ -13,13 +13,13 @@ import lombok.Data;
 @Data
 public class ShiftForm {
 
-    private Long id;
+    private Integer id;
 
     @NotNull(message = "イベントを選択してください")
-    private Long eventId;
+    private Integer eventId;
 
     @NotNull(message = "対象ユーザーが未指定です")
-    private Long userId;
+    private String userId;
 
     @NotNull(message = "勤務日を入力してください")
     @DateTimeFormat(pattern = "yyyy-MM-dd")

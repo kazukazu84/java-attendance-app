@@ -81,8 +81,8 @@ public class ShiftCreateController {
      * @return シフト作成画面パス
      */
     @GetMapping("/edit")
-    public String edit(@RequestParam("shiftId") Long shiftId,
-                       @RequestParam("eventId") Long eventId,
+    public String edit(@RequestParam("shiftId") Integer shiftId,
+                       @RequestParam("eventId") Integer eventId,
                        @ModelAttribute("searchForm") ShiftSearchForm searchForm,
                        Model model) {
         
@@ -147,7 +147,7 @@ public class ShiftCreateController {
     /**
      * シフト一覧画面に必要な共通データをModelにセットするプライベートメソッド
      */
-    private void setupShiftTableData(Long eventId, Model model) {
+    private void setupShiftTableData(Integer eventId, Model model) {
         Event currentEvent = shiftCreateService.getCurrentEvent(eventId);
         List<Shift> shiftList = shiftCreateService.getShiftTable(eventId);
 

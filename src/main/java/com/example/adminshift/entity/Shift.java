@@ -24,13 +24,13 @@ public class Shift {
     /** シフトID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /** イベントID */
-    private Long eventId;
+    private Integer eventId;
 
     /** ユーザー（従業員）ID */
-    private Long userId;
+    private String userId;
 
     /** 勤務日 */
     private LocalDate shiftDate;

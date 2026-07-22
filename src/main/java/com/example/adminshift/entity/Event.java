@@ -19,7 +19,7 @@ public class Event {
     /** イベントID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /** イベント名 */
     private String name;

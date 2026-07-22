@@ -12,5 +12,5 @@ public class ShiftSearchForm {
 
     /** 選択されたイベントID */
     @NotNull(message = "イベントを選択してください")
-    private Long selectedEventId;
+    private Integer selectedEventId;
 }

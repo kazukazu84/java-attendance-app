@@ -1,34 +1,38 @@
 @charset "UTF-8";
 
 /* ===================================================
-   全体基本設定（温かみのあるブラウン・業務風カラー）
+   全体基本設定（ビジネス・エンタープライズUIカラー）
    =================================================== */
 body {
-    background-color: #FAF9F6; /* 温かみのあるオフホワイト */
-    color: #4A4238;           /* こげ茶系の文字色 */
-    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+    background-color: #F8FAFC; /* 清潔感のある淡いグレー */
+    color: #0F172A;           /* 視認性の高いダークスレート */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     margin: 0;
-    padding: 20px;
+    padding: 24px;
+    -webkit-font-smoothing: antialiased;
 }
 
 .app-container {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
 /* ヘッダーエリア */
 .app-header {
     background-color: #FFFFFF;
-    padding: 20px 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(121, 85, 72, 0.08);
-    margin-bottom: 20px;
+    padding: 20px 24px;
+    border-radius: 8px;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin-bottom: 24px;
 }
 
 h1 {
-    margin: 0 0 15px 0;
-    font-size: 1.6rem;
-    color: #5D4037;
+    margin: 0 0 16px 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #1E293B;
+    letter-spacing: -0.02em;
 }
 
 .top-container {
@@ -36,40 +40,48 @@ h1 {
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 16px;
 }
 
 .event-form {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: #475569;
+    font-weight: 500;
 }
 
 select {
     padding: 8px 12px;
-    border: 1px solid #D7CCC8;
-    border-radius: 8px;
-    background-color: #FFF;
-    color: #4A4238;
-    font-size: 0.95rem;
+    border: 1px solid #CBD5E1;
+    border-radius: 6px;
+    background-color: #FFFFFF;
+    color: #0F172A;
+    font-size: 0.875rem;
     outline: none;
+    transition: border-color 0.15s ease;
 }
 
 select:focus {
-    border-color: #8D6E63;
+    border-color: #2563EB;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 /* ===================================================
-   ボタンデザイン（ヘッダー・モーダル用）
+   ボタンデザイン（共通）
    =================================================== */
 button {
     cursor: pointer;
-    border: none;
-    border-radius: 8px;
+    border: 1px solid transparent;
+    border-radius: 6px;
     padding: 8px 16px;
-    font-weight: bold;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 button:disabled {
@@ -77,55 +89,64 @@ button:disabled {
     cursor: not-allowed;
 }
 
+/* プライマリボタン（深みのあるブルー） */
 .btn-primary {
-    background-color: #E64A19; /* 温かいテラコッタ・オレンジ */
-    color: #FFF;
+    background-color: #2563EB;
+    color: #FFFFFF;
 }
 .btn-primary:hover:not(:disabled) {
-    background-color: #D84315;
+    background-color: #1D4ED8;
 }
 
+/* セカンダリボタン（グレー系アウトライン風） */
 .btn-secondary {
-    background-color: #E0D8D0;
-    color: #5D4037;
+    background-color: #FFFFFF;
+    color: #475569;
+    border-color: #CBD5E1;
 }
 .btn-secondary:hover:not(:disabled) {
-    background-color: #D7CCC8;
+    background-color: #F1F5F9;
+    color: #0F172A;
 }
 
+/* キャンセルボタン */
 .btn-cancel {
-    background-color: #B0BEC5;
-    color: #FFF;
+    background-color: #FFFFFF;
+    color: #64748B;
+    border-color: #CBD5E1;
 }
 .btn-cancel:hover:not(:disabled) {
-    background-color: #90A4AE;
+    background-color: #F8FAFC;
+    color: #334155;
 }
 
 /* ===================================================
    スプレッドシート風テーブルデザイン
    =================================================== */
 .section-title h2 {
-    font-size: 1.25rem;
-    color: #6D4C41;
-    margin-bottom: 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 12px;
 }
 
 .no-data {
-    background-color: #FFF;
-    padding: 40px;
+    background-color: #FFFFFF;
+    padding: 48px;
     text-align: center;
-    border-radius: 12px;
-    color: #8D6E63;
+    border-radius: 8px;
+    border: 1px solid #E2E8F0;
+    color: #64748B;
+    font-size: 0.9rem;
 }
 
-/* 横スクロールラッパー（7人分程度の幅に収め、超過時はスクロール） */
 .table-wrapper {
     width: 100%;
     overflow-x: auto;
     background-color: #FFFFFF;
-    border: 1px solid #D7CCC8;
+    border: 1px solid #CBD5E1;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(121, 85, 72, 0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .shift-table {
@@ -140,49 +161,50 @@ button:disabled {
 .shift-table td {
     width: 120px;
     min-width: 120px;
-    height: 80px;
+    height: 72px;
     padding: 0;
-    border-right: 1px solid #E0D8D0;
-    border-bottom: 1px solid #E0D8D0;
+    border-right: 1px solid #E2E8F0;
+    border-bottom: 1px solid #E2E8F0;
     text-align: center;
     vertical-align: middle;
     box-sizing: border-box;
 }
 
-/* ユーザーIDヘッダー */
+/* ユーザーIDヘッダー（ダークネイビー） */
 .shift-table th.sticky-header {
     position: sticky;
     top: 0;
     z-index: 10;
-    background-color: #5D4037;
-    color: #FFFFFF;
-    font-size: 0.95rem;
-    font-weight: bold;
-    height: 45px;
+    background-color: #1E293B;
+    color: #F8FAFC;
+    font-size: 0.85rem;
+    font-weight: 600;
+    height: 40px;
+    letter-spacing: 0.02em;
 }
 
-/* 日付列（左固定） */
+/* 日付列（左固定・ライトスレート） */
 .shift-table .sticky-col {
     position: sticky;
     left: 0;
     z-index: 11;
-    background-color: #FFF8E1;
-    color: #5D4037;
-    font-weight: bold;
-    font-size: 0.9rem;
-    border-right: 2px solid #D7CCC8;
+    background-color: #F1F5F9;
+    color: #334155;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border-right: 2px solid #CBD5E1;
 }
 
-/* 左上の角ヘッダー（最前面） */
+/* 左上の角ヘッダー */
 .shift-table th.sticky-header.sticky-col {
     z-index: 20;
-    background-color: #4E342E;
+    background-color: #0F172A;
     color: #FFFFFF;
 }
 
 /* セルホバー処理 */
 .shift-table tbody td:hover {
-    background-color: #F5EFE6;
+    background-color: #F8FAFC;
 }
 
 /* ===================================================
@@ -201,7 +223,7 @@ button:disabled {
     background: transparent;
     border: none;
     border-radius: 0;
-    padding: 5px;
+    padding: 4px;
     margin: 0;
     display: flex;
     align-items: center;
@@ -212,18 +234,14 @@ button:disabled {
     box-sizing: border-box;
 }
 
-.cell-btn:hover:not(:disabled) {
-    background: transparent;
-}
-
-/* 休み設定時のボタン背景（濃いグレー） */
+/* 休み設定時のボタン背景（明るいスカイブルー） */
 .cell-btn.is-rest-btn {
-    background-color: #424242; /* ダークグレー */
+    background-color: #0ea5e9; /* 鮮やかで明るいブルー */
     color: #FFFFFF;
 }
 
 .cell-btn.is-rest-btn:hover:not(:disabled) {
-    background-color: #212121; /* ホバー時はさらに深い黒寄りグレー */
+    background-color: #0284c7; /* ホバー時はやや濃いブルー */
 }
 
 .time-container {
@@ -231,82 +249,97 @@ button:disabled {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 0.95rem;
-    font-weight: bold;
-    color: #3E2723;
-    line-height: 1.3;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1E293B;
+    line-height: 1.35;
 }
 
 .time-sep {
     font-size: 0.75rem;
-    color: #8D6E63;
+    color: #94A3B8;
     font-weight: normal;
 }
 
 .rest-container {
-    font-size: 1.2rem;
-    font-weight: bold;
+    font-size: 0.95rem;
+    font-weight: 700;
     color: #FFFFFF;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
 }
 
 /* ===================================================
    モーダル（ポップアップ）デザイン
    =================================================== */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(62, 39, 35, 0.4);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
+   .modal-overlay {
+       position: fixed;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100%;
+       background-color: rgba(15, 23, 42, 0.4);
+       backdrop-filter: blur(2px);
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       z-index: 1000;
+   }
 
-.modal-content {
-    background-color: #FFFFFF;
-    width: 90%;
-    max-width: 420px;
-    padding: 25px;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-}
+   .modal-content {
+       position: relative; /* 追加 */
+       z-index: 1001;      /* 追加（オーバーレイより前面にする） */
+       background-color: #FFFFFF;
+       width: 90%;
+       max-width: 440px;
+       padding: 24px;
+       border-radius: 12px;
+       /* 省略 */
+   }
 
 .modal-header h3 {
-    margin: 0 0 15px 0;
-    color: #5D4037;
-    border-bottom: 2px solid #FFE0B2;
-    padding-bottom: 8px;
+    margin: 0 0 16px 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1E293B;
+    border-bottom: 1px solid #E2E8F0;
+    padding-bottom: 12px;
 }
 
 .modal-form-group {
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 }
 
 .modal-form-group label {
-    font-size: 0.85rem;
-    font-weight: bold;
-    color: #6D4C41;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #475569;
 }
 
 .modal-form-group input[type="text"],
 .modal-form-group input[type="date"],
 .modal-form-group input[type="time"] {
-    padding: 8px 10px;
-    border: 1px solid #D7CCC8;
+    padding: 8px 12px;
+    border: 1px solid #CBD5E1;
     border-radius: 6px;
-    font-size: 0.95rem;
+    font-size: 0.875rem;
+    color: #0F172A;
+    outline: none;
+}
+
+.modal-form-group input[type="text"]:focus,
+.modal-form-group input[type="date"]:focus,
+.modal-form-group input[type="time"]:focus {
+    border-color: #2563EB;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .input-readonly {
-    background-color: #F5F5F5;
-    color: #757575;
+    background-color: #F1F5F9;
+    color: #64748B;
+    border-color: #E2E8F0 !important;
 }
 
 .checkbox-group label {
@@ -314,13 +347,15 @@ button:disabled {
     align-items: center;
     gap: 8px;
     cursor: pointer;
-    font-size: 0.95rem;
+    font-size: 0.875rem;
+    color: #334155;
+    font-weight: 500;
 }
 
 .modal-buttons {
     display: flex;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 12px;
+    margin-top: 24px;
 }
 
 .modal-buttons button {
@@ -329,6 +364,12 @@ button:disabled {
 }
 
 .error-message {
-    color: #D32F2F;
-    font-size: 0.8rem;
+    color: #DC2626;
+    font-size: 0.775rem;
+    font-weight: 500;
+}
+/* キャンセルボタンを確実に一番手前に配置 */
+#btnCancel {
+    position: relative;
+    z-index: 1002;
 }

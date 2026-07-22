@@ -38,7 +38,7 @@ public class ShiftCreateService {
      * @param eventId イベントID
      * @return イベント情報（存在しない場合はnull）
      */
-    public Event getCurrentEvent(Long eventId) {
+    public Event getCurrentEvent (Integer eventId) {
         if (eventId == null) {
             return null;
         }
@@ -51,7 +51,7 @@ public class ShiftCreateService {
      * @param eventId イベントID
      * @return シフトのリスト
      */
-    public List<Shift> getShiftTable(Long eventId) {
+    public List<Shift> getShiftTable(Integer eventId) {
         if (eventId == null) {
             return List.of();
         }
@@ -64,7 +64,7 @@ public class ShiftCreateService {
      * @param shiftId シフトID
      * @return シフト詳細情報（存在しない場合はnull）
      */
-    public Shift getShiftDetail(Long shiftId) {
+    public Shift getShiftDetail(Integer shiftId) {
         if (shiftId == null) {
             return null;
         }
