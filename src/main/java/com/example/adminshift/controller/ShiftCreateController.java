@@ -1,4 +1,4 @@
-package com.example.attendance.controller;
+package com.example.adminshift.controller;
 
 import java.util.List;
 
@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.attendance.entity.Event;
-import com.example.attendance.entity.Shift;
-import com.example.attendance.form.ShiftForm;
-import com.example.attendance.form.ShiftSearchForm;
-import com.example.attendance.service.ShiftCreateService;
+import com.example.adminshift.entity.Event;
+import com.example.adminshift.entity.Shift;
+import com.example.adminshift.form.ShiftForm;
+import com.example.adminshift.form.ShiftSearchForm;
+import com.example.adminshift.service.ShiftCreateService;
 
 import lombok.RequiredArgsConstructor;
 

@@ -1,11 +1,11 @@
-package com.example.attendance.repository;
+package com.example.adminshift.repository;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.example.attendance.entity.Shift;
+import com.example.adminshift.entity.Shift;
 
 /**
  * シフト情報のデータアクセスを提供するリポジトリ

@@ -1,14 +1,14 @@
-package com.example.attendance.service;
+package com.example.adminshift.service;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.attendance.entity.Event;
-import com.example.attendance.entity.Shift;
-import com.example.attendance.repository.EventRepository;
-import com.example.attendance.repository.ShiftRepository;
+import com.example.adminshift.entity.Event;
+import com.example.adminshift.entity.Shift;
+import com.example.adminshift.repository.EventRepository;
+import com.example.adminshift.repository.ShiftRepository;
 
 import lombok.RequiredArgsConstructor;
 

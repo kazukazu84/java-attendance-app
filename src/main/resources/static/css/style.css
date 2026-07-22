@@ -185,14 +185,6 @@ button:disabled {
     background-color: #F5EFE6;
 }
 
-/* 休みセルの背景色・文字色 */
-.shift-table td.is-rest {
-    background-color: #E0E0E0;
-}
-.shift-table td.is-rest:hover {
-    background-color: #D5D5D5;
-}
-
 /* ===================================================
    セル内全体クリック用フォーム＆ボタン擬態スタイリング
    =================================================== */
@@ -224,6 +216,16 @@ button:disabled {
     background: transparent;
 }
 
+/* 休み設定時のボタン背景（濃いグレー） */
+.cell-btn.is-rest-btn {
+    background-color: #424242; /* ダークグレー */
+    color: #FFFFFF;
+}
+
+.cell-btn.is-rest-btn:hover:not(:disabled) {
+    background-color: #212121; /* ホバー時はさらに深い黒寄りグレー */
+}
+
 .time-container {
     display: flex;
     flex-direction: column;
@@ -242,14 +244,10 @@ button:disabled {
 }
 
 .rest-container {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: bold;
-    color: #666666;
-}
-
-.empty-cell {
-    width: 100%;
-    height: 100%;
+    color: #FFFFFF;
+    letter-spacing: 2px;
 }
 
 /* ===================================================

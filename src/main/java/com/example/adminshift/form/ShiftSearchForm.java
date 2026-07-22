@@ -1,4 +1,4 @@
-package com.example.attendance.form;
+package com.example.adminshift.form;
 
 import jakarta.validation.constraints.NotNull;
 
