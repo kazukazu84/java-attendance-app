@@ -42,63 +42,71 @@
             <h2>シフト一覧 <span th:if="${currentEvent != null}" th:text="'（' + ${currentEvent.name} + '）'"></span></h2>
         </div>
 
-        <!-- カレンダー風シフト一覧 -->
+        <!-- スプレッドシート風シフト一覧テーブル -->
         <main class="calendar-container">
             <!-- 該当データなしの表示 -->
             <div th:if="${#lists.isEmpty(shiftList)}" class="no-data">
                 該当するシフト情報が存在しません。
             </div>
 
-            <!-- カレンダーグリッド -->
-            <div th:unless="${#lists.isEmpty(shiftList)}" class="calendar-grid">
-                
-                <!-- シフトカード（各シフトを1つのカレンダーコマとして表示） -->
-                <div class="shift-card" th:each="shift : ${shiftList}" th:classappend="${shift.startTime == null ? 'is-rest' : ''}">
-                    <!-- 日付ヘッダー -->
-                    <div class="card-date">
-                        <span class="date-text" th:text="${shift.shiftDate}">2026-07-21</span>
-                    </div>
+            <!-- スクロール可能なテーブルエリア -->
+            <div th:unless="${#lists.isEmpty(shiftList)}" class="table-wrapper">
+                <!-- shiftListから重複を除いた日付Set・ユーザーIDSetを取得 -->
+                <table class="shift-table"
+                       th:with="dateSet=${#sets.toSet(shiftList.![shiftDate])},
+                                userSet=${#sets.toSet(shiftList.![userId])}">
+                    <thead>
+                        <tr>
+                            <!-- 左上の固定ヘッダー -->
+                            <th class="sticky-header sticky-col">日付</th>
+                            <!-- 横軸：ユーザーID一覧 -->
+                            <th th:each="uid : ${userSet}" 
+                                class="sticky-header" 
+                                th:text="${uid}">1001</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 縦軸：勤務日一覧 -->
+                        <tr th:each="d : ${dateSet}">
+                            <!-- 左固定：日付セル -->
+                            <th class="sticky-col date-cell" th:text="${d}">2026-07-21</th>
 
-                    <!-- シフト詳細情報 -->
-                    <div class="card-body">
-                        <div class="user-info">
-                            <span class="badge-user">ID: <span th:text="${shift.userId}">1001</span></span>
-                        </div>
+                            <!-- 交差セル（日付 × ユーザーID に該当するShiftを探す） -->
+                            <td th:each="uid : ${userSet}">
+                                
+                                <!-- shiftList内をループして該当する日付・ユーザーIDのシフトを保持 -->
+                                <th:block th:each="s : ${shiftList}" th:if="${s.shiftDate == d and s.userId == uid}">
+                                    <form th:action="@{/shift/shiftCreate/edit}" method="get" class="cell-form">
+                                        <input type="hidden" name="shiftId" th:value="${s.id}" />
+                                        <input type="hidden" name="eventId" th:value="${searchForm.selectedEventId}" />
+                                        
+                                        <button type="submit" 
+                                                class="cell-btn" 
+                                                th:classappend="${s.startTime == null ? 'is-rest-btn' : ''}"
+                                                th:disabled="${showModal}">
+                                            <!-- 出勤時（startTime != null） -->
+                                            <div th:if="${s.startTime != null}" class="time-container">
+                                                <span th:text="${#temporals.format(s.startTime, 'HH:mm')}">09:00</span>
+                                                <span class="time-sep">～</span>
+                                                <span th:text="${#temporals.format(s.endTime, 'HH:mm')}">18:00</span>
+                                            </div>
+                                            <!-- 休み時（startTime == null） -->
+                                            <div th:if="${s.startTime == null}" class="rest-container">
+                                                休
+                                            </div>
+                                        </button>
+                                    </form>
+                                </th:block>
 
-                        <!-- 勤務時間表示 -->
-                        <div class="time-info">
-                            <th:block th:if="${shift.startTime != null}">
-                                <span class="time-icon">⏰</span>
-                                <span th:text="${#temporals.format(shift.startTime, 'HH:mm')}">09:00</span>
-                                ～
-                                <span th:text="${#temporals.format(shift.endTime, 'HH:mm')}">18:00</span>
-                            </th:block>
-                            <th:block th:if="${shift.startTime == null}">
-                                <span class="badge-rest">☕ 休み</span>
-                            </th:block>
-                        </div>
-
-                        <!-- 備考メモ -->
-                        <div class="memo-info" th:if="${shift.memo != null and !#strings.isEmpty(shift.memo)}">
-                            <span class="memo-text" th:text="${shift.memo}">備考メモ</span>
-                        </div>
-                    </div>
-
-                    <!-- 操作ボタン -->
-                    <div class="card-footer">
-                        <form th:action="@{/shift/shiftCreate/edit}" method="get">
-                            <input type="hidden" name="shiftId" th:value="${shift.id}" />
-                            <input type="hidden" name="eventId" th:value="${searchForm.selectedEventId}" />
-                            <button type="submit" class="btn-edit" th:disabled="${showModal}">✏️ 編集</button>
-                        </form>
-                    </div>
-                </div>
-
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </main>
     </div>
 
-    <!-- シフト編集ポップアップ（モーダル） -->
+    <!-- シフト編集ポップアップ（モーダル）※現在の構成を完全維持 -->
     <div id="modalOverlay" class="modal-overlay" th:if="${showModal}">
         <div class="modal-content">
             <div class="modal-header">

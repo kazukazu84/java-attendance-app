@@ -1,11 +1,11 @@
 @charset "UTF-8";
 
 /* ===================================================
-   全体基本設定（ナチュラル・ウォームカラー）
+   全体基本設定（温かみのあるブラウン・業務風カラー）
    =================================================== */
 body {
     background-color: #FAF9F6; /* 温かみのあるオフホワイト */
-    color: #4A4238;           /* こげ茶系の文字色（黒より柔らかい印象） */
+    color: #4A4238;           /* こげ茶系の文字色 */
     font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
     margin: 0;
     padding: 20px;
@@ -60,7 +60,7 @@ select:focus {
 }
 
 /* ===================================================
-   ボタンデザイン
+   ボタンデザイン（ヘッダー・モーダル用）
    =================================================== */
 button {
     cursor: pointer;
@@ -93,16 +93,6 @@ button:disabled {
     background-color: #D7CCC8;
 }
 
-.btn-edit {
-    background-color: #FFF8E1;
-    color: #F57F17;
-    border: 1px solid #FFE082;
-    width: 100%;
-}
-.btn-edit:hover:not(:disabled) {
-    background-color: #FFECB3;
-}
-
 .btn-cancel {
     background-color: #B0BEC5;
     color: #FFF;
@@ -112,18 +102,12 @@ button:disabled {
 }
 
 /* ===================================================
-   カレンダー風カードグリッド
+   スプレッドシート風テーブルデザイン
    =================================================== */
 .section-title h2 {
     font-size: 1.25rem;
     color: #6D4C41;
     margin-bottom: 15px;
-}
-
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* レスポンシブ配置 */
-    gap: 15px;
 }
 
 .no-data {
@@ -134,93 +118,138 @@ button:disabled {
     color: #8D6E63;
 }
 
-/* カード1枚のスタイル */
-.shift-card {
+/* 横スクロールラッパー（7人分程度の幅に収め、超過時はスクロール） */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
     background-color: #FFFFFF;
-    border-radius: 12px;
-    border: 1px solid #EFEBE9;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #D7CCC8;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(121, 85, 72, 0.05);
 }
 
-.shift-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(121, 85, 72, 0.12);
+.shift-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    table-layout: fixed;
 }
 
-/* 日付ヘッダー */
-.card-date {
-    background-color: #8D6E63; /* カレンダーの日付ヘッダー（モカブラウン） */
-    color: #FFFFFF;
-    padding: 8px 12px;
-    font-weight: bold;
-    font-size: 0.95rem;
+/* セル共通指定 */
+.shift-table th,
+.shift-table td {
+    width: 120px;
+    min-width: 120px;
+    height: 80px;
+    padding: 0;
+    border-right: 1px solid #E0D8D0;
+    border-bottom: 1px solid #E0D8D0;
     text-align: center;
+    vertical-align: middle;
+    box-sizing: border-box;
 }
 
-.card-body {
-    padding: 12px 15px;
-    flex-grow: 1;
+/* ユーザーIDヘッダー */
+.shift-table th.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #5D4037;
+    color: #FFFFFF;
+    font-size: 0.95rem;
+    font-weight: bold;
+    height: 45px;
+}
+
+/* 日付列（左固定） */
+.shift-table .sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 11;
+    background-color: #FFF8E1;
+    color: #5D4037;
+    font-weight: bold;
+    font-size: 0.9rem;
+    border-right: 2px solid #D7CCC8;
+}
+
+/* 左上の角ヘッダー（最前面） */
+.shift-table th.sticky-header.sticky-col {
+    z-index: 20;
+    background-color: #4E342E;
+    color: #FFFFFF;
+}
+
+/* セルホバー処理 */
+.shift-table tbody td:hover {
+    background-color: #F5EFE6;
+}
+
+/* 休みセルの背景色・文字色 */
+.shift-table td.is-rest {
+    background-color: #E0E0E0;
+}
+.shift-table td.is-rest:hover {
+    background-color: #D5D5D5;
+}
+
+/* ===================================================
+   セル内全体クリック用フォーム＆ボタン擬態スタイリング
+   =================================================== */
+.cell-form {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.cell-btn {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 5px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.cell-btn:hover:not(:disabled) {
+    background: transparent;
+}
+
+.time-container {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-}
-
-.badge-user {
-    background-color: #F5F5F5;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    color: #616161;
-}
-
-.time-info {
-    font-size: 1.05rem;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
     font-weight: bold;
     color: #3E2723;
-    margin: 4px 0;
+    line-height: 1.3;
 }
 
-.time-icon {
-    font-size: 0.9rem;
+.time-sep {
+    font-size: 0.75rem;
+    color: #8D6E63;
+    font-weight: normal;
 }
 
-/* 休みカードの特別指定 */
-.shift-card.is-rest {
-    background-color: #FAFAFA;
-    border-color: #E0E0E0;
+.rest-container {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #666666;
 }
 
-.shift-card.is-rest .card-date {
-    background-color: #A1887F; /* 休日用の少し落ち着いたトーン */
-}
-
-.badge-rest {
-    display: inline-block;
-    background-color: #E8F5E9;
-    color: #2E7D32;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-}
-
-.memo-info {
-    background-color: #FFFDE7; /* 付箋紙のような柔らかいイエロー */
-    border-left: 3px solid #FFF59D;
-    padding: 4px 8px;
-    font-size: 0.85rem;
-    color: #5D4037;
-    border-radius: 0 4px 4px 0;
-}
-
-.card-footer {
-    padding: 10px 15px;
-    background-color: #FAFAFA;
-    border-top: 1px solid #F5F5F5;
+.empty-cell {
+    width: 100%;
+    height: 100%;
 }
 
 /* ===================================================
@@ -232,7 +261,7 @@ button:disabled {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(62, 39, 35, 0.4); /* 背景を柔らかくダークダウン */
+    background-color: rgba(62, 39, 35, 0.4);
     display: flex;
     justify-content: center;
     align-items: center;
