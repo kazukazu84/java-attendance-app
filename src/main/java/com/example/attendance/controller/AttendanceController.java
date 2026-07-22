@@ -37,13 +37,20 @@ public class AttendanceController {
             return "redirect:/login";
         }
 
-        // 権限チェック：管理者の場合は /admin/attendance へ強制リダイレクト
+        // 1. 権限チェック＆URL正規化リダイレクト
         boolean isAdmin = loginUser.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
-        // 管理者が /user/attendance にアクセスした場合は /admin/attendance へ転送
-        if (isAdmin && request.getRequestURI().endsWith("/user/attendance")) {
+        String requestUri = request.getRequestURI();
+
+        // 管理者が /user/attendance に直打ちアクセスした場合 ➔ /admin/attendance へ転送
+        if (isAdmin && requestUri.endsWith("/user/attendance")) {
             return "redirect:/admin/attendance";
+        }
+
+        // 一般ユーザーが /admin/attendance に直打ちアクセスした場合 ➔ /user/attendance へ転送
+        if (!isAdmin && requestUri.endsWith("/admin/attendance")) {
+            return "redirect:/user/attendance";
         }
 
         String currentUserId = loginUser.getUsername();

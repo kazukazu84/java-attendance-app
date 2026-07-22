@@ -71,10 +71,8 @@
                 <div class="panel-box mb-3">
                     <div class="row g-2">
 						<div class="col-6">
-						    <!-- 管理者の場合： /admin/attendance へ -->
-						    <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/attendance}" class="btn btn-nav text-dark py-1" style="font-size: 0.9rem;">簡易</a>
-						    <!-- 一般ユーザーの場合： /user/attendance へ -->
-						    <a sec:authorize="!hasRole('ADMIN')" th:href="@{/user/attendance}" class="btn btn-nav text-dark py-1" style="font-size: 0.9rem;">簡易</a>
+						    <!-- 単一のリンクにする（管理者が押しても Controller が /admin/attendance に補正してくれる） -->
+						    <a th:href="@{/user/attendance}" class="btn btn-nav text-dark py-1" style="font-size: 0.9rem;">簡易</a>
 						</div>
                         <div class="col-6">
                             <form th:action="@{/logout}" method="post" class="w-100">
