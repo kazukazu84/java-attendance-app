@@ -1,0 +1,201 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   全体設定 / 基本スタイリング
+   ========================================================================== */
+body {
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+    background-color: #f4f7f6;
+    color: #333333;
+    margin: 0;
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+/* ページタイトル */
+h1 {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin-bottom: 24px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid #3498db;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   新規イベント作成フォーム
+   ========================================================================== */
+form[action*="/create"] {
+    background-color: #ffffff;
+    padding: 20px 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+form[action*="/create"] label {
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: #555555;
+    margin-right: 4px;
+}
+
+/* ==========================================================================
+   フォーム要素（select, input, button）
+   ========================================================================== */
+select, 
+input[type="date"] {
+    padding: 8px 12px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    color: #333333;
+    background-color: #ffffff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+select:focus, 
+input[type="date"]:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+select:disabled, 
+input:disabled, 
+button:disabled {
+    background-color: #e9ecef !important;
+    border-color: #ced4da !important;
+    color: #6c757d !important;
+    cursor: not-allowed !important;
+    opacity: 0.7;
+}
+
+/* ボタン共通設定 */
+button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+button:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+/* ボタン色指定 */
+form[action*="/create"] button[type="submit"] {
+    background-color: #3498db;
+    color: #ffffff;
+    margin-left: auto;
+}
+
+form[action*="/create"] button[type="submit"]:hover:not(:disabled) {
+    background-color: #2980b9;
+}
+
+/* 戻るボタン */
+button[onclick*="shift-management"] {
+    background-color: #95a5a6;
+    color: #ffffff;
+    margin-top: 10px;
+}
+
+button[onclick*="shift-management"]:hover:not(:disabled) {
+    background-color: #7f8c8d;
+}
+
+/* ==========================================================================
+   テーブル（イベント一覧）
+   ========================================================================== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    border: none; /* HTML側の border="1" を上書きリセット */
+}
+
+th, td {
+    padding: 12px 16px;
+    text-align: center;
+    border-bottom: 1px solid #eeeeee;
+}
+
+th {
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* インラインフォーム（テーブル内ボタン） */
+td form {
+    display: inline-block;
+    margin: 0;
+}
+
+/* 編集ボタン */
+form[action*="/edit"] button {
+    background-color: #2ecc71;
+    color: #ffffff;
+}
+
+form[action*="/edit"] button:hover:not(:disabled) {
+    background-color: #27ae60;
+}
+
+/* 削除ボタン */
+form[action*="/delete"] button {
+    background-color: #e74c3c;
+    color: #ffffff;
+}
+
+form[action*="/delete"] button:hover:not(:disabled) {
+    background-color: #c0392b;
+}
+
+/* ==========================================================================
+   テーブル内：編集モード時
+   ========================================================================== */
+td[colspan="6"] {
+    background-color: #eef7fc;
+    padding: 12px;
+}
+
+td[colspan="6"] table {
+    box-shadow: none;
+    background-color: transparent;
+}
+
+td[colspan="6"] td {
+    border: none;
+    padding: 4px;
+}
+
+/* 完了（更新）ボタン */
+form[action*="/update"] button {
+    background-color: #f39c12;
+    color: #ffffff;
+}
+
+form[action*="/update"] button:hover:not(:disabled) {
+    background-color: #d68910;
+}

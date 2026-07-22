@@ -18,76 +18,85 @@ import com.example.adminshift.service.ShiftApplicationEventService;
 
 @Controller
 @RequestMapping("/admin/shift-application-event")
-@SessionAttributes("CreateShiftApplicationEventForm")
+// 属性名を「頭小文字」に統一します
+@SessionAttributes("createShiftApplicationEventForm") 
 public class ShiftApplicationEventController {
-	
-	private final ShiftApplicationEventService service;
 
-	private static final String REDIRECT_URL =
-			"redirect:/admin/shift-application-event";
+    private final ShiftApplicationEventService service;
 
-	private static final String VIEW_NAME =
-			"admin/shift-application-event";
+    private static final String REDIRECT_URL = "redirect:/admin/shift-application-event";
+    private static final String VIEW_NAME = "admin/shift-application-event";
 
-	public ShiftApplicationEventController(
-			ShiftApplicationEventService service) {
+    public ShiftApplicationEventController(ShiftApplicationEventService service) {
+        this.service = service;
+    }
 
-		this.service = service;
-		
-	}
+    /**
+     * フォームの初期化（セッションにない場合に呼ばれます）
+     */
+    @ModelAttribute("createShiftApplicationEventForm")
+    public CreateShiftApplicationEventForm setUpCreateForm() {
+        return service.getCreateForm();
+    }
 
+    /**
+     * 初期表示
+     */
+    @GetMapping
+    public String index(Model model) {
+        model.addAttribute("eventList", service.getEventList());
+        return VIEW_NAME;
+    }
 
-/**
- * 初期表示
- */
-	@GetMapping
-	public String index(Model model) {
+    /**
+     * 新規作成
+     */
+    @PostMapping("/create")
+    public String create(
+            @Validated @ModelAttribute("createShiftApplicationEventForm") CreateShiftApplicationEventForm form,
+            BindingResult bindingResult,
+            Model model) {
 
-	    model.addAttribute(
-	            "eventList",
-	            service.getEventList());
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("eventList", service.getEventList());
+            return VIEW_NAME;
+        }
 
-	    if (!model.containsAttribute(
-	            "CreateShiftApplicationEventForm")) {
+        service.createEvent(form);
+        service.saveSetting(form);
 
-	        model.addAttribute(
-	                "CreateShiftApplicationEventForm",
-	                service.getCreateForm());
-	    }
+        // 登録後も「最後に選択した設定」を画面に残したい場合は、ここでのセッションクリア（status.setComplete()）を行わずリダイレクトします。
+        // もしDB等の初期設定値に戻したい場合は status.setComplete() を呼び出してください。
 
-	    return VIEW_NAME;
-	}
+        return REDIRECT_URL;
+    }
 
-/**
- * 新規作成
- */
-@PostMapping("/create")
-public String create(
-		@Validated
-		@ModelAttribute CreateShiftApplicationEventForm form,
-		BindingResult bindingResult,
-		Model model) {
+    /**
+     * 編集モード切り替え
+     */
+    @PostMapping("/edit")
+    public String edit(
+            @ModelAttribute("createShiftApplicationEventForm") CreateShiftApplicationEventForm createForm,
+            @RequestParam Integer eventId,
+            Model model) {
 
-	if (bindingResult.hasErrors()) {
+        ShiftApplicationEvent event = service.getEvent(eventId);
 
-	    model.addAttribute(
-	            "eventList",
-	            service.getEventList());
+        UpdateShiftApplicationEventForm form = new UpdateShiftApplicationEventForm();
+        form.setEventId(event.getEventId());
+        form.setTargetStartDate(event.getTargetStartDate());
+        form.setTargetEndDate(event.getTargetEndDate());
+        form.setApplicationStartDate(event.getApplicationStartDate());
+        form.setApplicationEndDate(event.getApplicationEndDate());
 
-	    model.addAttribute(
-	            "CreateShiftApplicationEventForm",
-	            form);
+        model.addAttribute("editingEventId", eventId);
+        model.addAttribute("eventList", service.getEventList());
+        model.addAttribute("updateShiftApplicationEventForm", form);
 
-	    return VIEW_NAME;
-	}
+        return VIEW_NAME;
+    }
 
-	service.createEvent(form);
-	service.saveSetting(form);
-
-	
-	return REDIRECT_URL;
-}
-
+  
 /**
  * 編集完了
  */
@@ -138,38 +147,6 @@ public String back() {
 
 	return "redirect:/admin/shift-management";
 }
-
-@PostMapping("/edit")
-public String edit(
-        @ModelAttribute CreateShiftApplicationEventForm createForm,
-        @RequestParam Integer eventId,
-        Model model)  {
-
-	ShiftApplicationEvent event = service.getEvent(eventId);
-
-	UpdateShiftApplicationEventForm form = new UpdateShiftApplicationEventForm();
-
-	form.setEventId(event.getEventId());
-	form.setTargetStartDate(event.getTargetStartDate());
-	form.setTargetEndDate(event.getTargetEndDate());
-	form.setApplicationStartDate(event.getApplicationStartDate());
-	form.setApplicationEndDate(event.getApplicationEndDate());
-
-	model.addAttribute("editingEventId", eventId);
-	model.addAttribute("eventList", service.getEventList());
-
-	model.addAttribute(
-	    "UpdateShiftApplicationEventForm",
-	    form
-	);
-	model.addAttribute(
-		    "CreateShiftApplicationEventForm",
-		    createForm);
-	
-
-	return "admin/shift-application-event";
-}
-
 
 
 }

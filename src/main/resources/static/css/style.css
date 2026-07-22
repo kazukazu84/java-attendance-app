@@ -1,0 +1,307 @@
+@charset "UTF-8";
+
+/* ===================================================
+   全体基本設定（ナチュラル・ウォームカラー）
+   =================================================== */
+body {
+    background-color: #FAF9F6; /* 温かみのあるオフホワイト */
+    color: #4A4238;           /* こげ茶系の文字色（黒より柔らかい印象） */
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+.app-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* ヘッダーエリア */
+.app-header {
+    background-color: #FFFFFF;
+    padding: 20px 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(121, 85, 72, 0.08);
+    margin-bottom: 20px;
+}
+
+h1 {
+    margin: 0 0 15px 0;
+    font-size: 1.6rem;
+    color: #5D4037;
+}
+
+.top-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.event-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+select {
+    padding: 8px 12px;
+    border: 1px solid #D7CCC8;
+    border-radius: 8px;
+    background-color: #FFF;
+    color: #4A4238;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+select:focus {
+    border-color: #8D6E63;
+}
+
+/* ===================================================
+   ボタンデザイン
+   =================================================== */
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background-color: #E64A19; /* 温かいテラコッタ・オレンジ */
+    color: #FFF;
+}
+.btn-primary:hover:not(:disabled) {
+    background-color: #D84315;
+}
+
+.btn-secondary {
+    background-color: #E0D8D0;
+    color: #5D4037;
+}
+.btn-secondary:hover:not(:disabled) {
+    background-color: #D7CCC8;
+}
+
+.btn-edit {
+    background-color: #FFF8E1;
+    color: #F57F17;
+    border: 1px solid #FFE082;
+    width: 100%;
+}
+.btn-edit:hover:not(:disabled) {
+    background-color: #FFECB3;
+}
+
+.btn-cancel {
+    background-color: #B0BEC5;
+    color: #FFF;
+}
+.btn-cancel:hover:not(:disabled) {
+    background-color: #90A4AE;
+}
+
+/* ===================================================
+   カレンダー風カードグリッド
+   =================================================== */
+.section-title h2 {
+    font-size: 1.25rem;
+    color: #6D4C41;
+    margin-bottom: 15px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* レスポンシブ配置 */
+    gap: 15px;
+}
+
+.no-data {
+    background-color: #FFF;
+    padding: 40px;
+    text-align: center;
+    border-radius: 12px;
+    color: #8D6E63;
+}
+
+/* カード1枚のスタイル */
+.shift-card {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    border: 1px solid #EFEBE9;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.shift-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(121, 85, 72, 0.12);
+}
+
+/* 日付ヘッダー */
+.card-date {
+    background-color: #8D6E63; /* カレンダーの日付ヘッダー（モカブラウン） */
+    color: #FFFFFF;
+    padding: 8px 12px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+.card-body {
+    padding: 12px 15px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.badge-user {
+    background-color: #F5F5F5;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #616161;
+}
+
+.time-info {
+    font-size: 1.05rem;
+    font-weight: bold;
+    color: #3E2723;
+    margin: 4px 0;
+}
+
+.time-icon {
+    font-size: 0.9rem;
+}
+
+/* 休みカードの特別指定 */
+.shift-card.is-rest {
+    background-color: #FAFAFA;
+    border-color: #E0E0E0;
+}
+
+.shift-card.is-rest .card-date {
+    background-color: #A1887F; /* 休日用の少し落ち着いたトーン */
+}
+
+.badge-rest {
+    display: inline-block;
+    background-color: #E8F5E9;
+    color: #2E7D32;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+.memo-info {
+    background-color: #FFFDE7; /* 付箋紙のような柔らかいイエロー */
+    border-left: 3px solid #FFF59D;
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    color: #5D4037;
+    border-radius: 0 4px 4px 0;
+}
+
+.card-footer {
+    padding: 10px 15px;
+    background-color: #FAFAFA;
+    border-top: 1px solid #F5F5F5;
+}
+
+/* ===================================================
+   モーダル（ポップアップ）デザイン
+   =================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(62, 39, 35, 0.4); /* 背景を柔らかくダークダウン */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #FFFFFF;
+    width: 90%;
+    max-width: 420px;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.modal-header h3 {
+    margin: 0 0 15px 0;
+    color: #5D4037;
+    border-bottom: 2px solid #FFE0B2;
+    padding-bottom: 8px;
+}
+
+.modal-form-group {
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.modal-form-group label {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #6D4C41;
+}
+
+.modal-form-group input[type="text"],
+.modal-form-group input[type="date"],
+.modal-form-group input[type="time"] {
+    padding: 8px 10px;
+    border: 1px solid #D7CCC8;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+.input-readonly {
+    background-color: #F5F5F5;
+    color: #757575;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    flex: 1;
+    padding: 10px;
+}
+
+.error-message {
+    color: #D32F2F;
+    font-size: 0.8rem;
+}
