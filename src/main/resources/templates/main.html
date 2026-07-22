@@ -131,7 +131,7 @@
                         <!-- 管理者時の表示 (画像通りの2列配置) -->
                         <div sec:authorize="hasRole('ADMIN')" class="row g-2 mb-2">
                             <div class="col-6">
-                                <a th:href="@{/admin/users}" class="btn btn-nav">ユーザー管理</a>
+                                <a th:href="@{/admin/user-management}" class="btn btn-nav">ユーザー管理</a>
                             </div>
                             <div class="col-6">
                                 <a th:href="@{/user/salary}" class="btn btn-nav">給与確認</a>
@@ -140,7 +140,7 @@
                                 <a th:href="@{/user/shift-request}" class="btn btn-nav">シフト申請</a>
                             </div>
                             <div class="col-6">
-                                <a th:href="@{/admin/shifts}" class="btn btn-nav">シフト管理</a>
+                                <a th:href="@{/admin/shift-management}" class="btn btn-nav">シフト管理</a>
                             </div>
                         </div>
                     </div>

@@ -47,19 +47,9 @@ public class MainController {
         }
 
         // 1. 権限チェック＆URL正規化リダイレクト
-        boolean isAdmin = loginUser.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-        
-        String requestUri = request.getRequestURI();
-
-        // 管理者が /user/main に直打ちアクセスした場合 ➔ /admin/main へ転送
-        if (isAdmin && requestUri.endsWith("/user/main")) {
-            return "redirect:/admin/main";
-        }
-
-        // 一般ユーザーが /admin/main に直打ちアクセスした場合 ➔ /user/main へ転送
-        if (!isAdmin && requestUri.endsWith("/admin/main")) {
-            return "redirect:/user/main";
+        String redirectUrl = checkAndRedirect(loginUser, request, "/user/main", "/admin/main");
+        if (redirectUrl != null) {
+            return redirectUrl;
         }
 
         // 2. ログイン中のユーザーIDを取得
@@ -100,16 +90,77 @@ public class MainController {
         return "main";
     }
     
-    // 👈 【追加】給与確認画面（仮）
-    @GetMapping("/user/salary")
-    public String salaryView() {
+    /**
+     * 給与確認画面（仮）
+     */
+    @GetMapping({"/user/salary", "/admin/salary"})
+    public String salaryView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
+        if (loginUser == null) return "redirect:/login";
+
+        String redirectUrl = checkAndRedirect(loginUser, request, "/user/salary", "/admin/salary");
+        if (redirectUrl != null) return redirectUrl;
+
         return "tempSalary";
     }
 
-    // 👈 【追加】シフト申請画面（仮）
-    @GetMapping("/user/shift-request")
-    public String shiftRequestView() {
+    /**
+     * シフト申請画面（仮）
+     */
+    @GetMapping({"/user/shift-request", "/admin/shift-request"})
+    public String shiftRequestView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
+        if (loginUser == null) return "redirect:/login";
+
+        String redirectUrl = checkAndRedirect(loginUser, request, "/user/shift-request", "/admin/shift-request");
+        if (redirectUrl != null) return redirectUrl;
+
         return "tempShiftRequest";
     }
 
+    /**
+     * ユーザー管理画面（仮）
+     */
+    @GetMapping({"/user/user-management", "/admin/user-management"})
+    public String userManagementView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
+        if (loginUser == null) return "redirect:/login";
+
+        String redirectUrl = checkAndRedirect(loginUser, request, "/user/user-management", "/admin/user-management");
+        if (redirectUrl != null) return redirectUrl;
+
+        return "tempUserManagement";
+    }
+
+    /**
+     * シフト管理画面（仮）
+     */
+    @GetMapping({"/user/shift-management", "/admin/shift-management"})
+    public String shiftManagementView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
+        if (loginUser == null) return "redirect:/login";
+
+        String redirectUrl = checkAndRedirect(loginUser, request, "/user/shift-management", "/admin/shift-management");
+        if (redirectUrl != null) return redirectUrl;
+
+        return "tempShiftManagement";
+    }
+
+    /**
+     * 【共通処理】権限とリクエストURLに応じたリダイレクト判定
+     */
+    private String checkAndRedirect(UserDetails loginUser, HttpServletRequest request, String userPath, String adminPath) {
+        boolean isAdmin = loginUser.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        
+        String requestUri = request.getRequestURI();
+
+        // 管理者が一般用URLにアクセスした場合 ➔ 管理者用URLへ転送
+        if (isAdmin && requestUri.endsWith(userPath)) {
+            return "redirect:" + adminPath;
+        }
+        
+        // 一般ユーザーが管理者用URLにアクセスした場合 ➔ 一般用URLへ転送
+        if (!isAdmin && requestUri.endsWith(adminPath)) {
+            return "redirect:" + userPath;
+        }
+
+        return null; // リダイレクト不要
+    }
 }

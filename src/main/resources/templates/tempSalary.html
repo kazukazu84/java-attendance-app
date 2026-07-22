@@ -10,15 +10,7 @@
         <div class="card p-4 shadow-sm">
             <h3 class="mb-4">給与確認画面（仮）</h3>
             <p class="text-muted">※給与確認機能は担当外の班が開発します</p>
-			<!-- 管理者の場合： /admin/main へ戻る -->
-			<a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/main}" class="btn btn-secondary">
-			    メイン画面へ戻る
-			</a>
-
-			<!-- 一般ユーザーの場合： /user/main へ戻る -->
-			<a sec:authorize="!hasRole('ADMIN')" th:href="@{/user/main}" class="btn btn-secondary">
-			    メイン画面へ戻る
-			</a>
+            <a th:href="@{/admin/main}" class="btn btn-outline-secondary w-100 fw-bold">メイン画面へ戻る</a>
         </div>
     </div>
 </body>
