@@ -72,8 +72,9 @@ public class MainController {
         AttendanceDto attendanceDto = attendanceService.getStatus(currentUserId);
         model.addAttribute("status", attendanceDto);
 
-        // 4. ログインユーザーのログ一覧を取得（currentUserId に変更）
-        List<LogDto> logList = logService.getLogListForMain(currentUserId);
+        // 4. ログ一覧を取得（引数を currentUserId から loginUser に変更）
+        // 【修正前】 List<LogDto> logList = logService.getLogListForMain(currentUserId);
+        List<LogDto> logList = logService.getLogListForMain(loginUser);
         model.addAttribute("logList", logList);
 
         /*

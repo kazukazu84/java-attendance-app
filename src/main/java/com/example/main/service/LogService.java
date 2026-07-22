@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.example.account.entity.UserInfo;
@@ -32,15 +33,21 @@ public class LogService {
     /**
      * メイン画面に表示する全ログの一覧を取得し、表示用メッセージを組み立てて返す
      */
-    public List<LogDto> getLogListForMain(String currentUserId) {
+    public List<LogDto> getLogListForMain(UserDetails loginUser) {
+        if (loginUser == null) {
+            return new ArrayList<>();
+        }
+
         // 全てのログ履歴を新着順で取得
         List<Log> logs = logRepository.findAllByOrderByCreatedAtDesc();
         List<LogDto> dtoList = new ArrayList<>();
 
-    String cleanCurrentUserId = (currentUserId != null) ? currentUserId.trim() : "";
+        String currentUserId = loginUser.getUsername();
+        String cleanCurrentUserId = (currentUserId != null) ? currentUserId.trim() : "";
     
-    // ※もし将来的にSpring Security等から管理者権限を取得する場合はここで判定します
-    // boolean isAdmin = ...; 
+        // 🔑 ログインユーザーが管理者(ROLE_ADMIN)かどうか判定
+        boolean isAdmin = loginUser.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
 
         for (Log log : logs) {
             // ログに関連するメッセージ定義（マスター）を取得
@@ -54,15 +61,15 @@ public class LogService {
         // ★【メッセージスコープ（0:全員 / 1:個人+管理者）の判定】
         // ----------------------------------------------------
         if (Integer.valueOf(0).equals(scope)) {
-            // 【0: 全員向け】
-            // 誰の画面にも表示するので、チェックを通過してそのまま表示処理へ
+                // 【0: 全員向け】誰の画面にも表示
 
         } else if (Integer.valueOf(1).equals(scope)) {
-                // 【1: 個人 + 管理者 向け】自分宛てでない場合はスキップ
+                // 【1: 個人 + 管理者 向け】
             boolean isMyLog = cleanCurrentUserId.equals(targetUserId);
 
-            if (!isMyLog /* && !isAdminUser */) {
-                continue; // 表示対象外なのでスキップ
+                // 「自分のログ」でもなく「管理者」でもない場合は表示対象外
+                if (!isMyLog && !isAdmin) {
+                    continue; 
                 }
 
         } else {
@@ -70,7 +77,7 @@ public class LogService {
             continue;
             }
 
-            // ログを発生させたユーザーの名前を取得（※トリム済みの targetUserId を使用）
+            // ログを発生させたユーザーの名前を取得
             UserInfo actionUser = userRepository.findById(targetUserId).orElse(null);
             String userName = (actionUser != null) ? actionUser.getUserName() : "不明なユーザー";
 
