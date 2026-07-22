@@ -7,8 +7,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.attendance.entity.TempUserInfo;
-import com.example.attendance.repository.TempUserInfoRepository;
+import com.example.account.entity.UserInfo;
+import com.example.account.repository.UserInfoRepository;
 import com.example.main.dto.LogDto;
 import com.example.main.entity.Log;
 import com.example.main.entity.LogMessage;
@@ -25,7 +25,7 @@ public class LogService {
     private LogMessageRepository logMessageRepository;
 
     @Autowired
-    private TempUserInfoRepository userRepository;
+    private UserInfoRepository userRepository;
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
@@ -37,29 +37,48 @@ public class LogService {
         List<Log> logs = logRepository.findAllByOrderByCreatedAtDesc();
         List<LogDto> dtoList = new ArrayList<>();
 
+    String cleanCurrentUserId = (currentUserId != null) ? currentUserId.trim() : "";
+    
+    // ※もし将来的にSpring Security等から管理者権限を取得する場合はここで判定します
+    // boolean isAdmin = ...; 
+
         for (Log log : logs) {
             // ログに関連するメッセージ定義（マスター）を取得
             LogMessage messageTemplate = logMessageRepository.findById(log.getMessageId()).orElse(null);
             if (messageTemplate == null) continue;
 
-            // 表示対象（メッセージスコープ）の判定
-            // スコープが「1:個人+管理者」かつ、自分宛てでもなく自分が送ったものでもない場合はスキップ
-            if (messageTemplate.getMessageScope() == 1) {
-                if (!currentUserId.equals(log.getTargetUserId())) {
-                    continue; 
+        Integer scope = messageTemplate.getMessageScope();
+        String targetUserId = (log.getTargetUserId() != null) ? log.getTargetUserId().trim() : "";
+
+        // ----------------------------------------------------
+        // ★【メッセージスコープ（0:全員 / 1:個人+管理者）の判定】
+        // ----------------------------------------------------
+        if (Integer.valueOf(0).equals(scope)) {
+            // 【0: 全員向け】
+            // 誰の画面にも表示するので、チェックを通過してそのまま表示処理へ
+
+        } else if (Integer.valueOf(1).equals(scope)) {
+                // 【1: 個人 + 管理者 向け】自分宛てでない場合はスキップ
+            boolean isMyLog = cleanCurrentUserId.equals(targetUserId);
+
+            if (!isMyLog /* && !isAdminUser */) {
+                continue; // 表示対象外なのでスキップ
                 }
+
+        } else {
+            // 想定外のスコープ値（null等）の場合は安全のため表示しない
+            continue;
             }
 
-            // ログを発生させたユーザーの名前を取得
-            TempUserInfo actionUser = userRepository.findById(log.getTargetUserId()).orElse(null);
+            // ログを発生させたユーザーの名前を取得（※トリム済みの targetUserId を使用）
+            UserInfo actionUser = userRepository.findById(targetUserId).orElse(null);
             String userName = (actionUser != null) ? actionUser.getUserName() : "不明なユーザー";
 
             // メッセージ内の {user_name} プレースホルダーを実際のユーザー名に置き換える
             String rawMessage = messageTemplate.getMessageValue();
-            String processedMessage = rawMessage.replace("{user_name}", userName);
+        String processedMessage = (rawMessage != null) ? rawMessage.replace("{user_name}", userName) : "";
 
-            // 日時とメッセージを組み合わせた綺麗な表示用テキストを作成
-            String timestamp = log.getCreatedAt().format(formatter);
+        String timestamp = (log.getCreatedAt() != null) ? log.getCreatedAt().format(formatter) : "";
             String finalLogText = "[" + timestamp + "] " + processedMessage;
 
             // DTOに詰め替えてリストに追加

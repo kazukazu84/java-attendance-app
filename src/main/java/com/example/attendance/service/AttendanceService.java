@@ -9,11 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.account.entity.UserInfo;
+import com.example.account.repository.UserInfoRepository;
 import com.example.attendance.dto.AttendanceDto;
 import com.example.attendance.entity.Attendance;
-import com.example.attendance.entity.TempUserInfo;
 import com.example.attendance.repository.AttendanceRepository;
-import com.example.attendance.repository.TempUserInfoRepository;
 import com.example.main.service.LogService;
 
 @Service
@@ -28,7 +28,7 @@ public class AttendanceService {
 
 	// 👇 追加：UserInfoのステータスを更新するために注入します
 	@Autowired
-	private TempUserInfoRepository userRepository;
+	private UserInfoRepository userRepository;
 
 	// フォーマッターを日付用と時間用に分けます
 	private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("M月d日");
@@ -87,7 +87,7 @@ public class AttendanceService {
 		logService.saveLog(0, userId); // 👈 1行で安全にログ登録完了！
 
 		// 3. 👈【追加】ユーザーの出退勤ステータスを「1: 出勤状態」に更新
-		TempUserInfo user = userRepository.findById(userId)
+		UserInfo user = userRepository.findById(userId)
 				.orElseThrow(() -> new RuntimeException("ユーザー情報が見つかりません。ID: " + userId));
 		user.setAttendanceStatus(1); // ⭐ 1: 出勤状態
 		userRepository.save(user);
@@ -130,7 +130,7 @@ public class AttendanceService {
 		logService.saveLog(1, userId); // 👈 1行ですっきり！[cite: 1]
 
 		// 5. 👈【追加】ユーザーの出退勤ステータスを「0: 退勤状態」に更新
-		TempUserInfo user = userRepository.findById(userId)
+		UserInfo user = userRepository.findById(userId)
 				.orElseThrow(() -> new RuntimeException("ユーザー情報が見つかりません。ID: " + userId));
 		user.setAttendanceStatus(0); // ⭐ 0: 退勤状態
 		userRepository.save(user);

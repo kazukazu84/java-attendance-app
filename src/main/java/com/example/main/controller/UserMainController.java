@@ -3,13 +3,15 @@ package com.example.main.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import com.example.account.entity.UserInfo;
+import com.example.account.repository.UserInfoRepository;
 import com.example.attendance.dto.AttendanceDto;
-import com.example.attendance.entity.TempUserInfo;
-import com.example.attendance.repository.TempUserInfoRepository;
 import com.example.attendance.service.AttendanceService;
 import com.example.main.dto.LogDto;
 import com.example.main.service.LogService;
@@ -23,28 +25,42 @@ public class UserMainController {
     private AttendanceService attendanceService;
 
     @Autowired
-    private TempUserInfoRepository userRepository;
-
-    private final String TEST_USER_ID = "1";
+    private UserInfoRepository userRepository;
 
     /**
      * メイン画面の表示（URLと名前が完全に一致して分かりやすくなります）
      */
     @GetMapping("/user/main")
-    public String mainView(Model model) {
-        // 中身の処理は1行も変えずにそのままでOKです
-        TempUserInfo currentUser = userRepository.findById(TEST_USER_ID).orElse(null);
+    public String mainView(@AuthenticationPrincipal UserDetails loginUser, Model model) {
+        
+        if (loginUser == null) {
+            // 未認証（未ログイン）状態の場合はログイン画面へリダイレクト
+            return "redirect:/login";
+        }
+
+        // 1. ログイン中のユーザーIDを取得
+        // ※独自クラス（CustomUserDetails）を使っている場合は loginUser.getUserId() 等に書き換えてください
+        String currentUserId = loginUser.getUsername();
+
+        // 2. DBから UserInfo テーブルのレコードを取得（ここで username も取得されます）
+        UserInfo currentUser = userRepository.findById(currentUserId).orElse(null);
         if (currentUser == null) {
-            currentUser = new TempUserInfo();
-            currentUser.setUserId(TEST_USER_ID);
-            currentUser.setUserName("テスト太郎");
+            // 【デバッグ用】DBからユーザーが見つからなかった場合のログ出力
+            System.out.println("[WARN] UserInfoテーブルに ID: '" + currentUserId + "' のデータが存在しません。");
+            
+            // 例外処理用：画面崩れ防止のためのフォールバック設定
+            currentUser = new UserInfo();
+            currentUser.setUserId(currentUserId);
+            currentUser.setUserName("（名称未設定）"); // "ゲスト" から変更
         }
         model.addAttribute("user", currentUser);
 
-        AttendanceDto attendanceDto = attendanceService.getStatus(TEST_USER_ID);
+        // 3. ログインユーザーの勤怠ステータスを取得（currentUserId に変更）
+        AttendanceDto attendanceDto = attendanceService.getStatus(currentUserId);
         model.addAttribute("status", attendanceDto);
 
-        List<LogDto> logList = logService.getLogListForMain(TEST_USER_ID);
+        // 4. ログインユーザーのログ一覧を取得（currentUserId に変更）
+        List<LogDto> logList = logService.getLogListForMain(currentUserId);
         model.addAttribute("logList", logList);
 
         return "userMain";

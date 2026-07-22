@@ -110,10 +110,11 @@
 
 		<!-- ボタンエリア（最下部） -->
 		<div class="row mt-4">
-			<!-- 1. 左寄せ：ログアウトボタン -->
+			<!-- 1. 左寄せ：ログアウトボタン（POST送信用のformに変更） -->
 			<div class="col-4 text-start">
-				<!-- 変更箇所：aタグにth:hrefを適用してデザインをボタン風に調整しました -->
-				<a th:href="@{/logout}" class="btn btn-outline-danger">ログアウト</a>
+				<form th:action="@{/logout}" method="post" style="display: inline;">
+					<button type="submit" class="btn btn-outline-danger">ログアウト</button>
+				</form>
 			</div>
 			
 			<!-- 2. 中央寄せ：メイン画面へボタン -->

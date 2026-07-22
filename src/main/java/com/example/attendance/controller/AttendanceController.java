@@ -2,6 +2,8 @@ package com.example.attendance.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,14 +24,19 @@ public class AttendanceController {
     @Autowired
     private LogService logService;
 
-    // テスト用のユーザーID (本来はセッション等から取得)
-    private final String TEST_USER_ID = "1";
+    /**
+     * 簡易勤怠画面の初期表示
+     */
+    @GetMapping("/user/attendance")
+    public String attendance(@AuthenticationPrincipal UserDetails loginUser, Model model) {
+        if (loginUser == null) {
+            return "redirect:/login";
+        }
 
-    // 初期画面表示
-    @GetMapping("/user/attendance") // /user/indexから変更
-    public String attendance(Model model) {
-        // 初期表示用のステータスを取得してThymeleafに渡す
-        AttendanceDto dto = attendanceService.getStatus(TEST_USER_ID);
+        String currentUserId = loginUser.getUsername();
+
+        // ログインユーザーのステータスを取得してThymeleafに渡す
+        AttendanceDto dto = attendanceService.getStatus(currentUserId);
         model.addAttribute("status", dto);
         return "attendance";
     }
@@ -37,28 +44,30 @@ public class AttendanceController {
     // 出勤処理（API）
     @PostMapping("/api/attendance/clock-in")
     @ResponseBody
-    public AttendanceDto clockIn() {
-        return attendanceService.clockIn(TEST_USER_ID);//★
-//    	// 1. 打刻処理を実行
-//        AttendanceDto dto = attendanceService.clockIn(TEST_USER_ID);
-//        
-//        // 2. ⭐追加：ログ保存を呼び出す（例：メッセージマスタのID「1」を出勤ログと仮定）
-//        logService.saveLog(1, TEST_USER_ID);
-//        
-//        return dto;
+    public AttendanceDto clockIn(@AuthenticationPrincipal UserDetails loginUser) {
+        if (loginUser == null) {
+            throw new RuntimeException("ログインセッションが切れています。再ログインしてください。");
     }
 
-    // 退勤処理（API）
+        String currentUserId = loginUser.getUsername();
+
+        // 打刻処理（※ Service 内で logService.saveLog(0, currentUserId) が実行されます）
+        return attendanceService.clockIn(currentUserId);
+    }
+
+    /**
+     * 退勤処理（API）
+     */
     @PostMapping("/api/attendance/clock-out")
     @ResponseBody
-    public AttendanceDto clockOut() {
-        return attendanceService.clockOut(TEST_USER_ID);//★
-//    	// 1. 打刻処理を実行
-//        AttendanceDto dto = attendanceService.clockOut(TEST_USER_ID);
-//        
-//        // 2. ⭐追加：ログ保存を呼び出す（例：メッセージマスタのID「2」を退勤ログと仮定）
-//        logService.saveLog(2, TEST_USER_ID);
-//        
-//        return dto;
+    public AttendanceDto clockOut(@AuthenticationPrincipal UserDetails loginUser) {
+        if (loginUser == null) {
+            throw new RuntimeException("ログインセッションが切れています。再ログインしてください。");
+        }
+
+        String currentUserId = loginUser.getUsername();
+
+        // 打刻処理（※ Service 内で logService.saveLog(1, currentUserId) が実行されます）
+        return attendanceService.clockOut(currentUserId);
     }
 }
