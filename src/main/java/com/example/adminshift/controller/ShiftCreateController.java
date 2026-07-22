@@ -1,5 +1,6 @@
 package com.example.adminshift.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -12,8 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.adminshift.entity.Event;
 import com.example.adminshift.entity.Shift;
+import com.example.adminshift.entity.ShiftApplicationEvent;
+import com.example.adminshift.entity.Users;
 import com.example.adminshift.form.ShiftForm;
 import com.example.adminshift.form.ShiftSearchForm;
 import com.example.adminshift.service.ShiftCreateService;
@@ -24,7 +26,7 @@ import lombok.RequiredArgsConstructor;
  * シフト作成画面の遷移・イベント制御を行うコントローラー
  */
 @Controller
-@RequestMapping("/shift/shiftCreate") // 先頭に「/」を追加
+@RequestMapping("/shift/shiftCreate")
 @RequiredArgsConstructor
 public class ShiftCreateController {
 
@@ -39,12 +41,15 @@ public class ShiftCreateController {
      */
     @GetMapping
     public String index(@ModelAttribute("searchForm") ShiftSearchForm searchForm, Model model) {
-        List<Event> eventList = shiftCreateService.getEventList();
+        List<ShiftApplicationEvent> eventList = shiftCreateService.getEventList();
         model.addAttribute("eventList", eventList);
 
-        // イベントが1つ以上存在し、未選択の場合は先頭のイベントを初期選択とする
-        if (searchForm.getSelectedEventId() == null && !eventList.isEmpty()) {
-            searchForm.setSelectedEventId(eventList.get(0).getId());
+        // イベントが1つ以上存在し、未選択の場合は eventId が最も大きい（最新作成）イベントを初期選択とする
+        if (searchForm.getSelectedEventId() == null) {
+            ShiftApplicationEvent latestEvent = shiftCreateService.getLatestEvent();
+            if (latestEvent != null) {
+                searchForm.setSelectedEventId(latestEvent.getEventId());
+            }
         }
 
         if (searchForm.getSelectedEventId() != null) {
@@ -148,10 +153,14 @@ public class ShiftCreateController {
      * シフト一覧画面に必要な共通データをModelにセットするプライベートメソッド
      */
     private void setupShiftTableData(Integer eventId, Model model) {
-        Event currentEvent = shiftCreateService.getCurrentEvent(eventId);
+        ShiftApplicationEvent currentEvent = shiftCreateService.getCurrentEvent(eventId);
         List<Shift> shiftList = shiftCreateService.getShiftTable(eventId);
+        List<LocalDate> dateList = shiftCreateService.getTargetDateList(currentEvent);
+        List<Users> userList = shiftCreateService.getAllUsers();
 
         model.addAttribute("currentEvent", currentEvent);
         model.addAttribute("shiftList", shiftList);
+        model.addAttribute("dateList", dateList);
+        model.addAttribute("userList", userList);
     }
 }

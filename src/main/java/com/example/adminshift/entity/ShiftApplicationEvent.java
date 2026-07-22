@@ -1,8 +1,8 @@
 package com.example.adminshift.entity;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,32 +11,28 @@ import jakarta.persistence.Table;
 
 import lombok.Data;
 
-@Data
 @Entity
 @Table(name = "shift_application_event")
+@Data
 public class ShiftApplicationEvent {
 
-    /** イベントID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "event_id")
     private Integer eventId;
 
-    /** 対象期間開始日 */
-    @Column(name = "target_start_date", nullable = false)
     private LocalDate targetStartDate;
-
-    /** 対象期間終了日 */
-    @Column(name = "target_end_date", nullable = false)
     private LocalDate targetEndDate;
-
-    /** 受付開始日 */
-    @Column(name = "application_start_date", nullable = false)
     private LocalDate applicationStartDate;
-
-    /** 受付終了日 */
-    @Column(name = "application_end_date", nullable = false)
     private LocalDate applicationEndDate;
 
+    /**
+     * 表示用イベント期間文字列を取得（yyyy/MM/dd～yyyy/MM/dd）
+     */
+    public String getDisplayName() {
+        if (targetStartDate == null || targetEndDate == null) {
+            return "";
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        return targetStartDate.format(formatter) + "～" + targetEndDate.format(formatter);
+    }
 }
-

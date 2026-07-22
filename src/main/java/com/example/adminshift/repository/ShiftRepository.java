@@ -20,6 +20,7 @@ public interface ShiftRepository extends JpaRepository<Shift, Integer> {
      * @return シフトのリスト
      */
     List<Shift> findByEventId(Integer eventId);
+
     /**
      * 指定されたイベントIDに紐づくShiftレコードを一括削除する
      */

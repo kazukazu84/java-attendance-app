@@ -1,8 +1,5 @@
 package com.example.adminshift.repository;
 
-
-
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,18 +13,12 @@ public interface ShiftApplicationEventRepository
         extends JpaRepository<ShiftApplicationEvent, Integer> {
 
     /**
-     * 現在日以降のイベントを最大10件取得
+     * 全イベントを eventId の降順で取得（必要に応じてソート指定）
      */
-    List<ShiftApplicationEvent>
-        findTop10ByTargetEndDateGreaterThanEqualOrderByTargetStartDate(
-                LocalDate today);
-//   11件目以降のメソッドを追加する
-    
+    List<ShiftApplicationEvent> findAllByOrderByEventIdDesc();
 
     /**
-     * 最新イベント取得
+     * eventIdが最も大きい（最新作成）イベントを1件取得
      */
-     Optional<ShiftApplicationEvent>
-        findTopByOrderByTargetEndDateDesc();
-
+    Optional<ShiftApplicationEvent> findTopByOrderByEventIdDesc();
 }
