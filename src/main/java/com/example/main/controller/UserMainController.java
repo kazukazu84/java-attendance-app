@@ -15,6 +15,7 @@ import com.example.attendance.dto.AttendanceDto;
 import com.example.attendance.service.AttendanceService;
 import com.example.main.dto.LogDto;
 import com.example.main.service.LogService;
+import com.example.main.service.UserShiftService;
 
 @Controller
 public class UserMainController {
@@ -24,6 +25,9 @@ public class UserMainController {
     @Autowired
     private AttendanceService attendanceService;
 
+    @Autowired
+    private UserShiftService userShiftService;
+    
     @Autowired
     private UserInfoRepository userRepository;
 
@@ -38,8 +42,15 @@ public class UserMainController {
             return "redirect:/login";
         }
 
-        // 1. ログイン中のユーザーIDを取得
-        // ※独自クラス（CustomUserDetails）を使っている場合は loginUser.getUserId() 等に書き換えてください
+        // 💡 1. 権限チェック：管理者の場合は /admin/main へ強制リダイレクト
+        boolean isAdmin = loginUser.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        
+        if (isAdmin) {
+            return "redirect:/admin/main";
+        }
+
+        // 2. ログイン中のユーザーIDを取得
         String currentUserId = loginUser.getUsername();
 
         // 2. DBから UserInfo テーブルのレコードを取得（ここで username も取得されます）
@@ -63,6 +74,17 @@ public class UserMainController {
         List<LogDto> logList = logService.getLogListForMain(currentUserId);
         model.addAttribute("logList", logList);
 
+        /*
+         * シフト表示処理
+         * ShiftScheduleRepository完成後に実装予定
+         *
+         * 月間表示
+         * userShiftService.getMonthlyShift()
+         *
+         * 週間表示
+         * userShiftService.getWeeklyShift()
+         */
+        
         return "userMain";
     }
     

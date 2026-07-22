@@ -14,6 +14,8 @@ import com.example.attendance.dto.AttendanceDto;
 import com.example.attendance.service.AttendanceService;
 import com.example.main.service.LogService;
 
+import jakarta.servlet.http.HttpServletRequest; // 👈 1. importを追加
+
 @Controller
 public class AttendanceController {
 
@@ -27,10 +29,21 @@ public class AttendanceController {
     /**
      * 簡易勤怠画面の初期表示
      */
-    @GetMapping("/user/attendance")
-    public String attendance(@AuthenticationPrincipal UserDetails loginUser, Model model) {
+    @GetMapping({"/user/attendance", "/admin/attendance"})
+    public String attendance(@AuthenticationPrincipal UserDetails loginUser, 
+                             HttpServletRequest request, // 👈 2. 引数に request を追加
+                             Model model) {
         if (loginUser == null) {
             return "redirect:/login";
+        }
+
+        // 権限チェック：管理者の場合は /admin/attendance へ強制リダイレクト
+        boolean isAdmin = loginUser.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        // 管理者が /user/attendance にアクセスした場合は /admin/attendance へ転送
+        if (isAdmin && request.getRequestURI().endsWith("/user/attendance")) {
+            return "redirect:/admin/attendance";
         }
 
         String currentUserId = loginUser.getUsername();

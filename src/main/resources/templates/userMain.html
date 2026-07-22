@@ -18,29 +18,38 @@
         /* ログ表示エリア */
         .log-box { height: 120px; overflow-y: auto; border: 2px solid #333; border-radius: 4px; padding: 8px; font-family: monospace; font-size: 0.9rem; text-align: left; background-color: #fff; }
         
-		/* 右側の親要素を縦いっぱいに伸ばす設定 */
-		.right-panel-wrapper {
-		    display: flex;
-		    flex-direction: column;
-		    height: 100%;
-		}
+        /* 右側の親要素を縦いっぱいに伸ばす設定 */
+        .right-panel-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
 
-		/* シフトカレンダー表示枠（余った高さを自動で埋める） */
-		.shift-box { 
-		    flex-grow: 1; 
-		    border: 2px solid #28a745; 
-		    border-radius: 4px; 
-		    padding: 12px; 
-		    display: flex; 
-		    flex-direction: column; 
-		    background-color: #fff; 
-		}
+        /* シフトカレンダー表示枠（余った高さを自動で埋める） */
+        .shift-box { 
+            flex-grow: 1; 
+            border: 2px solid #28a745; 
+            border-radius: 4px; 
+            padding: 12px; 
+            display: flex; 
+            flex-direction: column; 
+            background-color: #fff; 
+        }
+
+        /* シフト表示エリアの中身 */
+        .shift-content { width: 100%; height: 100%; display: flex; flex-direction: column; }
+        .shift-header { position: relative; text-align: center; margin-bottom: 15px; }
+        .toggle-area { position: absolute; right: 0; top: 0; }
+        
+        /* セレクトボックスの簡易装飾 */
+        select { border: 2px solid #333; border-radius: 4px; padding: 2px 6px; font-weight: bold; }
         
         /* 押し込まれる立体ボタンの設定 */
         button, .btn { display: inline-flex; justify-content: center; align-items: center; font-weight: bold; cursor: pointer; border: 2px solid #333 !important; border-radius: 4px; outline: none; transition: all 0.1s ease; box-shadow: 0 4px 0 #333; }
         .btn-clock-in { background-color: #fff; color: #000; padding: 25px 0; font-size: 1.2rem; }
         .btn-clock-out { background-color: #fff; color: #000; padding: 25px 0; font-size: 1.2rem; }
         .btn-nav { background-color: #fff; color: #000; font-size: 1.1rem; padding: 12px 0; width: 100%; text-decoration: none; }
+        .btn-sm-custom { padding: 2px 8px; font-size: 0.85rem; background-color: #fff; color: #000; }
         
         button:active, .btn:active { box-shadow: 0 1px 0 transparent !important; transform: translateY(3px); }
         button:disabled, .btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none !important; transform: none !important; }
@@ -61,9 +70,12 @@
                 <!-- ①② 簡易ボタン & ログアウト -->
                 <div class="panel-box mb-3">
                     <div class="row g-2">
-                        <div class="col-6">
-                            <a th:href="@{/user/attendance}" class="btn btn-nav text-dark py-1" style="font-size: 0.9rem;">簡易</a>
-                        </div>
+						<div class="col-6">
+						    <!-- 管理者の場合： /admin/attendance へ -->
+						    <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/attendance}" class="btn btn-nav text-dark py-1" style="font-size: 0.9rem;">簡易</a>
+						    <!-- 一般ユーザーの場合： /user/attendance へ -->
+						    <a sec:authorize="!hasRole('ADMIN')" th:href="@{/user/attendance}" class="btn btn-nav text-dark py-1" style="font-size: 0.9rem;">簡易</a>
+						</div>
                         <div class="col-6">
                             <form th:action="@{/logout}" method="post" class="w-100">
                                 <button type="submit" class="btn btn-nav py-1" style="font-size: 0.9rem;">ログアウト</button>
@@ -72,11 +84,11 @@
                     </div>
                 </div>
 
-				<!-- ユーザーID・ユーザー名表示 -->
-				<div class="panel-box mb-3 text-start fw-bold fs-6">
-				    <div>ユーザーID: <span th:text="${user.userId}">0</span></div>
-				    <div>名前: <span th:text="${user.userName}">ゲスト</span></div>
-				</div>
+                <!-- ユーザーID・ユーザー名表示 -->
+                <div class="panel-box mb-3 text-start fw-bold fs-6">
+                    <div>ユーザーID: <span th:text="${user.userId}">0</span></div>
+                    <div>名前: <span th:text="${user.userName}">ゲスト</span></div>
+                </div>
 
                 <!-- ③ 時刻 & 出退勤ボタンエリア -->
                 <div class="panel-box mb-3">
@@ -102,52 +114,103 @@
 
             </div>
 
-			<!-- ➡️ 右カラム：ナビゲーションボタン & シフト表示エリア -->
-			<div class="col-md-8">
-			    <div class="right-panel-wrapper">
-			        
-			        <!-- ④⑤⑥⑩ ナビゲーションボタンエリア -->
-			        <div class="mb-3">
-			            <!-- 一般ユーザー時の表示 (1列配置) -->
-			            <div sec:authorize="!hasRole('ADMIN')" class="row g-2 mb-2">
-			                <div class="col-12">
-			                    <a th:href="@{/user/salary}" class="btn btn-nav">給与確認</a>
-			                </div>
-			                <div class="col-12">
-			                    <a th:href="@{/user/shift-request}" class="btn btn-nav">シフト申請</a>
-			                </div>
-			            </div>
+            <!-- ➡️ 右カラム：ナビゲーションボタン & シフト表示エリア -->
+            <div class="col-md-8">
+                <div class="right-panel-wrapper">
+                    
+                    <!-- ④⑤⑥⑩ ナビゲーションボタンエリア -->
+                    <div class="mb-3">
+                        <!-- 一般ユーザー時の表示 (1列配置) -->
+                        <div sec:authorize="!hasRole('ADMIN')" class="row g-2 mb-2">
+                            <div class="col-12">
+                                <a th:href="@{/user/salary}" class="btn btn-nav">給与確認</a>
+                            </div>
+                            <div class="col-12">
+                                <a th:href="@{/user/shift-request}" class="btn btn-nav">シフト申請</a>
+                            </div>
+                        </div>
 
-			            <!-- 管理者時の表示 (画像通りの2列配置) -->
-			            <div sec:authorize="hasRole('ADMIN')" class="row g-2 mb-2">
-			                <div class="col-6">
-			                    <a th:href="@{/admin/users}" class="btn btn-nav">ユーザー管理</a>
-			                </div>
-			                <div class="col-6">
-			                    <a th:href="@{/user/salary}" class="btn btn-nav">給与確認</a>
-			                </div>
-			                <div class="col-6">
-			                    <a th:href="@{/user/shift-request}" class="btn btn-nav">シフト申請</a>
-			                </div>
-			                <div class="col-6">
-			                    <a th:href="@{/admin/shifts}" class="btn btn-nav">シフト管理</a>
-			                </div>
-			            </div>
-			        </div>
+                        <!-- 管理者時の表示 (画像通りの2列配置) -->
+                        <div sec:authorize="hasRole('ADMIN')" class="row g-2 mb-2">
+                            <div class="col-6">
+                                <a th:href="@{/admin/users}" class="btn btn-nav">ユーザー管理</a>
+                            </div>
+                            <div class="col-6">
+                                <a th:href="@{/user/salary}" class="btn btn-nav">給与確認</a>
+                            </div>
+                            <div class="col-6">
+                                <a th:href="@{/user/shift-request}" class="btn btn-nav">シフト申請</a>
+                            </div>
+                            <div class="col-6">
+                                <a th:href="@{/admin/shifts}" class="btn btn-nav">シフト管理</a>
+                            </div>
+                        </div>
+                    </div>
 
-			        <!-- ⑦⑧ シフト表示枠 (自動で下端まで伸縮) -->
-			        <div class="shift-box">
-			            <div class="d-flex justify-content-between align-items-center w-100 mb-2">
-			                <span class="fw-bold fs-5">シフト 7月分 ▽</span>
-			                <button class="btn btn-sm btn-outline-dark" style="box-shadow: none;">週間シフト表示</button>
-			            </div>
-			            <div class="text-muted border w-100 flex-grow-1 d-flex align-items-center justify-content-center">
-			                ※ここにシフトカレンダーテーブルが配置されます
-			            </div>
-			        </div>
+                    <!-- ⑦⑧ シフト表示枠 (マージ済みシフトエリア) -->
+                    <div class="shift-box">
+                        <div class="shift-content">
+                            
+                            <!-- 月間シフト表示エリア（初期表示） -->
+                            <div id="monthlyShiftArea" class="h-100 d-flex flex-column">
+                                <!-- ヘッダー -->
+                                <div class="shift-header">
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                        <span class="fw-bold fs-5">月間シフト</span>
+                                        <select id="monthSelect">
+                                            <option>2026年7月</option>
+                                            <option>2026年6月</option>
+                                            <option>2026年5月</option>
+                                            <option>2026年4月</option>
+                                        </select>
+                                    </div>
+                                    <div class="toggle-area">
+                                        <button id="toWeeklyButton" type="button" class="btn btn-sm-custom">
+                                            週間シフト表示
+                                        </button>
+                                    </div>
+                                </div>
 
-			    </div>
-			</div>
+                                <!-- 月間カレンダー描画部分 -->
+                                <div class="text-muted border w-100 flex-grow-1 d-flex align-items-center justify-content-center">
+                                    ※ここに月間のシフトカレンダーテーブルが配置されます
+                                </div>
+                            </div>
+
+                            <!-- 週間シフト表示エリア -->
+                            <div id="weeklyShiftArea" style="display:none;" class="h-100 flex-column">
+                                <!-- ヘッダー -->
+                                <div class="shift-header">
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                        <span class="fw-bold fs-5">週間シフト</span>
+                                        <select id="weekSelect">
+                                            <option value="1">7月 1週目</option>
+                                            <option value="2">7月 2週目</option>
+                                            <option value="3">7月 3週目</option>
+                                            <option value="4">7月 4週目</option>
+                                            <option value="5">7月 5週目</option>
+                                        </select>
+                                    </div>
+                                    <div class="toggle-area">
+                                        <button id="toMonthlyButton" type="button" class="btn btn-sm-custom">
+                                            月間シフト表示
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- 週間カレンダー描画部分 -->
+                                <div class="text-muted border w-100 flex-grow-1 d-flex align-items-center justify-content-center">
+                                    ※ここに１週間ごとのシフトテーブルが配置されます
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 
@@ -221,6 +284,29 @@
         })
         .then(data => updateDOM(data))
         .catch(errorText => alert("【打刻エラー】\n" + errorText));
+    });
+
+    // --- 3. 月間 / 週間シフト表示の切り替え処理 ---
+    document.getElementById("toWeeklyButton").addEventListener("click", function() {
+        const monthlyArea = document.getElementById("monthlyShiftArea");
+        const weeklyArea = document.getElementById("weeklyShiftArea");
+        
+        monthlyArea.classList.remove("d-flex");
+        monthlyArea.style.display = "none";
+        
+        weeklyArea.style.display = "flex";
+        weeklyArea.classList.add("d-flex");
+    });
+
+    document.getElementById("toMonthlyButton").addEventListener("click", function() {
+        const monthlyArea = document.getElementById("monthlyShiftArea");
+        const weeklyArea = document.getElementById("weeklyShiftArea");
+        
+        weeklyArea.classList.remove("d-flex");
+        weeklyArea.style.display = "none";
+        
+        monthlyArea.style.display = "flex";
+        monthlyArea.classList.add("d-flex");
     });
 </script>
 </body>
