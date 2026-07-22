@@ -1,5 +1,5 @@
 package com.example.main.service;
 
-public class UserMainService {
+public class MainService {
 
 }
