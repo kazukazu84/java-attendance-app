@@ -268,3 +268,18 @@ th.sticky-header.sticky-col {
     font-size: 12px;
     margin-top: 3px;
 }
+
+/* 夜勤セルスタイル追加 */
+.cell-btn.is-night-btn {
+    background-color: #4a154b; /* ダークパープル背景 */
+    color: #ffffff; /* 白文字で可読性を維持 */
+    border: 1px solid #350d36;
+}
+
+.cell-btn.is-night-btn:hover {
+    background-color: #611f69; /* ホバー時に少し明るめのパープル */
+}
+
+.cell-btn.is-night-btn .time-sep {
+    color: #d1d5db; /* 区切り記号の視認性を担保 */
+}

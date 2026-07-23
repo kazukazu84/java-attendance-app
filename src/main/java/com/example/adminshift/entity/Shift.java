@@ -47,5 +47,15 @@ public class Shift {
      */
     @Column(name = "is_available", nullable = false)
     private Integer isAvailable = 1;
-}
 
+    /**
+     * 夜勤判定 (startTime > endTime かつ 出勤の場合)
+     * Thymeleaf側で targetShift.nightShift として参照可能
+     */
+    public boolean isNightShift() {
+        if (Integer.valueOf(0).equals(isAvailable) || startTime == null || endTime == null) {
+            return false;
+        }
+        return startTime.isAfter(endTime);
+    }
+}

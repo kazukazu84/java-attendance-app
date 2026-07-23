@@ -1,6 +1,8 @@
 package com.example.adminshift.repository;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -26,4 +28,13 @@ public interface ShiftRepository extends JpaRepository<Shift, Integer> {
      */
     void deleteByEventId(Integer eventId);
 
+    /**
+     * イベントID、ユーザーID、勤務日を指定して単一のシフトレコードを取得する
+     *
+     * @param eventId イベントID
+     * @param userId ユーザーID
+     * @param shiftDate 勤務日
+     * @return シフト情報（存在しない場合はEmpty）
+     */
+    Optional<Shift> findByEventIdAndUserIdAndShiftDate(Integer eventId, String userId, LocalDate shiftDate);
 }

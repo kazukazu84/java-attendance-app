@@ -85,9 +85,10 @@
                                             <input type="hidden" name="shiftId" th:value="${targetShift.id}" />
                                             <input type="hidden" name="eventId" th:value="${searchForm.selectedEventId}" />
                                             
+                                            <!-- 夜勤（isNightShift）と 休み（isAvailable == 0）に応じてクラスを付与 -->
                                             <button type="submit" 
                                                     class="cell-btn" 
-                                                    th:classappend="${targetShift.isAvailable == 0 ? 'is-rest-btn' : ''}"
+                                                    th:classappend="${targetShift.isAvailable == 0 ? 'is-rest-btn' : (targetShift.nightShift ? 'is-night-btn' : '')}"
                                                     th:disabled="${showModal}">
                                                 
                                                 <!-- ①-A 出勤可能時（isAvailable == 1） -->
@@ -174,7 +175,6 @@
 
                 <div class="modal-buttons">
                     <button type="submit" class="btn-primary">保存する</button>
-                    <!-- ここが修正箇所です（onclickを追加） -->
                     <button type="button" id="btnCancel" class="btn-cancel" onclick="cancelModal()">キャンセル</button>
                 </div>
             </form>
