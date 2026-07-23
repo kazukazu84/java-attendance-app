@@ -1,5 +1,6 @@
 package com.example.adminshift.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,4 +22,12 @@ public interface ShiftApplicationEventRepository
      * eventIdが最も大きい（最新作成）イベントを1件取得
      */
     Optional<ShiftApplicationEvent> findTopByOrderByEventIdDesc();
+    
+    List<ShiftApplicationEvent>
+    findTop10ByTargetEndDateGreaterThanEqualOrderByTargetStartDate(
+            LocalDate today);
+    
+    Optional<ShiftApplicationEvent>
+    findTopByOrderByTargetEndDateDesc(
+    		);
 }
