@@ -151,7 +151,7 @@
                         <!-- 一般ユーザー時の表示 (1列配置) -->
                         <div sec:authorize="!hasRole('ADMIN')" class="row g-2 mb-2">
                             <div class="col-12">
-                                <a th:href="@{/user/salary}" class="btn btn-nav">給与確認</a>
+                                <a th:href="@{/user/salary/confirm}" class="btn btn-nav">給与確認</a>
                             </div>
                             <div class="col-12">
                                 <a th:href="@{/user/shift-request}" class="btn btn-nav">シフト申請</a>
@@ -164,7 +164,7 @@
                                 <a th:href="@{/admin/UserManagement}" class="btn btn-nav">ユーザー管理</a>
                             </div>
                             <div class="col-6">
-                                <a th:href="@{/user/salary}" class="btn btn-nav">給与確認</a>
+                                <a th:href="@{/user/salary/confirm}" class="btn btn-nav">給与確認</a>
                             </div>
                             <div class="col-6">
                                 <a th:href="@{/user/shift-request}" class="btn btn-nav">シフト申請</a>

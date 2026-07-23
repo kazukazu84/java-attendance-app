@@ -94,15 +94,15 @@ public class MainController {
     /**
      * 給与確認画面（仮）
      */
-    @GetMapping({"/user/salary", "/admin/salary"})
-    public String salaryView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
-        if (loginUser == null) return "redirect:/login";
-
-        String redirectUrl = checkAndRedirect(loginUser, request, "/user/salary", "/admin/salary");
-        if (redirectUrl != null) return redirectUrl;
-
-        return "tempSalary";
-    }
+//    @GetMapping({"/user/salary", "/admin/salary"})
+//    public String salaryView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
+//        if (loginUser == null) return "redirect:/login";
+//
+//        String redirectUrl = checkAndRedirect(loginUser, request, "/user/salary", "/admin/salary");
+//        if (redirectUrl != null) return redirectUrl;
+//
+//        return "tempSalary";
+//    }
 
     /**
      * シフト申請画面（仮）

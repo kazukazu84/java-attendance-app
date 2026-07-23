@@ -25,7 +25,7 @@ public class SalaryDetailController {
     @Autowired
     private Validator validator;
 
-    @GetMapping("/salary/detail")
+    @GetMapping("/user/salary/detail")
     public String showDetail(int userId, int targetYear, int targetMonth,
                              Model model,
                              RedirectAttributes redirectAttributes) {
