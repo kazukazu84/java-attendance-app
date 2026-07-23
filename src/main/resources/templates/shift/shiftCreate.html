@@ -50,56 +50,60 @@
                 該当するシフト情報が存在しません。
             </div>
 
-            <!-- スクロール可能なテーブルエリア -->
-            <div th:unless="${#lists.isEmpty(dateList)}" class="table-wrapper">
-                <table class="shift-table">
-                    <thead>
-                        <tr>
-                            <!-- 左上の固定ヘッダー -->
-                            <th class="sticky-header sticky-col">日付</th>
-                            <!-- 横軸：ユーザーID + ユーザー名 -->
-                            <th th:each="user : ${userList}" 
-                                class="sticky-header" 
-                                th:text="${user.userId + ' ' + user.userName}">1001 山田太郎</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- 縦軸：勤務日一覧（targetStartDate ～ targetEndDate） -->
-                        <tr th:each="d : ${dateList}">
-                            <!-- 左固定：日付セル (yyyy/MM/dd 形式) -->
-                            <th class="sticky-col date-cell" th:text="${#temporals.format(d, 'yyyy/MM/dd')}">2026/07/20</th>
+            <div th:unless="${#lists.isEmpty(dateList)}" class="table-outer-container">
+                <!-- ① 上部横スクロールバー専用コンテナ -->
+                <div id="topScrollbarWrapper" class="top-scrollbar-wrapper">
+                    <div id="topScrollbarContent" class="top-scrollbar-content"></div>
+                </div>
 
-                            <!-- 交差セル（日付 × ユーザーID に一致するShiftを探す） -->
-                            <td th:each="user : ${userList}">
-                                
-                                <!-- shiftList内をループして該当する日付・ユーザーIDのシフトを保持 -->
-                                <th:block th:each="s : ${shiftList}" th:if="${s.shiftDate != null and s.shiftDate.equals(d) and s.userId == user.userId}">
-                                    <form th:action="@{/shift/shiftCreate/edit}" method="get" class="cell-form">
-                                        <input type="hidden" name="shiftId" th:value="${s.id}" />
-                                        <input type="hidden" name="eventId" th:value="${searchForm.selectedEventId}" />
-                                        
-                                        <button type="submit" 
-                                                class="cell-btn" 
-                                                th:classappend="${s.startTime == null ? 'is-rest-btn' : ''}"
-                                                th:disabled="${showModal}">
-                                            <!-- 出勤時（startTime != null） -->
-                                            <div th:if="${s.startTime != null}" class="time-container">
-                                                <span th:text="${#temporals.format(s.startTime, 'H:mm')}">9:00</span>
-                                                <span class="time-sep">～</span>
-                                                <span th:text="${#temporals.format(s.endTime, 'H:mm')}">18:00</span>
-                                            </div>
-                                            <!-- 休み時（startTime == null） -->
-                                            <div th:if="${s.startTime == null}" class="rest-container">
-                                                休
-                                            </div>
-                                        </button>
-                                    </form>
-                                </th:block>
+                <!-- スクロール可能なテーブルエリア（最大7日分表示・8日目以降縦スクロール） -->
+                <div id="tableWrapper" class="table-wrapper">
+                    <table id="shiftTable" class="shift-table">
+                        <thead>
+                            <tr>
+                                <!-- 左上の固定ヘッダー -->
+                                <th class="sticky-header sticky-col">日付</th>
+                                <!-- 横軸：ユーザーID + ユーザー名 -->
+                                <th th:each="user : ${userList}" 
+                                    class="sticky-header" 
+                                    th:text="${user.userId + ' ' + user.userName}">1001 山田太郎</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 縦軸：勤務日一覧 -->
+                            <tr th:each="d : ${dateList}">
+                                <!-- 左固定：日付セル (yyyy/MM/dd 形式) -->
+                                <th class="sticky-col date-cell" th:text="${#temporals.format(d, 'yyyy/MM/dd')}">2026/07/20</th>
 
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                <!-- 交差セル -->
+                                <td th:each="user : ${userList}">
+                                    <th:block th:each="s : ${shiftList}" th:if="${s.shiftDate != null and s.shiftDate.equals(d) and s.userId == user.userId}">
+                                        <form th:action="@{/shift/shiftCreate/edit}" method="get" class="cell-form">
+                                            <input type="hidden" name="shiftId" th:value="${s.id}" />
+                                            <input type="hidden" name="eventId" th:value="${searchForm.selectedEventId}" />
+                                            
+                                            <button type="submit" 
+                                                    class="cell-btn" 
+                                                    th:classappend="${s.startTime == null ? 'is-rest-btn' : ''}"
+                                                    th:disabled="${showModal}">
+                                                <!-- 出勤時 -->
+                                                <div th:if="${s.startTime != null}" class="time-container">
+                                                    <span th:text="${#temporals.format(s.startTime, 'H:mm')}">9:00</span>
+                                                    <span class="time-sep">～</span>
+                                                    <span th:text="${#temporals.format(s.endTime, 'H:mm')}">18:00</span>
+                                                </div>
+                                                <!-- 休み時 -->
+                                                <div th:if="${s.startTime == null}" class="rest-container">
+                                                    休
+                                                </div>
+                                            </button>
+                                        </form>
+                                    </th:block>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </main>
     </div>

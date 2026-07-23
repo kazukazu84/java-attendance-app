@@ -5,7 +5,7 @@
    =================================================== */
 body {
     background-color: #F8FAFC; /* 清潔感のある淡いグレー */
-    color: #0F172A;           /* 視認性の高いダークスレート */
+    color: #0F172A;            /* 視認性の高いダークスレート */
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     margin: 0;
     padding: 24px;
@@ -89,7 +89,7 @@ button:disabled {
     cursor: not-allowed;
 }
 
-/* プライマリボタン（深みのあるブルー） */
+/* プライマリボタン */
 .btn-primary {
     background-color: #2563EB;
     color: #FFFFFF;
@@ -98,7 +98,7 @@ button:disabled {
     background-color: #1D4ED8;
 }
 
-/* セカンダリボタン（グレー系アウトライン風） */
+/* セカンダリボタン */
 .btn-secondary {
     background-color: #FFFFFF;
     color: #475569;
@@ -140,13 +140,42 @@ button:disabled {
     font-size: 0.9rem;
 }
 
-.table-wrapper {
-    width: 100%;
-    overflow-x: auto;
+/* 全体コンテナ */
+.table-outer-container {
     background-color: #FFFFFF;
     border: 1px solid #CBD5E1;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+/* 上部横スクロールバー専用領域 */
+.top-scrollbar-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    background-color: #F1F5F9;
+    border-bottom: 1px solid #CBD5E1;
+}
+
+.top-scrollbar-content {
+    height: 1px; /* ダミー高さ */
+}
+
+/* テーブル本体のラッパー（高さ制限・スクロール設定） */
+.table-wrapper {
+    width: 100%;
+    max-height: 544px; /* ヘッダー(40px) + 7行分(72px * 7 = 504px) */
+    overflow-x: auto;
+    overflow-y: auto;
+    background-color: #FFFFFF;
+
+    /* 下部横スクロールバーの非表示（Firefox / Edge, Chrome） */
+    scrollbar-width: thin;
+}
+
+.table-wrapper::-webkit-scrollbar {
+    height: 0px; /* 横スクロールバーを隠す */
 }
 
 .shift-table {
@@ -170,7 +199,7 @@ button:disabled {
     box-sizing: border-box;
 }
 
-/* ユーザーIDヘッダー（ダークネイビー） */
+/* ユーザーIDヘッダー（固定） */
 .shift-table th.sticky-header {
     position: sticky;
     top: 0;
@@ -183,7 +212,7 @@ button:disabled {
     letter-spacing: 0.02em;
 }
 
-/* 日付列（左固定・ライトスレート） */
+/* 日付列（左固定） */
 .shift-table .sticky-col {
     position: sticky;
     left: 0;
@@ -195,7 +224,7 @@ button:disabled {
     border-right: 2px solid #CBD5E1;
 }
 
-/* 左上の角ヘッダー */
+/* 左上の角ヘッダー（最前面固定） */
 .shift-table th.sticky-header.sticky-col {
     z-index: 20;
     background-color: #0F172A;
@@ -234,14 +263,14 @@ button:disabled {
     box-sizing: border-box;
 }
 
-/* 休み設定時のボタン背景（明るいスカイブルー） */
+/* 休み設定時のボタン背景 */
 .cell-btn.is-rest-btn {
-    background-color: #0ea5e9; /* 鮮やかで明るいブルー */
+    background-color: #0ea5e9;
     color: #FFFFFF;
 }
 
 .cell-btn.is-rest-btn:hover:not(:disabled) {
-    background-color: #0284c7; /* ホバー時はやや濃いブルー */
+    background-color: #0284c7;
 }
 
 .time-container {
@@ -271,30 +300,30 @@ button:disabled {
 /* ===================================================
    モーダル（ポップアップ）デザイン
    =================================================== */
-   .modal-overlay {
-       position: fixed;
-       top: 0;
-       left: 0;
-       width: 100%;
-       height: 100%;
-       background-color: rgba(15, 23, 42, 0.4);
-       backdrop-filter: blur(2px);
-       display: flex;
-       justify-content: center;
-       align-items: center;
-       z-index: 1000;
-   }
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(2px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
 
-   .modal-content {
-       position: relative; /* 追加 */
-       z-index: 1001;      /* 追加（オーバーレイより前面にする） */
-       background-color: #FFFFFF;
-       width: 90%;
-       max-width: 440px;
-       padding: 24px;
-       border-radius: 12px;
-       /* 省略 */
-   }
+.modal-content {
+    position: relative;
+    z-index: 1001;
+    background-color: #FFFFFF;
+    width: 90%;
+    max-width: 440px;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
 
 .modal-header h3 {
     margin: 0 0 16px 0;
@@ -368,7 +397,7 @@ button:disabled {
     font-size: 0.775rem;
     font-weight: 500;
 }
-/* キャンセルボタンを確実に一番手前に配置 */
+
 #btnCancel {
     position: relative;
     z-index: 1002;
