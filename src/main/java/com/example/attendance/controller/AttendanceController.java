@@ -1,6 +1,10 @@
 package com.example.attendance.controller;
 
 
+import java.time.LocalDate;
+
+import jakarta.servlet.http.HttpServletRequest; // 👈 1. importを追加
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,14 +17,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.example.attendance.dto.AttendanceDto;
 import com.example.attendance.service.AttendanceService;
 import com.example.main.service.LogService;
-
-import jakarta.servlet.http.HttpServletRequest; // 👈 1. importを追加
+import com.example.salary.service.SalaryCalculationService;
 
 @Controller
 public class AttendanceController {
 
     @Autowired
     private AttendanceService attendanceService;
+    
+    @Autowired
+    private SalaryCalculationService salaryCalculationService;
     
 	// 👇 1. LogServiceを注入
     @Autowired
@@ -81,13 +87,28 @@ public class AttendanceController {
     @PostMapping("/api/attendance/clock-out")
     @ResponseBody
     public AttendanceDto clockOut(@AuthenticationPrincipal UserDetails loginUser) {
+
         if (loginUser == null) {
             throw new RuntimeException("ログインセッションが切れています。再ログインしてください。");
         }
 
         String currentUserId = loginUser.getUsername();
 
-        // 打刻処理（※ Service 内で logService.saveLog(1, currentUserId) が実行されます）
-        return attendanceService.clockOut(currentUserId);
+        // ① 退勤処理
+        AttendanceDto dto = attendanceService.clockOut(currentUserId);
+
+        // ② DTO から勤怠日を取得（最新仕様）
+        LocalDate workDate = dto.getWorkDate();
+
+        // ③ 給与自動生成・更新
+        salaryCalculationService.calculateOrUpdateMonthlySalary(
+                currentUserId,
+                workDate.getYear(),
+                workDate.getMonthValue()
+        );
+
+        return dto;
     }
+
+
 }

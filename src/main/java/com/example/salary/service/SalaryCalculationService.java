@@ -32,9 +32,9 @@ public class SalaryCalculationService {
     private SalaryDetailRepository salaryDetailRepository;
 
     /**
-     * 勤怠確定時に給与を計算して salary に保存する（完全版）
+     * 勤怠確定時に給与を計算して salary に保存する（新規 or 更新）
      */
-    public void calculateAndSaveMonthlySalary(String userId, int targetYear, int targetMonth) {
+    public void calculateOrUpdateMonthlySalary(String userId, int targetYear, int targetMonth) {
 
         // ① ユーザー情報取得
         UserInfo user = userInfoRepository.findById(userId)
@@ -42,11 +42,11 @@ public class SalaryCalculationService {
 
         // ② 時給マスタ取得
         Wage wage = wageRepository.findById(user.getWage().getWageId())
-                .orElseThrow(() -> new IllegalArgumentException("時給マスタが存在しません: wage_id=" + user.getWage().getWageId()));
+                .orElseThrow(() -> new IllegalArgumentException("時給マスタが存在しません"));
 
         int hourlyWage = wage.getWageValue();
 
-        // ③ 月初〜月末の範囲で勤怠を取得（Between）
+        // ③ 月初〜月末の範囲で勤怠を取得
         LocalDate start = LocalDate.of(targetYear, targetMonth, 1);
         LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
 
@@ -57,32 +57,39 @@ public class SalaryCalculationService {
 
         for (Attendance att : attendances) {
 
-            if (att.getClockIn() == null || att.getClockOut() == null) {
-                continue;
-            }
+            if (att.getClockIn() == null || att.getClockOut() == null) continue;
 
             long minutes = Duration.between(att.getClockIn(), att.getClockOut()).toMinutes();
-            minutes -= att.getRestTime(); // 休憩時間を差し引く
+            minutes -= att.getRestTime();
 
-            double hours = minutes / 60.0; // 15分刻みでも問題なし
-            totalWorkingHours += hours;
+            totalWorkingHours += (minutes / 60.0);
         }
 
         // ④ 総支給額
         int grossSalary = (int) Math.round(totalWorkingHours * hourlyWage);
 
-        // ⑤ 雇用保険料（0.3%）
+        // ⑤ 雇用保険料
         boolean appliedInsurance = user.isEmploymentInsurance();
         int insuranceFee = appliedInsurance ? (int) Math.round(grossSalary * 0.003) : 0;
 
         // ⑥ 差引支給額
         int netSalary = grossSalary - insuranceFee;
 
-        // ⑦ salary テーブルに保存（履歴として保持）
-        SalaryEntity salary = new SalaryEntity();
-        salary.setUserInfo(user);
-        salary.setTargetYear(targetYear);
-        salary.setTargetMonth(targetMonth);
+        // ⑦ 既存 salary を検索
+        SalaryEntity salary =
+                salaryDetailRepository.findByUserInfoUserIdAndTargetYearAndTargetMonth(
+                        userId, targetYear, targetMonth
+                ).orElse(null);
+
+        if (salary == null) {
+            // ★ 新規作成
+            salary = new SalaryEntity();
+            salary.setUserInfo(user);
+            salary.setTargetYear(targetYear);
+            salary.setTargetMonth(targetMonth);
+        }
+
+        // ★ 新規でも更新でも共通の値をセット
         salary.setWorkingHours(totalWorkingHours);
         salary.setAppliedHourlyWage(hourlyWage);
         salary.setAppliedEmploymentInsurance(appliedInsurance);
