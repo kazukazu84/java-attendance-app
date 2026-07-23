@@ -8,6 +8,9 @@ import com.example.salary.salarydetail.entity.SalaryEntity;
 @Repository
 public interface SalaryDetailRepository extends JpaRepository<SalaryEntity, Integer> {
 
-    SalaryEntity findByUserIdAndTargetYearAndTargetMonth(int userId, int targetYear, int targetMonth);
-
+    SalaryEntity findByUserInfoUserIdAndTargetYearAndTargetMonth(
+            String userId,
+            int targetYear,
+            int targetMonth
+    );
 }

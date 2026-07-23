@@ -31,7 +31,7 @@ public class SalaryConfirmAllValidatorTest {
         SalaryConfirmDto dto = new SalaryConfirmDto(
                 5,        // targetMonth
                 200000,   // netSalary
-                1,        // userId
+                "1",        // userId
                 2024      // targetYear
         );
 
@@ -55,7 +55,7 @@ public class SalaryConfirmAllValidatorTest {
         SalaryConfirmDto dto = new SalaryConfirmDto(
                 5,
                 -100,     // netSalary（整合性NG）
-                1,
+                "1",
                 2024
         );
 

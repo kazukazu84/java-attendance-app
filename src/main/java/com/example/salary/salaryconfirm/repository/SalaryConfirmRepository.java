@@ -10,6 +10,9 @@ import com.example.salary.salarydetail.entity.SalaryEntity;
 @Repository
 public interface SalaryConfirmRepository extends JpaRepository<SalaryEntity, Integer> {
 
-    List<SalaryEntity> findByUserIdAndTargetYear(int userId, int targetYear);
-
+    // ★ 最新仕様：UserInfo.userId（String）を辿る
+    List<SalaryEntity> findByUserInfoUserIdAndTargetYear(
+            String userId,
+            int targetYear
+    );
 }

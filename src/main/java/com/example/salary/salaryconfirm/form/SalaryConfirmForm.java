@@ -8,7 +8,7 @@ import lombok.Data;
 public class SalaryConfirmForm {
 
     @SalaryConfirmRequired
-    private Integer userId;
+    private String userId;   // ★ Integer → String に変更
 
     @SalaryConfirmRequired
     private Integer targetYear;

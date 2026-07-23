@@ -29,7 +29,7 @@ public class SalaryConfirmRequiredValidatorTest {
         SalaryConfirmDto dto = new SalaryConfirmDto(
                 5,      // targetMonth
                 200000, // netSalary
-                1,      // userId
+                "1",      // userId
                 2024    // targetYear
         );
 
@@ -45,7 +45,7 @@ public class SalaryConfirmRequiredValidatorTest {
         SalaryConfirmDto dto = new SalaryConfirmDto(
                 null,   // targetMonth
                 200000,
-                1,
+                "1",
                 2024
         );
 
