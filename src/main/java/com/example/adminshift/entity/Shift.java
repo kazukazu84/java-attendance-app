@@ -1,10 +1,9 @@
 package com.example.adminshift.entity;
 
-
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,33 +13,39 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 /**
- * シフト情報を管理するエンティティクラス
+ * シフト情報を管理するエンティティ
  */
 @Entity
 @Table(name = "shifts")
 @Data
 public class Shift {
 
-    /** シフトID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    /** イベントID */
+    @Column(name = "event_id", nullable = false)
     private Integer eventId;
 
-    /** ユーザー（従業員）ID */
+    @Column(name = "user_id", nullable = false)
     private String userId;
 
-    /** 勤務日 */
+    @Column(name = "shift_date", nullable = false)
     private LocalDate shiftDate;
 
-    /** 出勤予定時間 */
+    @Column(name = "start_time")
     private LocalTime startTime;
 
-    /** 退勤予定時間 */
+    @Column(name = "end_time")
     private LocalTime endTime;
 
-    /** 備考・メモ */
+    @Column(name = "memo")
     private String memo;
+
+    /**
+     * 出勤可能フラグ (0 = 休み, 1 = 出勤可能)
+     */
+    @Column(name = "is_available", nullable = false)
+    private Integer isAvailable = 1;
 }
+

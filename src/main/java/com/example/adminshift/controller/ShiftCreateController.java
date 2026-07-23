@@ -3,6 +3,7 @@ package com.example.adminshift.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -77,7 +78,7 @@ public class ShiftCreateController {
     }
 
     /**
-     * シフトセル押下処理（ポップアップ編集データの取得）
+     * 既存シフトセル押下処理（ポップアップ編集データの取得・編集モード）
      *
      * @param shiftId    選択されたシフトID
      * @param eventId    現在選択中のイベントID
@@ -90,7 +91,7 @@ public class ShiftCreateController {
                        @RequestParam("eventId") Integer eventId,
                        @ModelAttribute("searchForm") ShiftSearchForm searchForm,
                        Model model) {
-        
+
         searchForm.setSelectedEventId(eventId);
 
         Shift shift = shiftCreateService.getShiftDetail(shiftId);
@@ -104,7 +105,46 @@ public class ShiftCreateController {
             shiftForm.setStartTime(shift.getStartTime());
             shiftForm.setEndTime(shift.getEndTime());
             shiftForm.setMemo(shift.getMemo());
+            shiftForm.setIsAvailable(shift.getIsAvailable());
+            // isAvailable == 0 の場合は「休み」フラグをtrueにセット
+            shiftForm.setRest(Integer.valueOf(0).equals(shift.getIsAvailable()));
         }
+
+        model.addAttribute("shiftForm", shiftForm);
+        model.addAttribute("showModal", true); // ポップアップ自動表示フラグ
+
+        return index(searchForm, model);
+    }
+
+    /**
+     * 空白セル押下処理（新規作成モーダルデータの作成・新規登録モード）
+     *
+     * @param eventId    選択中のイベントID
+     * @param userId     選択されたユーザーID
+     * @param shiftDate  選択された勤務日
+     * @param searchForm 検索フォーム
+     * @param model      画面保持モデル
+     * @return シフト作成画面パス
+     */
+    @GetMapping("/new")
+    public String createNewShift(@RequestParam("eventId") Integer eventId,
+                                 @RequestParam("userId") String userId,
+                                 @RequestParam("shiftDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate shiftDate,
+                                 @ModelAttribute("searchForm") ShiftSearchForm searchForm,
+                                 Model model) {
+
+        searchForm.setSelectedEventId(eventId);
+
+        ShiftForm shiftForm = new ShiftForm();
+        shiftForm.setId(null); // 新規作成のためIDはnull
+        shiftForm.setEventId(eventId);
+        shiftForm.setUserId(userId);
+        shiftForm.setShiftDate(shiftDate);
+        shiftForm.setStartTime(null);
+        shiftForm.setEndTime(null);
+        shiftForm.setMemo("");
+        shiftForm.setRest(false);
+        shiftForm.setIsAvailable(1); // 初期状態は出勤可能(1)
 
         model.addAttribute("shiftForm", shiftForm);
         model.addAttribute("showModal", true); // ポップアップ自動表示フラグ
@@ -121,28 +161,28 @@ public class ShiftCreateController {
                          @ModelAttribute("searchForm") ShiftSearchForm searchForm,
                          Model model) {
 
+        // バリデーションエラーが発生した場合
         if (result.hasErrors()) {
             searchForm.setSelectedEventId(shiftForm.getEventId());
-            model.addAttribute("showModal", true);
-            return "shift/shiftCreate";
+            model.addAttribute("showModal", true); // モーダルを開いた状態を保持
+            return index(searchForm, model);       // 背景テーブル等の表示用データを設定して画面再表示
         }
 
         Shift shift = new Shift();
-        shift.setId(shiftForm.getId());
+        shift.setId(shiftForm.getId()); // nullの場合は新規登録(Insert)、値がある場合は更新(Update)
         shift.setEventId(shiftForm.getEventId());
         shift.setUserId(shiftForm.getUserId());
         shift.setShiftDate(shiftForm.getShiftDate());
-
-        // 休みフラグがtrueの場合は出退勤時間をnullにする安全性処理
-        if (shiftForm.isRest()) {
-            shift.setStartTime(null);
-            shift.setEndTime(null);
-        } else {
-            shift.setStartTime(shiftForm.getStartTime());
-            shift.setEndTime(shiftForm.getEndTime());
-        }
-
+        shift.setStartTime(shiftForm.getStartTime());
+        shift.setEndTime(shiftForm.getEndTime());
         shift.setMemo(shiftForm.getMemo());
+
+        // チェックボックスの状態から isAvailable を決定 (rest == true なら 0:休み, false なら 1:出勤可能)
+        if (shiftForm.isRest()) {
+            shift.setIsAvailable(0);
+        } else {
+            shift.setIsAvailable(1);
+        }
 
         shiftCreateService.saveShift(shift);
 

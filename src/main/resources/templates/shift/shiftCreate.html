@@ -51,12 +51,12 @@
             </div>
 
             <div th:unless="${#lists.isEmpty(dateList)}" class="table-outer-container">
-                <!-- ① 上部横スクロールバー専用コンテナ -->
+                <!-- 上部横スクロールバー専用コンテナ -->
                 <div id="topScrollbarWrapper" class="top-scrollbar-wrapper">
                     <div id="topScrollbarContent" class="top-scrollbar-content"></div>
                 </div>
 
-                <!-- スクロール可能なテーブルエリア（最大7日分表示・8日目以降縦スクロール） -->
+                <!-- スクロール可能なテーブルエリア -->
                 <div id="tableWrapper" class="table-wrapper">
                     <table id="shiftTable" class="shift-table">
                         <thead>
@@ -77,27 +77,44 @@
 
                                 <!-- 交差セル -->
                                 <td th:each="user : ${userList}">
-                                    <th:block th:each="s : ${shiftList}" th:if="${s.shiftDate != null and s.shiftDate.equals(d) and s.userId == user.userId}">
-                                        <form th:action="@{/shift/shiftCreate/edit}" method="get" class="cell-form">
-                                            <input type="hidden" name="shiftId" th:value="${s.id}" />
+                                    <!-- 該当する日付・ユーザーIDに一致するShiftレコードを検索 -->
+                                    <th:block th:with="targetShift=${#lists.isEmpty(shiftList) ? null : shiftList.^[shiftDate != null and shiftDate.equals(#vars.d) and userId == #vars.user.userId]}">
+                                        
+                                        <!-- ① Shiftレコードが存在する場合（編集モード） -->
+                                        <form th:if="${targetShift != null}" th:action="@{/shift/shiftCreate/edit}" method="get" class="cell-form">
+                                            <input type="hidden" name="shiftId" th:value="${targetShift.id}" />
                                             <input type="hidden" name="eventId" th:value="${searchForm.selectedEventId}" />
                                             
                                             <button type="submit" 
                                                     class="cell-btn" 
-                                                    th:classappend="${s.startTime == null ? 'is-rest-btn' : ''}"
+                                                    th:classappend="${targetShift.isAvailable == 0 ? 'is-rest-btn' : ''}"
                                                     th:disabled="${showModal}">
-                                                <!-- 出勤時 -->
-                                                <div th:if="${s.startTime != null}" class="time-container">
-                                                    <span th:text="${#temporals.format(s.startTime, 'H:mm')}">9:00</span>
+                                                
+                                                <!-- ①-A 出勤可能時（isAvailable == 1） -->
+                                                <div th:if="${targetShift.isAvailable == 1}" class="time-container">
+                                                    <span th:text="${targetShift.startTime != null ? #temporals.format(targetShift.startTime, 'H:mm') : ''}">09:00</span>
                                                     <span class="time-sep">～</span>
-                                                    <span th:text="${#temporals.format(s.endTime, 'H:mm')}">18:00</span>
+                                                    <span th:text="${targetShift.endTime != null ? #temporals.format(targetShift.endTime, 'H:mm') : ''}">18:00</span>
                                                 </div>
-                                                <!-- 休み時 -->
-                                                <div th:if="${s.startTime == null}" class="rest-container">
+
+                                                <!-- ①-B 休み時（isAvailable == 0） -->
+                                                <div th:if="${targetShift.isAvailable == 0}" class="rest-container">
                                                     休
                                                 </div>
                                             </button>
                                         </form>
+
+                                        <!-- ② Shiftレコードが存在しない場合（新規作成モード：「未」表示セル） -->
+                                        <form th:if="${targetShift == null}" th:action="@{/shift/shiftCreate/new}" method="get" class="cell-form">
+                                            <input type="hidden" name="eventId" th:value="${searchForm.selectedEventId}" />
+                                            <input type="hidden" name="userId" th:value="${user.userId}" />
+                                            <input type="hidden" name="shiftDate" th:value="${#temporals.format(d, 'yyyy-MM-dd')}" />
+                                            
+                                            <button type="submit" class="cell-btn is-unsubmitted-btn" th:disabled="${showModal}">
+                                                <div class="unsubmitted-container">未</div>
+                                            </button>
+                                        </form>
+
                                     </th:block>
                                 </td>
                             </tr>
@@ -108,11 +125,11 @@
         </main>
     </div>
 
-    <!-- シフト編集ポップアップ（モーダル） -->
+    <!-- シフト編集・新規作成ポップアップ（モーダル） -->
     <div id="modalOverlay" class="modal-overlay" th:if="${showModal}">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>シフト編集</h3>
+                <h3 th:text="${shiftForm.id == null ? 'シフト新規登録' : 'シフト編集'}">シフト編集</h3>
             </div>
             <form th:action="@{/shift/shiftCreate/update}" th:object="${shiftForm}" method="post">
                 <input type="hidden" th:field="*{id}" />
@@ -125,7 +142,7 @@
 
                 <div class="modal-form-group">
                     <label>勤務日：</label>
-                    <input type="date" th:field="*{shiftDate}" />
+                    <input type="date" th:field="*{shiftDate}" class="input-readonly" readonly />
                     <span class="error-message" th:if="${#fields.hasErrors('shiftDate')}" th:errors="*{shiftDate}"></span>
                 </div>
 
@@ -157,7 +174,8 @@
 
                 <div class="modal-buttons">
                     <button type="submit" class="btn-primary">保存する</button>
-                    <button type="button" id="btnCancel" class="btn-cancel">キャンセル</button>
+                    <!-- ここが修正箇所です（onclickを追加） -->
+                    <button type="button" id="btnCancel" class="btn-cancel" onclick="cancelModal()">キャンセル</button>
                 </div>
             </form>
         </div>
