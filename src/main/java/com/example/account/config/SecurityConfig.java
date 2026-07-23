@@ -21,6 +21,7 @@ public class SecurityConfig {
             .loginPage("/login")
             .loginProcessingUrl("/authenticate")
             .successHandler((request, response, authentication) -> {
+
                 // 💡 ログインしたユーザーの持つ権限（ロール）をセットとして取得
                 Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
                 
@@ -32,7 +33,7 @@ public class SecurityConfig {
                 }
             })
             .failureUrl("/login?error")
-            .permitAll() 
+            .permitAll()            
         ).logout(logout -> logout
             .logoutSuccessUrl("/login?logout")
         ).authorizeHttpRequests(authz -> authz
@@ -46,11 +47,11 @@ public class SecurityConfig {
             .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
             
             // ④ それ以外のURLはログイン必須
+
             .anyRequest().authenticated() 
         ).exceptionHandling(exceptionHandling -> exceptionHandling
             .accessDeniedPage("/error-denied") 
         );
-        
         return http.build();
     }
 
@@ -58,4 +59,5 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() { 
         return new BCryptPasswordEncoder(); 
     }
+
 }
