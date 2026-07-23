@@ -1,6 +1,5 @@
 package com.example.salary.salaryconfirm.controller;
 
-import java.util.List;
 import java.util.Set;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -60,7 +59,9 @@ public class SalaryConfirmController {
         form.setUserId(loginUser.getUsername()); // ★ ログインユーザーのIDをセット
 
         model.addAttribute("salaryConfirmForm", form);
-        model.addAttribute("yearList", List.of(2024, 2025, 2026));
+        model.addAttribute("yearList",
+                salaryConfirmService.getAvailableYears(loginUser.getUsername()));
+
 
         return "salaryConfirm";
     }
@@ -137,7 +138,8 @@ public class SalaryConfirmController {
         model.addAttribute("totalNetSalary", totalNetSalary);
 
         model.addAttribute("salaryConfirmForm", form);
-        model.addAttribute("yearList", List.of(2024, 2025, 2026));
+        model.addAttribute("yearList",
+                salaryConfirmService.getAvailableYears(loginUser.getUsername()));
 
         return "salaryConfirm";
     }
