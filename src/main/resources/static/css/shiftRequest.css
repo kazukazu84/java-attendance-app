@@ -20,6 +20,12 @@ th {
     background-color: #f0f0f0;
 }
 
+.success-message {
+    color: green;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
 .period-box {
     width: 300px;
     margin: 20px auto;

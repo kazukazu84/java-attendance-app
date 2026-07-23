@@ -8,18 +8,37 @@ public class ShiftRequestForm {
 
 	
 	/* 対象期間 */
+    
     private String targetPeriod;
     
     private List<ShiftRequestDto> shiftList;
+    
+    private String workDate;
+    
+    private String available;
+    
+    private String startTime;
+    
+    private String endTime;
 
 
-    public String getTargetPeriod() {
+
+	public String getWorkDate() {
+		return workDate;
+	}
+
+	public void setWorkDate(String workDate) {
+		this.workDate = workDate;
+	}
+
+	public String getTargetPeriod() {
         return targetPeriod;
     }
     
     public void setTargetPeriod(String targetPeriod) {
         this.targetPeriod = targetPeriod;
     }
+    
     
     public List<ShiftRequestDto> getShiftList(){
     	return shiftList;
@@ -28,4 +47,33 @@ public class ShiftRequestForm {
     public void setShiftList(List<ShiftRequestDto> shiftList) {
     	this.shiftList = shiftList;
     }
+    
+    
+    /* （7/22追加分　シフト申請の入力欄） */
+    
+    public String getAvailable() {
+		return available;
+	}
+
+	public void setAvailable(String available) {
+		this.available = available;
+	}
+	
+	
+	public String getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(String startTime) {
+		this.startTime = startTime;
+	}
+	
+	
+	public String getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(String endTime) {
+		this.endTime = endTime;
+	}
 }

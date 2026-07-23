@@ -10,7 +10,9 @@
 <title>シフト申請画面</title>
 
 
-    <link rel="stylesheet" th:href="@{/css/shiftRequest.css} " href="/css/shiftRequest.css">
+    <link rel="stylesheet"
+	 th:href="@{/css/shiftRequest.css} " 
+	 href="/css/shiftRequest.css">
 
 </head>
 
@@ -18,9 +20,14 @@
 
 <body>
 
-	<div class="period-box">
-
-	    <div class="period-title">
+	<p th:if="${message}"
+	   th:text="${message}"
+	   class="success-message">
+	</p>
+	
+	<div class="period-box">		
+		
+	    <div class ="period-title">
 	        対象期間
 	    </div>
 
@@ -29,10 +36,12 @@
 	    </div>
 
 	</div>
-	
-	
 
     <br>
+	
+	<form th:object = "${form}" 
+		  th:action = "@{/shiftRequest/apply}"
+		  method = "post">
 
     <table>
 
@@ -43,15 +52,35 @@
             <th>退勤</th>
         </tr>
 
-		<tr th:each="shift : ${form.shiftList}">
+		<tr th:each="shift, stat : ${form.shiftList}">
+			
+			<td>
 
-		    <td th:text="${shift.workDate}"></td>
+			    <span th:text="${shift.workDate}"></span>
 
-		    <td th:text="${shift.available}"></td>
+			    <input type="hidden"
+			           th:field="*{shiftList[__${stat.index}__].workDate}">
 
-		    <td th:text="${shift.startTime}"></td>
+			</td>
 
-		    <td th:text="${shift.endTime}"></td>
+			
+			<td>
+				<select th:field="*{shiftList[__${stat.index}__].available}">
+					<option value = "">選択してください</option>
+				    <option value = "○">○</option>
+				    <option value = "×">×</option>
+				</select>
+			</td>
+
+			<td>
+				<input type="time"
+				       th:field="*{shiftList[__${stat.index}__].startTime}">
+			</td>
+
+			<td>
+				<input type="time"
+				       th:field="*{shiftList[__${stat.index}__].endTime}">
+			</td>
 
 		</tr>
 
@@ -59,17 +88,24 @@
 
     <br>
 
+	
+	
 <div class = "button-area">
 	
     <button type="button">
         キャンセル
     </button>
-
-    <button type="submit">
-        申請
-    </button>
-
-</div>	
 	
+	
+    <button type = "submit">
+		申請
+    </button>
+	
+	
+</div>
+	
+</form>
+
 </body>
+
 </html>
