@@ -66,4 +66,9 @@ public class SalaryConfirmService {
                 .mapToInt(SalaryEntity::getNetSalary)
                 .sum();
     }
+    
+    public List<Integer> getAvailableYears(String userId) {
+        return salaryConfirmRepository.findYearsByUserId(userId);
+    }
+
 }
