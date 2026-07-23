@@ -19,33 +19,23 @@ public class SalaryConfirmService {
     /**
      * 給与一覧（DTO）を取得
      */
-    public List<SalaryConfirmDto> getSalaryList(int userId, int targetYear) {
+    public List<SalaryConfirmDto> getSalaryList(String userId, int targetYear) {
 
+        // ★ 最新仕様の Repository メソッド名に合わせる
         List<SalaryEntity> list =
-                salaryConfirmRepository.findByUserIdAndTargetYear(userId, targetYear);
+                salaryConfirmRepository.findByUserInfoUserIdAndTargetYear(userId, targetYear);
 
         List<SalaryConfirmDto> dtoList = new ArrayList<>();
 
         for (SalaryEntity s : list) {
 
-            int appliedHourlyWage = s.getAppliedHourlyWage();
+            // ★ 給与計算は保存済みの値をそのまま使用（再計算しない）
+            int netSalary = s.getNetSalary();
 
-            // 総支給額 → 小数点以下不要なので整数化
-            int grossSalary = (int) (s.getWorkingHours() * appliedHourlyWage);
-
-            // 雇用保険料 → 小数点以下不要なので整数化
-            int insuranceFee = s.isAppliedEmploymentInsurance()
-                    ? (int) (grossSalary * 0.005)
-                    : 0;
-
-            // 差引支給額 → 小数点以下不要なので整数化
-            int netSalary = grossSalary - insuranceFee;
-
-            // ★ DTO は純粋なデータのみを保持（画面状態は Controller がセット）
             SalaryConfirmDto dto = new SalaryConfirmDto(
                     s.getTargetMonth(),
                     netSalary,
-                    s.getUserId(),
+                    s.getUserInfo().getUserId(),   // ★ String に変更
                     s.getTargetYear()
             );
 
@@ -58,9 +48,9 @@ public class SalaryConfirmService {
     /**
      * 年間勤務時間
      */
-    public double getTotalWorkingHours(int userId, int targetYear) {
+    public double getTotalWorkingHours(String userId, int targetYear) {
 
-        return salaryConfirmRepository.findByUserIdAndTargetYear(userId, targetYear)
+        return salaryConfirmRepository.findByUserInfoUserIdAndTargetYear(userId, targetYear)
                 .stream()
                 .mapToDouble(SalaryEntity::getWorkingHours)
                 .sum();
@@ -69,28 +59,11 @@ public class SalaryConfirmService {
     /**
      * 年間差引支給額
      */
-    public double getTotalNetSalary(int userId, int targetYear) {
+    public int getTotalNetSalary(String userId, int targetYear) {
 
-        List<SalaryEntity> list =
-                salaryConfirmRepository.findByUserIdAndTargetYear(userId, targetYear);
-
-        int total = 0;
-
-        for (SalaryEntity s : list) {
-
-            int appliedHourlyWage = s.getAppliedHourlyWage();
-
-            int grossSalary = (int) (s.getWorkingHours() * appliedHourlyWage);
-
-            int insuranceFee = s.isAppliedEmploymentInsurance()
-                    ? (int) (grossSalary * 0.005)
-                    : 0;
-
-            int netSalary = grossSalary - insuranceFee;
-
-            total += netSalary;
-        }
-
-        return total;
+        return salaryConfirmRepository.findByUserInfoUserIdAndTargetYear(userId, targetYear)
+                .stream()
+                .mapToInt(SalaryEntity::getNetSalary)
+                .sum();
     }
 }

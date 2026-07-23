@@ -12,7 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * 給与確認画面 DTO（新構造）
+ * 給与確認画面 DTO（最新仕様）
  */
 @Data
 @NoArgsConstructor
@@ -28,7 +28,7 @@ public class SalaryConfirmDto {
     private Integer netSalary;
 
     @SalaryConfirmRequired(groups = RequiredGroup.class)
-    private Integer userId;
+    private String userId;   // ★ Integer → String に変更
 
     @SalaryConfirmRequired(groups = RequiredGroup.class)
     private Integer targetYear;
@@ -36,11 +36,11 @@ public class SalaryConfirmDto {
     private boolean initialDisplay;
     private String fromScreen;
 
-    // Service 用コンストラクタ（画面状態は Controller がセット）
+    // ★ Service 用コンストラクタ（画面状態は Controller がセット）
     public SalaryConfirmDto(
             Integer targetMonth,
             Integer netSalary,
-            Integer userId,
+            String userId,        // ★ String に変更
             Integer targetYear
     ) {
         this.targetMonth = targetMonth;

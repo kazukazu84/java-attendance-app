@@ -29,7 +29,7 @@ public class SalaryConfirmScreenStateValidatorTest {
         SalaryConfirmDto dto = new SalaryConfirmDto(
                 5,
                 200000,
-                1,
+                "1",
                 2024
         );
 
@@ -48,7 +48,7 @@ public class SalaryConfirmScreenStateValidatorTest {
         SalaryConfirmDto dto = new SalaryConfirmDto(
                 5,
                 200000,
-                1,
+                "1",
                 2024
         );
 
@@ -67,7 +67,7 @@ public class SalaryConfirmScreenStateValidatorTest {
         SalaryConfirmDto dto = new SalaryConfirmDto(
                 5,
                 200000,
-                1,
+                "1",
                 2024
         );
 

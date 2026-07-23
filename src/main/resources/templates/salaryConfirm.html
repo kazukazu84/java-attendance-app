@@ -13,41 +13,36 @@
     <!-- タイトル -->
     <h1 class="page-title">給与一覧</h1>
 
-	<!-- ① 年度選択（中央寄せ） -->
-	<div class="card center">
-	    <form th:action="@{/user/salary/confirm}" method="post" class="form-area">
+    <!-- ① 年度選択（中央寄せ） -->
+    <div class="card center">
+        <form th:action="@{${basePath} + '/salary/confirm'}" method="post" class="form-area">
 
-	        <label class="form-label">年度選択</label>
+            <label class="form-label">年度選択</label>
 
-	        <!-- ★ GET/POST の targetYear を初期選択＆維持 -->
-	        <select name="targetYear" class="form-select">
-	            <option th:each="year : ${yearList}"
-	                    th:value="${year}"
-	                    th:text="${year}"
-	                    th:selected="${year} == ${salaryConfirmForm.targetYear}">
-	            </option>
-	        </select>
+            <select name="targetYear" class="form-select">
+                <option th:each="year : ${yearList}"
+                        th:value="${year}"
+                        th:text="${year}"
+                        th:selected="${year} == ${salaryConfirmForm.targetYear}">
+                </option>
+            </select>
 
-	        <!-- ★ GET/POST の userId を hidden に反映 -->
-	        <input type="hidden" name="userId" th:value="${salaryConfirmForm.userId}">
+            <input type="hidden" name="userId" th:value="${salaryConfirmForm.userId}">
 
-	        <button type="submit" class="submit-btn">表示</button>
-	    </form>
-	</div>
-	
-	<!-- ★ エラーメッセージ表示（FlashAttribute） -->
-	<div th:if="${errorMessage}" class="alert-box">
-	    <p th:text="${errorMessage}"></p>
-	</div>
+            <button type="submit" class="submit-btn">表示</button>
+        </form>
+    </div>
 
-    <!-- ②③ 年間集計（中央寄せ） -->
+    <div th:if="${errorMessage}" class="alert-box">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
     <div th:if="${salaryList}" class="summary-box">
-		<p>対象年度：<span th:text="${salaryConfirmForm.targetYear}"></span> 年</p>
+        <p>対象年度：<span th:text="${salaryConfirmForm.targetYear}"></span> 年</p>
         <p>年間勤務時間：<span th:text="${totalWorkingHours}"></span> 時間</p>
         <p>年間差引支給額：<span th:text="${totalNetSalary}"></span> 円</p>
     </div>
 
-    <!-- ④⑤⑥ 月別給与一覧 -->
     <div th:if="${salaryList}" class="card">
         <table class="salary-table">
             <thead>
@@ -59,19 +54,16 @@
             </thead>
             <tbody>
                 <tr th:each="item : ${salaryList}">
-                    <!-- 対象月 -->
                     <td class="left">
                         <span th:text="${item.targetMonth}"></span> 月
                     </td>
 
-                    <!-- 給与額（DTOの netSalary） -->
                     <td class="right">
                         <span th:text="${item.netSalary}"></span> 円
                     </td>
 
-                    <!-- 詳細ボタン（DTOの userId / targetYear / targetMonth） -->
                     <td class="right">
-                        <a th:href="@{/user/salary/detail(
+                        <a th:href="@{${basePath} + '/salary/detail'(
                             userId=${item.userId},
                             targetYear=${item.targetYear},
                             targetMonth=${item.targetMonth}
@@ -82,9 +74,8 @@
         </table>
     </div>
 
-    <!-- ⑦ メイン画面リンク（中央寄せ） -->
     <div class="actions">
-        <a th:href="@{/admin/main}" class="back-link">メイン画面へ</a>
+        <a th:href="@{${basePath} + '/main'}" class="back-link">メイン画面へ</a>
     </div>
 
 </div>

@@ -29,7 +29,7 @@ public class SalaryConfirmConsistencyValidatorTest {
         SalaryConfirmDto dto = new SalaryConfirmDto(
                 5,
                 200000,
-                1,
+                "1",
                 2024
         );
 
@@ -45,7 +45,7 @@ public class SalaryConfirmConsistencyValidatorTest {
         SalaryConfirmDto dto = new SalaryConfirmDto(
                 5,
                 -100,
-                1,
+                "1",
                 2024
         );
 
@@ -61,7 +61,7 @@ public class SalaryConfirmConsistencyValidatorTest {
         SalaryConfirmDto dto = new SalaryConfirmDto(
                 5,
                 200000,
-                1,
+                "1",
                 1500 // 範囲外
         );
 
