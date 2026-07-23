@@ -25,16 +25,30 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // -------------------------------------------------------------
-// キャンセルボタン処理（HTMLのonclickから呼び出される）
+// キャンセルボタン処理
 // -------------------------------------------------------------
 function cancelModal() {
-    // イベント選択コンテナから現在選ばれているイベントIDを取得
+    // 1. モーダル内の hidden 項目、または select から selectedEventId を取得
+    // (disabled な select からではなく、hidden の eventId を優先参照する)
+    const hiddenEventId = document.querySelector('form input[name="eventId"]');
     const eventSelectEl = document.getElementById('eventSelect');
-    const selectedEventId = eventSelectEl ? eventSelectEl.value : null;
 
-    // 選択されたイベントIDを引き継いだまま画面を再読み込み（モーダルを閉じる）
+    let selectedEventId = null;
+    if (hiddenEventId && hiddenEventId.value) {
+        selectedEventId = hiddenEventId.value;
+    } else if (eventSelectEl && eventSelectEl.value) {
+        selectedEventId = eventSelectEl.value;
+    }
+
+    // 2. モーダルを即座に非表示
+    const modalOverlay = document.getElementById('modalOverlay');
+    if (modalOverlay) {
+        modalOverlay.style.display = 'none';
+    }
+
+    // 3. GETで初期表示URLへ遷移
     if (selectedEventId) {
-        window.location.href = `/shift/shiftCreate?selectedEventId=${encodeURIComponent(selectedEventId)}`;
+        window.location.href = '/shift/shiftCreate?selectedEventId=' + encodeURIComponent(selectedEventId);
     } else {
         window.location.href = '/shift/shiftCreate';
     }

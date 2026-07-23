@@ -132,9 +132,10 @@
             <div class="modal-header">
                 <h3 th:text="${shiftForm.id == null ? 'シフト新規登録' : 'シフト編集'}">シフト編集</h3>
             </div>
-            <form th:action="@{/shift/shiftCreate/update}" th:object="${shiftForm}" method="post">
-                <input type="hidden" th:field="*{id}" />
-                <input type="hidden" th:field="*{eventId}" />
+			<form th:action="@{/shift/shiftCreate/update}" th:object="${shiftForm}" method="post">
+			    <input type="hidden" th:field="*{id}" />
+			    <!-- ↓ name="eventId" が入っていることを確認 (th:field="*{eventId}" で自動セットされます) -->
+			    <input type="hidden" th:field="*{eventId}" />
 
                 <div class="modal-form-group">
                     <label>ユーザーID：</label>
