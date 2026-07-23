@@ -1,12 +1,21 @@
+/* ================================
+   ビジネス × ブルー（企業向け）
+================================ */
+
 :root {
-    --bg-color: #f4f6f9;
+    --bg-color: #f5f7fa;
     --card-bg: #ffffff;
-    --text-primary: #333;
-    --text-secondary: #666;
-    --border-color: #e2e8f0;
-    --accent-color: #2b6cb0;
+    --text-primary: #1a2b4c;
+    --text-secondary: #4a5b75;
+    --border-color: #d3d9e3;
+    --accent-color: #2b6cb0;       /* メインブルー */
+    --accent-light: #4a90e2;       /* 明るいブルー */
+    --accent-hover: #1e4f80;       /* 濃いブルー */
+    --shadow-light: rgba(0, 0, 0, 0.08);
+    --shadow-strong: rgba(0, 0, 0, 0.15);
 }
 
+/* 全体 */
 body {
     background: var(--bg-color);
     font-family: "Helvetica Neue", Arial, Meiryo, sans-serif;
@@ -14,19 +23,29 @@ body {
     padding: 40px 20px;
     display: flex;
     justify-content: center;
+    color: var(--text-primary);
 }
 
 .container {
     width: 100%;
     max-width: 700px;
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* フェードイン */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 /* タイトル */
 .page-title {
     text-align: center;
-    font-size: 1.8rem;
-    margin-bottom: 20px;
-    color: var(--text-primary);
+    font-size: 2rem;
+    margin-bottom: 24px;
+    color: var(--accent-color);
+    font-weight: 700;
+    letter-spacing: 1px;
 }
 
 /* カード */
@@ -34,8 +53,15 @@ body {
     background: var(--card-bg);
     padding: 24px;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 12px var(--shadow-light);
     margin-bottom: 24px;
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px var(--shadow-strong);
 }
 
 .card.center {
@@ -59,32 +85,47 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 6px;
     font-size: 1rem;
+    background: #f9fbfd;
+    color: var(--text-primary);
+    transition: border-color 0.2s ease;
 }
 
+.form-select:focus {
+    border-color: var(--accent-color);
+    outline: none;
+}
+
+/* ボタン（企業向けブルー） */
 .submit-btn {
     padding: 12px;
-    background: var(--accent-color);
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
     color: #fff;
     border: none;
     border-radius: 6px;
     font-size: 1rem;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 700;
+    box-shadow: 0 4px 10px var(--shadow-light);
+    transition: 0.25s ease;
 }
 
 .submit-btn:hover {
-    opacity: 0.9;
+    background: var(--accent-hover);
+    box-shadow: 0 6px 16px var(--shadow-strong);
+    transform: translateY(-2px);
 }
 
 /* 年間集計 */
 .summary-box {
-    background: #f7fafc;
+    background: #eef3f9;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 16px;
     margin-bottom: 24px;
     text-align: center;
     font-weight: 600;
+    color: var(--text-primary);
+    box-shadow: 0 4px 10px var(--shadow-light);
 }
 
 /* 一覧テーブル */
@@ -94,10 +135,10 @@ body {
 }
 
 .salary-table th {
-    background: #f0f4f8;
+    background: #e6edf5;
     padding: 12px;
     color: var(--text-secondary);
-    font-weight: 600;
+    font-weight: 700;
     border-bottom: 2px solid var(--border-color);
 }
 
@@ -111,19 +152,22 @@ body {
 .left { text-align: left; }
 .right { text-align: right; }
 
-/* 詳細ボタン */
+/* 詳細ボタン（ブルーアクセント） */
 .detail-btn {
-    background: #fefcbf;
-    color: #333;
+    background: var(--accent-light);
+    color: #fff;
     padding: 6px 12px;
     border-radius: 6px;
     text-decoration: none;
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-weight: 700;
+    box-shadow: 0 2px 6px var(--shadow-light);
+    transition: 0.25s ease;
 }
 
 .detail-btn:hover {
-    background: #faf089;
+    background: var(--accent-hover);
+    box-shadow: 0 4px 12px var(--shadow-strong);
+    transform: translateY(-2px);
 }
 
 /* メイン画面リンク */
@@ -135,21 +179,23 @@ body {
 .back-link {
     color: var(--accent-color);
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .back-link:hover {
     text-decoration: underline;
 }
 
+/* エラーメッセージ */
 .alert-box {
     margin: 20px auto;
     padding: 10px 15px;
     width: 60%;
-    background-color: #ffe4e1;
-    border: 1px solid #ff7f7f;
+    background-color: #fbeaea;
+    border: 1px solid #e57373;
     border-radius: 5px;
     color: #b30000;
     text-align: center;
     font-weight: bold;
+    box-shadow: 0 4px 10px var(--shadow-light);
 }
