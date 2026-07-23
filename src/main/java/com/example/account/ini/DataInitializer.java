@@ -11,20 +11,26 @@ import com.example.account.entity.Wage;
 import com.example.account.repository.UserInfoRepository;
 import com.example.account.repository.WageRepository;
 import com.example.account.service.AccountService;
+// 登録メッセージ用エンティティ＆リポジトリをインポート
+import com.example.main.entity.LogMessage;
+import com.example.main.repository.LogMessageRepository;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
     private final UserInfoRepository userInfoRepository;
     private final WageRepository wageRepository;
     private final AccountService accountService;
+    private final LogMessageRepository logMessageRepository; // 👈 追加
 
     // コンストラクタ注入（不要な PasswordEncoder を引数から削除）
     public DataInitializer(UserInfoRepository userInfoRepository, 
             WageRepository wageRepository,
-            AccountService accountService) {
+            AccountService accountService,
+            LogMessageRepository logMessageRepository) { // 👈 追加
         this.userInfoRepository = userInfoRepository;
         this.wageRepository = wageRepository;
         this.accountService = accountService;
+        this.logMessageRepository = logMessageRepository; // 👈 追加
     }
 
     @Override
@@ -75,5 +81,22 @@ public class DataInitializer implements CommandLineRunner {
 
             accountService.registerAccount(initUserForm);
         }
+
+        // 3. ログメッセージマスタデータの作成（データが空の場合のみ実行） 👈 追加！
+        if (logMessageRepository.count() == 0) {
+            createLogMessage(0, 1, "{user_name}さんが出勤しました");
+            createLogMessage(1, 1, "{user_name}さんが退勤しました");
+            createLogMessage(2, 0, "社員の皆様にメッセージがあります");
+            createLogMessage(3, 0, "シフト申請受付が開始しました");
+        }
+    }
+
+    // 💡 LogMessage インスタンスの生成・保存を行うプライベートヘルパーメソッド
+    private void createLogMessage(Integer id, Integer scope, String value) {
+        LogMessage message = new LogMessage();
+        message.setMessageId(id);
+        message.setMessageScope(scope);
+        message.setMessageValue(value);
+        logMessageRepository.save(message);
     }
 }
