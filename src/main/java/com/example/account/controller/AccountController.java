@@ -58,27 +58,37 @@ public class AccountController {
                            BindingResult result, 
                            Model model) {
         
+        // 1. パスワード等の単体入力チェック（アノテーションや手動チェック）
         if (form.getPassword() == null || form.getPassword().trim().isEmpty()) {
             result.rejectValue("password", "error.password", "パスワードは必須入力です。");
         }
 
-        if (form.getUserId() != null && !form.getUserId().isEmpty()) {
-            if (accountService.existsByUserId(form.getUserId())) {
-                result.rejectValue("userId", "error.userId", "このユーザーIDは既に登録されています。");
-            }
-        }
+        // 💡 【変更点】ここにあった controller 側の if (accountService.existsByUserId(...)) は丸ごと削除！
+        // 重複チェックはサービスへ完全委譲します。
 
+        // 事前入力エラーがあれば即座に画面差し戻し
         if (result.hasErrors()) {
             List<Wage> wages = wageRepo.findAllByOrderByWageValueAsc();
             model.addAttribute("wages", wages);
-            
-            // 💡 エラー差し戻し時も「新規登録画面」であることを維持する
             model.addAttribute("isNew", true); 
-            
             return "account/admin/register";
         }
 
-        accountService.registerAccount(form);
+        // 2. サービス実行（重複チェックは Service 内で実行され、重複時は例外が飛んでくる）
+        try {
+            accountService.registerAccount(form);
+            
+        } catch (IllegalArgumentException e) {
+            // ⚡ Service から投げられた「重複例外」をキャッチして画面にバインド！
+            result.rejectValue("userId", "error.userId", e.getMessage());
+            
+            // エラー時用にモデルを再設定して差し戻し
+            List<Wage> wages = wageRepo.findAllByOrderByWageValueAsc();
+            model.addAttribute("wages", wages);
+            model.addAttribute("isNew", true); 
+            return "account/admin/register";
+        }
+
         return "redirect:/admin/UserManagement";
     }
     
@@ -110,14 +120,14 @@ public class AccountController {
         form.setUserName(userInfo.getUserName());
         form.setPosition(userInfo.getPosition().name());
         
-        if (userInfo.getWage() != null) {
+        //if (userInfo.getWage() != null) {
             form.setWageId(userInfo.getWage().getWageId());
-        }
+        //}
         
-        if (userInfo.getBirthDate() != null) {
+        //if (userInfo.getBirthDate() != null) {
             java.sql.Date sqlDate = new java.sql.Date(userInfo.getBirthDate().getTime());
             form.setBirthDate(sqlDate.toLocalDate());
-        }
+        //}
         
         form.setEmploymentInsurance(userInfo.isEmploymentInsurance());
         form.setIsActive(userInfo.getIsActive());
@@ -176,4 +186,6 @@ public class AccountController {
         redirectAttributes.addFlashAttribute("successMessage", "アカウント情報を更新しました。");
         return "redirect:/admin/UserManagement";
     }
+    
+    
 }

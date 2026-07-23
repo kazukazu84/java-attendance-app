@@ -40,7 +40,10 @@ public class AccountService {
      */
     @Transactional
     public void registerAccount(UserRegisterForm form) {
-        UserInfo user = new UserInfo();
+        if (existsByUserId(form.getUserId())) {
+            throw new IllegalArgumentException("このユーザーIDは既に登録されています。");
+        }
+    	UserInfo user = new UserInfo();
         
         user.setUserId(form.getUserId());
         user.setPassword(passwordEncoder.encode(form.getPassword()));
@@ -82,9 +85,9 @@ public class AccountService {
             .orElseThrow(() -> new IllegalArgumentException("指定された賃金IDが存在しません: " + form.getWageId()));
         user.setWage(wage);
         
-        if (form.getBirthDate() != null) {
+        //if (form.getBirthDate() != null) {
             user.setBirthDate(java.sql.Date.valueOf(form.getBirthDate()));
-        }
+        //}
         
         user.setEmploymentInsurance(form.isEmploymentInsurance());
         user.setIsActive(form.getIsActive());

@@ -116,19 +116,19 @@ public class MainController {
 
         return "tempShiftRequest";
     }
-
-    /**
-     * ユーザー管理画面（仮）
-     */
-    @GetMapping({"/user/user-management", "/admin/user-management"})
-    public String userManagementView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
-        if (loginUser == null) return "redirect:/login";
-
-        String redirectUrl = checkAndRedirect(loginUser, request, "/user/user-management", "/admin/user-management");
-        if (redirectUrl != null) return redirectUrl;
-
-        return "tempUserManagement";
-    }
+//
+//    /**
+//     * ユーザー管理画面（仮）
+//     */
+//    @GetMapping({"/user/user-management", "/admin/user-management"})
+//    public String userManagementView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
+//        if (loginUser == null) return "redirect:/login";
+//
+//        String redirectUrl = checkAndRedirect(loginUser, request, "/user/user-management", "/admin/user-management");
+//        if (redirectUrl != null) return redirectUrl;
+//
+//        return "tempUserManagement";
+//    }
 
     /**
      * シフト管理画面（仮）
