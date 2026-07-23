@@ -27,9 +27,9 @@ public class SecurityConfig {
                 
                 // 🛡️ ロールに応じて遷移先を切り替える処理を完遂させる！
                 if (roles.contains("ROLE_ADMIN")) {
-                    response.sendRedirect("/admin/m-admin"); // 👑 管理者は管理画面（登録画面など）へ
-                } else {
-                    response.sendRedirect("/user/s-user");       // 💼 一般ユーザーはマイページ/トップへ（※実際のパスに合わせて調整してください）
+                    response.sendRedirect("/admin/main");// 👑 管理者は管理画面（登録画面など）へ
+                }else {
+                    response.sendRedirect("/user/attendance"); // 💼 一般ユーザーはマイページ/トップへ（※実際のパスに合わせて調整してください）
                 }
             })
             .failureUrl("/login?error")
