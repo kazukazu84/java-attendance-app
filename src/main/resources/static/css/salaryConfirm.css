@@ -1,70 +1,88 @@
 /* ================================
-   ビジネス × ブルー（企業向け）
+   ダークパープル × ホログラム × 背景アニメーション
 ================================ */
 
-:root {
-    --bg-color: #f5f7fa;
-    --card-bg: #ffffff;
-    --text-primary: #1a2b4c;
-    --text-secondary: #4a5b75;
-    --border-color: #d3d9e3;
-    --accent-color: #2b6cb0;       /* メインブルー */
-    --accent-light: #4a90e2;       /* 明るいブルー */
-    --accent-hover: #1e4f80;       /* 濃いブルー */
-    --shadow-light: rgba(0, 0, 0, 0.08);
-    --shadow-strong: rgba(0, 0, 0, 0.15);
+/* 背景アニメーション */
+.bg-animation {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: radial-gradient(circle at 20% 20%, #3a1a5f, #0b0714 60%);
+    overflow: hidden;
+    z-index: -1;
+}
+
+.bg-animation::before,
+.bg-animation::after {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        from 0deg,
+        #9b5cff,
+        #d08cff,
+        #6a2ca0,
+        #9b5cff
+    );
+    opacity: 0.15;
+    animation: spin 18s linear infinite;
+}
+
+.bg-animation::after {
+    animation-duration: 28s;
+    opacity: 0.25;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* 全体 */
 body {
-    background: var(--bg-color);
     font-family: "Helvetica Neue", Arial, Meiryo, sans-serif;
     margin: 0;
     padding: 40px 20px;
     display: flex;
     justify-content: center;
-    color: var(--text-primary);
+    color: #e8d9ff;
 }
 
 .container {
     width: 100%;
-    max-width: 700px;
-    animation: fadeIn 0.6s ease-out;
+    max-width: 780px;
 }
 
-/* フェードイン */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-/* タイトル */
+/* タイトル（ホログラム発光） */
 .page-title {
     text-align: center;
-    font-size: 2rem;
-    margin-bottom: 24px;
-    color: var(--accent-color);
-    font-weight: 700;
-    letter-spacing: 1px;
+    font-size: 2.6rem;
+    margin-bottom: 32px;
+    color: #d08cff;
+    font-weight: 900;
+    text-shadow: 0 0 18px #d08cff, 0 0 32px #9b5cff;
+    animation: glowPulse 3s infinite ease-in-out;
 }
 
-/* カード */
+@keyframes glowPulse {
+    0%   { text-shadow: 0 0 12px #d08cff; }
+    50%  { text-shadow: 0 0 32px #9b5cff; }
+    100% { text-shadow: 0 0 12px #d08cff; }
+}
+
+/* ガラスパネル */
 .card {
-    background: var(--card-bg);
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px var(--shadow-light);
-    margin-bottom: 24px;
-    border: 1px solid var(--border-color);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
+    border-radius: 14px;
+    padding: 26px;
+    margin-bottom: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 18px rgba(155, 92, 255, 0.25);
 }
 
-.card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 18px var(--shadow-strong);
-}
-
-.card.center {
+.center {
     text-align: center;
 }
 
@@ -72,114 +90,110 @@ body {
 .form-area {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 18px;
 }
 
 .form-label {
-    font-weight: 600;
-    color: var(--text-secondary);
+    font-weight: 700;
+    color: #cbb3ff;
 }
 
 .form-select {
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
+    padding: 12px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid #6a2ca0;
+    color: #e8d9ff;
     font-size: 1rem;
-    background: #f9fbfd;
-    color: var(--text-primary);
-    transition: border-color 0.2s ease;
+    transition: 0.3s;
 }
 
 .form-select:focus {
-    border-color: var(--accent-color);
+    border-color: #d08cff;
+    box-shadow: 0 0 12px #d08cff;
     outline: none;
 }
 
-/* ボタン（企業向けブルー） */
+/* ボタン */
 .submit-btn {
-    padding: 12px;
-    background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
+    padding: 14px;
+    background: linear-gradient(135deg, #9b5cff, #d08cff);
     color: #fff;
     border: none;
-    border-radius: 6px;
-    font-size: 1rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 800;
     cursor: pointer;
-    font-weight: 700;
-    box-shadow: 0 4px 10px var(--shadow-light);
-    transition: 0.25s ease;
+    box-shadow: 0 0 18px rgba(155, 92, 255, 0.35);
+    transition: 0.3s;
 }
 
 .submit-btn:hover {
-    background: var(--accent-hover);
-    box-shadow: 0 6px 16px var(--shadow-strong);
-    transform: translateY(-2px);
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 0 28px rgba(208, 140, 255, 0.55);
 }
 
-/* 年間集計 */
+/* 年間サマリー */
 .summary-box {
-    background: #eef3f9;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 16px;
+    background: rgba(255,255,255,0.08);
+    padding: 18px;
+    border-radius: 12px;
     margin-bottom: 24px;
-    text-align: center;
-    font-weight: 600;
-    color: var(--text-primary);
-    box-shadow: 0 4px 10px var(--shadow-light);
+    border: 1px solid rgba(255,255,255,0.15);
 }
 
-/* 一覧テーブル */
+/* テーブル */
 .salary-table {
     width: 100%;
     border-collapse: collapse;
+    color: #e8d9ff;
 }
 
 .salary-table th {
-    background: #e6edf5;
-    padding: 12px;
-    color: var(--text-secondary);
-    font-weight: 700;
-    border-bottom: 2px solid var(--border-color);
+    padding: 14px;
+    background: rgba(255,255,255,0.08);
+    border-bottom: 2px solid #6a2ca0;
+    text-shadow: 0 0 12px #d08cff;
 }
 
 .salary-table td {
-    padding: 12px;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text-primary);
-    font-weight: 500;
+    padding: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
 }
 
-.left { text-align: left; }
-.right { text-align: right; }
+.salary-table tr:hover {
+    background: rgba(155,92,255,0.15);
+    transition: 0.2s;
+}
 
-/* 詳細ボタン（ブルーアクセント） */
+/* 詳細ボタン */
 .detail-btn {
-    background: var(--accent-light);
-    color: #fff;
-    padding: 6px 12px;
-    border-radius: 6px;
+    background: #f6e05e;
+    color: #000;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: 800;
     text-decoration: none;
-    font-weight: 700;
-    box-shadow: 0 2px 6px var(--shadow-light);
-    transition: 0.25s ease;
+    box-shadow: 0 0 14px #f6e05e;
+    transition: 0.3s;
 }
 
 .detail-btn:hover {
-    background: var(--accent-hover);
-    box-shadow: 0 4px 12px var(--shadow-strong);
-    transform: translateY(-2px);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 0 22px #f6e05e;
 }
 
 /* メイン画面リンク */
 .actions {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 24px;
 }
 
 .back-link {
-    color: var(--accent-color);
+    color: #d08cff;
+    font-weight: 800;
     text-decoration: none;
-    font-weight: 700;
+    text-shadow: 0 0 12px #9b5cff;
 }
 
 .back-link:hover {
@@ -189,13 +203,13 @@ body {
 /* エラーメッセージ */
 .alert-box {
     margin: 20px auto;
-    padding: 10px 15px;
-    width: 60%;
-    background-color: #fbeaea;
-    border: 1px solid #e57373;
-    border-radius: 5px;
-    color: #b30000;
+    padding: 12px 18px;
+    width: 70%;
+    background-color: #3a0f0f;
+    border: 1px solid #ff4d4d;
+    border-radius: 8px;
+    color: #ffb3b3;
     text-align: center;
     font-weight: bold;
-    box-shadow: 0 4px 10px var(--shadow-light);
+    box-shadow: 0 0 18px rgba(255, 0, 0, 0.4);
 }

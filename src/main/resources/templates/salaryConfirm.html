@@ -8,12 +8,15 @@
 
 <body>
 
+<!-- ★ 背景アニメーション -->
+<div class="bg-animation"></div>
+
 <div class="container">
 
     <!-- タイトル -->
     <h1 class="page-title">給与一覧</h1>
 
-    <!-- ① 年度選択（中央寄せ） -->
+    <!-- 年度選択 -->
     <div class="card center">
         <form th:action="@{${basePath} + '/salary/confirm'}" method="post" class="form-area">
 
@@ -33,36 +36,39 @@
         </form>
     </div>
 
+    <!-- エラー -->
     <div th:if="${errorMessage}" class="alert-box">
         <p th:text="${errorMessage}"></p>
     </div>
 
+    <!-- 年間サマリー -->
     <div th:if="${salaryList}" class="summary-box">
         <p>対象年度：<span th:text="${salaryConfirmForm.targetYear}"></span> 年</p>
         <p>年間勤務時間：<span th:text="${totalWorkingHours}"></span> 時間</p>
         <p>年間差引支給額：<span th:text="${totalNetSalary}"></span> 円</p>
     </div>
 
+    <!-- 一覧テーブル -->
     <div th:if="${salaryList}" class="card">
         <table class="salary-table">
             <thead>
                 <tr>
-                    <th class="left">対象月</th>
-                    <th class="right">給与額</th>
-                    <th class="right">詳細</th>
+                    <th>対象月</th>
+                    <th>給与額</th>
+                    <th>詳細</th>
                 </tr>
             </thead>
             <tbody>
                 <tr th:each="item : ${salaryList}">
-                    <td class="left">
+                    <td>
                         <span th:text="${item.targetMonth}"></span> 月
                     </td>
 
-                    <td class="right">
+                    <td>
                         <span th:text="${item.netSalary}"></span> 円
                     </td>
 
-                    <td class="right">
+                    <td>
                         <a th:href="@{${basePath} + '/salary/detail'(
                             userId=${item.userId},
                             targetYear=${item.targetYear},
@@ -74,6 +80,7 @@
         </table>
     </div>
 
+    <!-- メイン画面へ -->
     <div class="actions">
         <a th:href="@{${basePath} + '/main'}" class="back-link">メイン画面へ</a>
     </div>
