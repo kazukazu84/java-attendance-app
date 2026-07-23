@@ -15,7 +15,7 @@
 
 	<!-- ① 年度選択（中央寄せ） -->
 	<div class="card center">
-	    <form th:action="@{/salary/confirm}" method="post" class="form-area">
+	    <form th:action="@{/user/salary/confirm}" method="post" class="form-area">
 
 	        <label class="form-label">年度選択</label>
 
@@ -71,7 +71,7 @@
 
                     <!-- 詳細ボタン（DTOの userId / targetYear / targetMonth） -->
                     <td class="right">
-                        <a th:href="@{/salary/detail(
+                        <a th:href="@{/user/salary/detail(
                             userId=${item.userId},
                             targetYear=${item.targetYear},
                             targetMonth=${item.targetMonth}
@@ -84,7 +84,7 @@
 
     <!-- ⑦ メイン画面リンク（中央寄せ） -->
     <div class="actions">
-        <a th:href="@{/main}" class="back-link">メイン画面へ</a>
+        <a th:href="@{/admin/main}" class="back-link">メイン画面へ</a>
     </div>
 
 </div>

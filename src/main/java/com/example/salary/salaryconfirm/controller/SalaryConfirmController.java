@@ -27,7 +27,7 @@ public class SalaryConfirmController {
     @Autowired
     private Validator validator;
 
-    @GetMapping("/salary/confirm")
+    @GetMapping("/user/salary/confirm")
     public String showConfirmForm(Model model) {
 
         SalaryConfirmForm form = new SalaryConfirmForm();
@@ -39,7 +39,7 @@ public class SalaryConfirmController {
         return "salaryConfirm";
     }
 
-    @PostMapping("/salary/confirm")
+    @PostMapping("/user/salary/confirm")
     public String confirmSalary(SalaryConfirmForm form, Model model) {
 
         int userId = form.getUserId();
