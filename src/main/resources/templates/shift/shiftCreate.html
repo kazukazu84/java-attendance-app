@@ -87,29 +87,31 @@
                                             
                                             <button type="submit" 
                                                     class="cell-btn" 
-                                                    th:classappend="${targetShift.startTime == null ? 'is-rest-btn' : ''}"
+                                                    th:classappend="${targetShift.isAvailable == 0 ? 'is-rest-btn' : ''}"
                                                     th:disabled="${showModal}">
-                                                <!-- 出勤時（startTime != null） -->
-                                                <div th:if="${targetShift.startTime != null}" class="time-container">
-                                                    <span th:text="${#temporals.format(targetShift.startTime, 'H:mm')}">9:00</span>
+                                                
+                                                <!-- ①-A 出勤可能時（isAvailable == 1） -->
+                                                <div th:if="${targetShift.isAvailable == 1}" class="time-container">
+                                                    <span th:text="${targetShift.startTime != null ? #temporals.format(targetShift.startTime, 'H:mm') : ''}">09:00</span>
                                                     <span class="time-sep">～</span>
-                                                    <span th:text="${#temporals.format(targetShift.endTime, 'H:mm')}">18:00</span>
+                                                    <span th:text="${targetShift.endTime != null ? #temporals.format(targetShift.endTime, 'H:mm') : ''}">18:00</span>
                                                 </div>
-                                                <!-- 休み時（startTime == null） -->
-                                                <div th:if="${targetShift.startTime == null}" class="rest-container">
+
+                                                <!-- ①-B 休み時（isAvailable == 0） -->
+                                                <div th:if="${targetShift.isAvailable == 0}" class="rest-container">
                                                     休
                                                 </div>
                                             </button>
                                         </form>
 
-                                        <!-- ② Shiftレコードが存在しない場合（新規作成モード：空白セル） -->
+                                        <!-- ② Shiftレコードが存在しない場合（新規作成モード：「未」表示セル） -->
                                         <form th:if="${targetShift == null}" th:action="@{/shift/shiftCreate/new}" method="get" class="cell-form">
                                             <input type="hidden" name="eventId" th:value="${searchForm.selectedEventId}" />
                                             <input type="hidden" name="userId" th:value="${user.userId}" />
                                             <input type="hidden" name="shiftDate" th:value="${#temporals.format(d, 'yyyy-MM-dd')}" />
                                             
-                                            <button type="submit" class="cell-btn" th:disabled="${showModal}">
-                                                <!-- 空白表示（クリック可能） -->
+                                            <button type="submit" class="cell-btn is-unsubmitted-btn" th:disabled="${showModal}">
+                                                <div class="unsubmitted-container">未</div>
                                             </button>
                                         </form>
 
@@ -172,7 +174,8 @@
 
                 <div class="modal-buttons">
                     <button type="submit" class="btn-primary">保存する</button>
-                    <button type="button" id="btnCancel" class="btn-cancel">キャンセル</button>
+                    <!-- ここが修正箇所です（onclickを追加） -->
+                    <button type="button" id="btnCancel" class="btn-cancel" onclick="cancelModal()">キャンセル</button>
                 </div>
             </form>
         </div>
