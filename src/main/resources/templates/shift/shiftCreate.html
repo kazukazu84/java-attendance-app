@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>シフト作成画面</title>
+    <!-- CSS & JS 読み込み -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/shiftCreate.js}" defer></script>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- 画面ヘッダー -->
+        <header class="app-header">
+            <h1>📅 シフト作成</h1>
+            
+            <!-- 上部操作エリア -->
+            <div class="top-container">
+                <div class="back-btn-container">
+                    <form th:action="@{/shift/shiftCreate/back}" method="get">
+                        <button type="submit" class="btn-secondary" th:disabled="${showModal}">← 戻る</button>
+                    </form>
+                </div>
+
+                <div class="event-select-container">
+                    <form th:action="@{/shift/shiftCreate/changeEvent}" th:object="${searchForm}" method="post" class="event-form">
+                        <label for="eventSelect">イベント選択：</label>
+                        <select id="eventSelect" th:field="*{selectedEventId}" th:disabled="${showModal}">
+                            <option th:each="event : ${eventList}"
+                                    th:value="${event.eventId}"
+                                    th:text="${event.displayName}">
+                                2026/07/20～2026/08/02
+                            </option>
+                        </select>
+                        <button type="submit" class="btn-primary" th:disabled="${showModal}">変更</button>
+                    </form>
+                </div>
+            </div>
+        </header>
+
+        <!-- イベントタイトル表示 -->
+        <div class="section-title">
+            <h2>シフト一覧 <span th:if="${currentEvent != null}" th:text="'（' + ${currentEvent.displayName} + '）'"></span></h2>
+        </div>
+
+        <!-- スプレッドシート風シフト一覧テーブル -->
+        <main class="calendar-container">
+            <!-- 該当データなしの表示 -->
+            <div th:if="${#lists.isEmpty(dateList)}" class="no-data">
+                該当するシフト情報が存在しません。
+            </div>
+
+            <!-- スクロール可能なテーブルエリア -->
+            <div th:unless="${#lists.isEmpty(dateList)}" class="table-wrapper">
+                <table class="shift-table">
+                    <thead>
+                        <tr>
+                            <!-- 左上の固定ヘッダー -->
+                            <th class="sticky-header sticky-col">日付</th>
+                            <!-- 横軸：ユーザーID + ユーザー名 -->
+                            <th th:each="user : ${userList}" 
+                                class="sticky-header" 
+                                th:text="${user.userId + ' ' + user.userName}">1001 山田太郎</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 縦軸：勤務日一覧（targetStartDate ～ targetEndDate） -->
+                        <tr th:each="d : ${dateList}">
+                            <!-- 左固定：日付セル (yyyy/MM/dd 形式) -->
+                            <th class="sticky-col date-cell" th:text="${#temporals.format(d, 'yyyy/MM/dd')}">2026/07/20</th>
+
+                            <!-- 交差セル（日付 × ユーザーID に一致するShiftを探す） -->
+                            <td th:each="user : ${userList}">
+                                
+                                <!-- shiftList内をループして該当する日付・ユーザーIDのシフトを保持 -->
+                                <th:block th:each="s : ${shiftList}" th:if="${s.shiftDate != null and s.shiftDate.equals(d) and s.userId == user.userId}">
+                                    <form th:action="@{/shift/shiftCreate/edit}" method="get" class="cell-form">
+                                        <input type="hidden" name="shiftId" th:value="${s.id}" />
+                                        <input type="hidden" name="eventId" th:value="${searchForm.selectedEventId}" />
+                                        
+                                        <button type="submit" 
+                                                class="cell-btn" 
+                                                th:classappend="${s.startTime == null ? 'is-rest-btn' : ''}"
+                                                th:disabled="${showModal}">
+                                            <!-- 出勤時（startTime != null） -->
+                                            <div th:if="${s.startTime != null}" class="time-container">
+                                                <span th:text="${#temporals.format(s.startTime, 'H:mm')}">9:00</span>
+                                                <span class="time-sep">～</span>
+                                                <span th:text="${#temporals.format(s.endTime, 'H:mm')}">18:00</span>
+                                            </div>
+                                            <!-- 休み時（startTime == null） -->
+                                            <div th:if="${s.startTime == null}" class="rest-container">
+                                                休
+                                            </div>
+                                        </button>
+                                    </form>
+                                </th:block>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- シフト編集ポップアップ（モーダル） -->
+    <div id="modalOverlay" class="modal-overlay" th:if="${showModal}">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>シフト編集</h3>
+            </div>
+            <form th:action="@{/shift/shiftCreate/update}" th:object="${shiftForm}" method="post">
+                <input type="hidden" th:field="*{id}" />
+                <input type="hidden" th:field="*{eventId}" />
+
+                <div class="modal-form-group">
+                    <label>ユーザーID：</label>
+                    <input type="text" th:field="*{userId}" class="input-readonly" readonly />
+                </div>
+
+                <div class="modal-form-group">
+                    <label>勤務日：</label>
+                    <input type="date" th:field="*{shiftDate}" />
+                    <span class="error-message" th:if="${#fields.hasErrors('shiftDate')}" th:errors="*{shiftDate}"></span>
+                </div>
+
+                <!-- 休みチェックボックス -->
+                <div class="modal-form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="restCheckbox" th:field="*{rest}" />
+                        <span>☕ 休みとして設定</span>
+                    </label>
+                </div>
+
+                <div class="modal-form-group">
+                    <label for="startTime">出勤予定時間：</label>
+                    <input type="time" id="startTime" th:field="*{startTime}" />
+                    <span class="error-message" th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}"></span>
+                </div>
+
+                <div class="modal-form-group">
+                    <label for="endTime">退勤予定時間：</label>
+                    <input type="time" id="endTime" th:field="*{endTime}" />
+                    <span class="error-message" th:if="${#fields.hasErrors('endTime')}" th:errors="*{endTime}"></span>
+                </div>
+
+                <div class="modal-form-group">
+                    <label>備考・メモ：</label>
+                    <input type="text" th:field="*{memo}" placeholder="例：早番、受付担当など" />
+                    <span class="error-message" th:if="${#fields.hasErrors('memo')}" th:errors="*{memo}"></span>
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-primary">保存する</button>
+                    <button type="button" id="btnCancel" class="btn-cancel">キャンセル</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,375 @@
+@charset "UTF-8";
+
+/* ===================================================
+   全体基本設定（ビジネス・エンタープライズUIカラー）
+   =================================================== */
+body {
+    background-color: #F8FAFC; /* 清潔感のある淡いグレー */
+    color: #0F172A;           /* 視認性の高いダークスレート */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    padding: 24px;
+    -webkit-font-smoothing: antialiased;
+}
+
+.app-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ヘッダーエリア */
+.app-header {
+    background-color: #FFFFFF;
+    padding: 20px 24px;
+    border-radius: 8px;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin-bottom: 24px;
+}
+
+h1 {
+    margin: 0 0 16px 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #1E293B;
+    letter-spacing: -0.02em;
+}
+
+.top-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.event-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: #475569;
+    font-weight: 500;
+}
+
+select {
+    padding: 8px 12px;
+    border: 1px solid #CBD5E1;
+    border-radius: 6px;
+    background-color: #FFFFFF;
+    color: #0F172A;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+select:focus {
+    border-color: #2563EB;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* ===================================================
+   ボタンデザイン（共通）
+   =================================================== */
+button {
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* プライマリボタン（深みのあるブルー） */
+.btn-primary {
+    background-color: #2563EB;
+    color: #FFFFFF;
+}
+.btn-primary:hover:not(:disabled) {
+    background-color: #1D4ED8;
+}
+
+/* セカンダリボタン（グレー系アウトライン風） */
+.btn-secondary {
+    background-color: #FFFFFF;
+    color: #475569;
+    border-color: #CBD5E1;
+}
+.btn-secondary:hover:not(:disabled) {
+    background-color: #F1F5F9;
+    color: #0F172A;
+}
+
+/* キャンセルボタン */
+.btn-cancel {
+    background-color: #FFFFFF;
+    color: #64748B;
+    border-color: #CBD5E1;
+}
+.btn-cancel:hover:not(:disabled) {
+    background-color: #F8FAFC;
+    color: #334155;
+}
+
+/* ===================================================
+   スプレッドシート風テーブルデザイン
+   =================================================== */
+.section-title h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 12px;
+}
+
+.no-data {
+    background-color: #FFFFFF;
+    padding: 48px;
+    text-align: center;
+    border-radius: 8px;
+    border: 1px solid #E2E8F0;
+    color: #64748B;
+    font-size: 0.9rem;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    background-color: #FFFFFF;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.shift-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    table-layout: fixed;
+}
+
+/* セル共通指定 */
+.shift-table th,
+.shift-table td {
+    width: 120px;
+    min-width: 120px;
+    height: 72px;
+    padding: 0;
+    border-right: 1px solid #E2E8F0;
+    border-bottom: 1px solid #E2E8F0;
+    text-align: center;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+
+/* ユーザーIDヘッダー（ダークネイビー） */
+.shift-table th.sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #1E293B;
+    color: #F8FAFC;
+    font-size: 0.85rem;
+    font-weight: 600;
+    height: 40px;
+    letter-spacing: 0.02em;
+}
+
+/* 日付列（左固定・ライトスレート） */
+.shift-table .sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 11;
+    background-color: #F1F5F9;
+    color: #334155;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border-right: 2px solid #CBD5E1;
+}
+
+/* 左上の角ヘッダー */
+.shift-table th.sticky-header.sticky-col {
+    z-index: 20;
+    background-color: #0F172A;
+    color: #FFFFFF;
+}
+
+/* セルホバー処理 */
+.shift-table tbody td:hover {
+    background-color: #F8FAFC;
+}
+
+/* ===================================================
+   セル内全体クリック用フォーム＆ボタン擬態スタイリング
+   =================================================== */
+.cell-form {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.cell-btn {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 4px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+/* 休み設定時のボタン背景（明るいスカイブルー） */
+.cell-btn.is-rest-btn {
+    background-color: #0ea5e9; /* 鮮やかで明るいブルー */
+    color: #FFFFFF;
+}
+
+.cell-btn.is-rest-btn:hover:not(:disabled) {
+    background-color: #0284c7; /* ホバー時はやや濃いブルー */
+}
+
+.time-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1E293B;
+    line-height: 1.35;
+}
+
+.time-sep {
+    font-size: 0.75rem;
+    color: #94A3B8;
+    font-weight: normal;
+}
+
+.rest-container {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    letter-spacing: 1px;
+}
+
+/* ===================================================
+   モーダル（ポップアップ）デザイン
+   =================================================== */
+   .modal-overlay {
+       position: fixed;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100%;
+       background-color: rgba(15, 23, 42, 0.4);
+       backdrop-filter: blur(2px);
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       z-index: 1000;
+   }
+
+   .modal-content {
+       position: relative; /* 追加 */
+       z-index: 1001;      /* 追加（オーバーレイより前面にする） */
+       background-color: #FFFFFF;
+       width: 90%;
+       max-width: 440px;
+       padding: 24px;
+       border-radius: 12px;
+       /* 省略 */
+   }
+
+.modal-header h3 {
+    margin: 0 0 16px 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1E293B;
+    border-bottom: 1px solid #E2E8F0;
+    padding-bottom: 12px;
+}
+
+.modal-form-group {
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.modal-form-group label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+.modal-form-group input[type="text"],
+.modal-form-group input[type="date"],
+.modal-form-group input[type="time"] {
+    padding: 8px 12px;
+    border: 1px solid #CBD5E1;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    color: #0F172A;
+    outline: none;
+}
+
+.modal-form-group input[type="text"]:focus,
+.modal-form-group input[type="date"]:focus,
+.modal-form-group input[type="time"]:focus {
+    border-color: #2563EB;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.input-readonly {
+    background-color: #F1F5F9;
+    color: #64748B;
+    border-color: #E2E8F0 !important;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: #334155;
+    font-weight: 500;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.modal-buttons button {
+    flex: 1;
+    padding: 10px;
+}
+
+.error-message {
+    color: #DC2626;
+    font-size: 0.775rem;
+    font-weight: 500;
+}
+/* キャンセルボタンを確実に一番手前に配置 */
+#btnCancel {
+    position: relative;
+    z-index: 1002;
+}
