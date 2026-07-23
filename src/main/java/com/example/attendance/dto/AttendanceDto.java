@@ -1,5 +1,7 @@
 package com.example.attendance.dto;
 
+import java.time.LocalDate;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -19,4 +21,8 @@ public class AttendanceDto {
 
     @JsonProperty("canClockOut")
     private boolean canClockOut;
+
+    // ★ 給与計算に必須（退勤した日の年月を渡す）
+    @JsonProperty("workDate")
+    private LocalDate workDate;
 }
