@@ -1,29 +1,44 @@
 /* ============================================================
-   SNS共通テーマ：ダークパープル × ホログラム × ガラスパネル
-   ============================================================ */
+   SNS共通テーマ：ビジネス × ブルー（企業向け）
+   給与一覧と完全統一デザイン
+============================================================ */
 
-/* 全体 */
-body {
-    font-family: "Helvetica Neue", Arial, Meiryo, sans-serif;
-    background: radial-gradient(circle at 20% 20%, #2a0f4d, #0b0714 70%);
-    color: #f3eaff;
-    margin: 0;
-    padding: 0;
+:root {
+    --bg-color: #f5f7fa;
+    --card-bg: #ffffff;
+    --text-primary: #1a2b4c;
+    --text-secondary: #4a5b75;
+    --border-color: #d3d9e3;
+    --accent-color: #2b6cb0;
+    --accent-light: #4a90e2;
+    --accent-hover: #1e4f80;
+    --shadow-light: rgba(0, 0, 0, 0.06);
+    --shadow-strong: rgba(0, 0, 0, 0.12);
 }
 
 /* ============================================================
-   ナビゲーションバー（ガラスパネル＋ホログラム）
-   ============================================================ */
+   全体
+============================================================ */
+body {
+    background: var(--bg-color);
+    font-family: "Helvetica Neue", Arial, Meiryo, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: var(--text-primary);
+}
+
+/* ============================================================
+   ナビゲーションバー（企業向けブルー）
+============================================================ */
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(12px);
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
     padding: 0 20px;
     height: 60px;
-    border-bottom: 1px solid rgba(255,255,255,0.18);
-    box-shadow: 0 0 18px rgba(155, 92, 255, 0.35);
+    box-shadow: 0 2px 6px var(--shadow-light);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -31,10 +46,9 @@ body {
 
 .nav-brand a {
     font-size: 1.4rem;
-    font-weight: 900;
-    color: #e0a8ff;
+    font-weight: 700;
+    color: var(--accent-color);
     text-decoration: none;
-    text-shadow: 0 0 14px #b57cff;
 }
 
 .nav-menu {
@@ -44,47 +58,51 @@ body {
 
 .nav-item {
     text-decoration: none;
-    color: #e0caff;
+    color: var(--text-secondary);
     padding: 8px 16px;
-    border-radius: 10px;
-    font-weight: 700;
+    border-radius: 8px;
+    font-weight: 600;
     font-size: 0.95rem;
     transition: 0.25s;
 }
 
 .nav-item:hover {
-    background: rgba(255,255,255,0.12);
-    box-shadow: 0 0 12px rgba(208, 140, 255, 0.45);
+    background: #e6edf5;
 }
 
 .nav-item.active {
-    background: rgba(255,255,255,0.18);
-    color: #ffffff;
-    box-shadow: 0 0 18px rgba(208, 140, 255, 0.65);
+    background: #ebf8ff;
+    color: var(--accent-color);
 }
 
 /* ============================================================
-   メインコンテナ（ガラスパネル）
-   ============================================================ */
+   メインコンテナ
+============================================================ */
 .main-container {
     max-width: 720px;
     margin: 30px auto;
     padding: 0 15px;
 }
 
+/* カード（企業向け） */
 .card {
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(14px);
-    border-radius: 16px;
+    background: var(--card-bg);
+    border-radius: 12px;
     padding: 24px;
-    margin-bottom: 28px;
-    border: 1px solid rgba(255,255,255,0.18);
-    box-shadow: 0 0 22px rgba(155, 92, 255, 0.35);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px var(--shadow-light);
+    margin-bottom: 24px;
+    transition: 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px var(--shadow-strong);
 }
 
 /* ============================================================
    投稿カード（タイムライン）
-   ============================================================ */
+============================================================ */
 .post-card {
     display: flex;
     flex-direction: column;
@@ -98,20 +116,19 @@ body {
 }
 
 .post-user-name {
-    font-weight: 900;
+    font-weight: 700;
     font-size: 1rem;
-    color: #e0a8ff;
-    text-shadow: 0 0 10px #b57cff;
+    color: var(--accent-color);
 }
 
 .post-user-id {
-    color: #cbb3ff;
+    color: var(--text-secondary);
     font-size: 0.85rem;
     margin-left: 6px;
 }
 
 .post-time {
-    color: #cbb3ff;
+    color: var(--text-secondary);
     font-size: 0.8rem;
 }
 
@@ -120,134 +137,121 @@ body {
     white-space: pre-wrap;
     word-break: break-word;
     margin-bottom: 14px;
-    color: #f3eaff;
+    color: var(--text-primary);
 }
 
 /* ============================================================
    投稿アクション（いいね・RT・引用RT）
-   ============================================================ */
+============================================================ */
 .post-actions {
     display: flex;
     gap: 18px;
-    border-top: 1px solid rgba(255,255,255,0.18);
+    border-top: 1px solid var(--border-color);
     padding-top: 10px;
 }
 
 .btn-icon,
 .btn-icon-link {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.18);
-    color: #e0caff;
+    background: #eef2f7;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
     font-size: 0.85rem;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
     text-decoration: none;
     display: flex;
     align-items: center;
     gap: 6px;
     padding: 6px 12px;
-    border-radius: 10px;
+    border-radius: 8px;
     transition: 0.25s;
 }
 
 .btn-icon:hover,
 .btn-icon-link:hover {
-    background: rgba(255,255,255,0.18);
-    box-shadow: 0 0 14px rgba(208, 140, 255, 0.45);
+    background: #e6edf5;
 }
 
 .btn-icon.active-like {
-    color: #ff7abf;
-    text-shadow: 0 0 10px #ff7abf;
+    color: #c53030;
+    font-weight: 700;
 }
 
 .btn-icon.active-retweet {
-    color: #7affc9;
-    text-shadow: 0 0 10px #7affc9;
+    color: #2f855a;
+    font-weight: 700;
 }
 
 /* ============================================================
    投稿フォーム
-   ============================================================ */
+============================================================ */
 textarea,
 input[type="text"] {
     width: 100%;
     padding: 14px;
-    border-radius: 12px;
-    background: rgba(255,255,255,0.12);
-    border: 1px solid #7a3cc0;
-    color: #f3eaff;
+    border-radius: 10px;
+    background: #f0f4f8;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
     font-size: 1rem;
     resize: vertical;
 }
 
 textarea:focus,
 input[type="text"]:focus {
-    border-color: #e0a8ff;
-    box-shadow: 0 0 14px #e0a8ff;
+    border-color: var(--accent-color);
     outline: none;
+    box-shadow: 0 0 0 3px #cfe2ff;
 }
 
+/* 投稿ボタン */
 .btn-primary {
     padding: 12px 20px;
-    background: linear-gradient(135deg, #b57cff, #e0a8ff);
+    background: var(--accent-color);
     color: #fff;
     border: none;
-    border-radius: 12px;
-    font-size: 1rem;
-    font-weight: 800;
-    cursor: pointer;
-    box-shadow: 0 0 22px rgba(155, 92, 255, 0.45);
-    transition: 0.3s;
-}
-
-.btn-primary:hover {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow: 0 0 32px rgba(208, 140, 255, 0.65);
-}
-
-/* ============================================================
-   キャンセルボタン（投稿画面専用）
-   ダークパープル × ホログラム × ガラスパネル調
-   ============================================================ */
-.btn-secondary {
-    padding: 12px 20px;
-    background: rgba(255,255,255,0.10);
-    border: 1px solid rgba(255,255,255,0.22);
-    color: #e0caff;
-    border-radius: 12px;
+    border-radius: 10px;
     font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-    transition: 0.3s;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 14px rgba(155, 92, 255, 0.25);
+    transition: 0.25s;
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+}
+
+/* キャンセルボタン */
+.btn-secondary {
+    padding: 12px 20px;
+    background: #e6edf5;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s;
 }
 
 .btn-secondary:hover {
-    background: rgba(255,255,255,0.18);
-    color: #ffffff;
-    box-shadow: 0 0 22px rgba(208, 140, 255, 0.45);
-    transform: translateY(-3px) scale(1.03);
+    background: #dce3ee;
 }
 
 /* ============================================================
    引用リツイート
-   ============================================================ */
+============================================================ */
 .target-post-preview {
-    background: rgba(255,255,255,0.10);
-    border-left: 4px solid #e0a8ff;
+    background: #f0f4f8;
+    border-left: 4px solid var(--accent-color);
     padding: 14px 18px;
-    border-radius: 12px;
+    border-radius: 10px;
     margin-bottom: 20px;
-    box-shadow: 0 0 14px rgba(155, 92, 255, 0.35);
 }
 
 /* ============================================================
    DM画面（2カラム）
-   ============================================================ */
+============================================================ */
 .dm-container {
     max-width: 900px;
     height: calc(100vh - 80px);
@@ -262,20 +266,19 @@ input[type="text"]:focus {
     width: 280px;
     display: flex;
     flex-direction: column;
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(12px);
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.18);
-    box-shadow: 0 0 18px rgba(155, 92, 255, 0.35);
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px var(--shadow-light);
     overflow: hidden;
 }
 
 .sidebar-header {
     padding: 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.18);
+    border-bottom: 1px solid var(--border-color);
     font-size: 1rem;
-    font-weight: 900;
-    color: #e0a8ff;
+    font-weight: 700;
+    color: var(--accent-color);
 }
 
 .user-list {
@@ -285,11 +288,11 @@ input[type="text"]:focus {
 }
 
 .user-item {
-    border-bottom: 1px solid rgba(255,255,255,0.12);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .user-item.active {
-    background: rgba(208,140,255,0.18);
+    background: #ebf8ff;
 }
 
 .user-link {
@@ -297,7 +300,7 @@ input[type="text"]:focus {
     flex-direction: column;
     padding: 14px 16px;
     text-decoration: none;
-    color: #f3eaff;
+    color: var(--text-primary);
 }
 
 .user-link .user-name {
@@ -307,7 +310,7 @@ input[type="text"]:focus {
 
 .user-link .user-id {
     font-size: 0.8rem;
-    color: #cbb3ff;
+    color: var(--text-secondary);
 }
 
 /* 右側メッセージ表示 */
@@ -315,11 +318,10 @@ input[type="text"]:focus {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(12px);
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.18);
-    box-shadow: 0 0 18px rgba(155, 92, 255, 0.35);
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px var(--shadow-light);
     overflow: hidden;
 }
 
@@ -347,29 +349,27 @@ input[type="text"]:focus {
 .message-bubble {
     max-width: 65%;
     padding: 12px 16px;
-    border-radius: 16px;
+    border-radius: 12px;
     word-break: break-word;
     font-size: 0.95rem;
 }
 
 .message-bubble-wrapper.mine .message-bubble {
-    background: linear-gradient(135deg, #b57cff, #e0a8ff);
-    color: #ffffff;
-    border-bottom-right-radius: 6px;
+    background: var(--accent-light);
+    color: #fff;
 }
 
 .message-bubble-wrapper.other .message-bubble {
-    background: rgba(255,255,255,0.12);
-    color: #f3eaff;
-    border-bottom-left-radius: 6px;
+    background: #eef2f7;
+    color: var(--text-primary);
 }
 
 .chat-input-form {
     display: flex;
     gap: 10px;
     padding: 14px;
-    border-top: 1px solid rgba(255,255,255,0.18);
-    background: rgba(255,255,255,0.08);
+    border-top: 1px solid var(--border-color);
+    background: #f0f4f8;
 }
 
 .chat-input-form input[type="text"] {
@@ -382,6 +382,6 @@ input[type="text"]:focus {
     justify-content: center;
     align-items: center;
     height: 100%;
-    color: #cbb3ff;
+    color: var(--text-secondary);
     font-size: 0.95rem;
 }
