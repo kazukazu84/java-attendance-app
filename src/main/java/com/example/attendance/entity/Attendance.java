@@ -35,5 +35,5 @@ public class Attendance {
     private LocalTime clockOut;
     
     @Column(name = "rest_time", nullable = false)
-    private Integer restTime = 0; // 初期値を0にしておくと安全です
+    private Double restTime = 0.0; // 初期値を0にしておくと安全です
 }

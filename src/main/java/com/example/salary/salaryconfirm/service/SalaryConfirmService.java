@@ -2,6 +2,7 @@ package com.example.salary.salaryconfirm.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,21 +22,25 @@ public class SalaryConfirmService {
      */
     public List<SalaryConfirmDto> getSalaryList(String userId, int targetYear) {
 
-        // ★ 最新仕様の Repository メソッド名に合わせる
+        // ★ Repository から取得
         List<SalaryEntity> list =
                 salaryConfirmRepository.findByUserInfoUserIdAndTargetYear(userId, targetYear);
+
+        // ★ 月の降順（新しい月 → 古い月）にソート
+        list = list.stream()
+                .sorted((a, b) -> Integer.compare(b.getTargetMonth(), a.getTargetMonth()))
+                .collect(Collectors.toList());
 
         List<SalaryConfirmDto> dtoList = new ArrayList<>();
 
         for (SalaryEntity s : list) {
 
-            // ★ 給与計算は保存済みの値をそのまま使用（再計算しない）
             int netSalary = s.getNetSalary();
 
             SalaryConfirmDto dto = new SalaryConfirmDto(
                     s.getTargetMonth(),
                     netSalary,
-                    s.getUserInfo().getUserId(),   // ★ String に変更
+                    s.getUserInfo().getUserId(),
                     s.getTargetYear()
             );
 
@@ -44,6 +49,7 @@ public class SalaryConfirmService {
 
         return dtoList;
     }
+
 
     /**
      * 年間勤務時間
