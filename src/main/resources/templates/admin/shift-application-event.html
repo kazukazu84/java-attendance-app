@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
+
     <meta charset="UTF-8">
     <title>シフト受付期間設定</title>
     <link rel="stylesheet" th:href="@{/css/shift-application-event.css}">
@@ -62,6 +63,7 @@
     </select>
 
     <button type="submit"
+            class="btn-primary"
             th:disabled="${editingEventId != null}">
         新規作成
     </button>
@@ -78,6 +80,7 @@
 
     <thead>
     <tr>
+        <th>状態</th><!-- ★「対象期間開始」の左側に追加 -->
         <th>対象期間開始</th>
         <th>対象期間終了</th>
         <th>受付開始</th>
@@ -94,6 +97,7 @@
         <!-- 通常表示 -->
         <th:block th:if="${editingEventId != event.eventId}">
 
+            <td th:text="${event.statusLabel}"></td><!-- ★状態の表示文字列を出力 -->
             <td th:text="${event.targetStartDate}"></td>
             <td th:text="${event.targetEndDate}"></td>
             <td th:text="${event.applicationStartDate}"></td>
@@ -102,14 +106,14 @@
             <td>
                 <form th:action="@{/admin/shift-application-event/edit}" method="post">
                     <input type="hidden" name="eventId" th:value="${event.eventId}">
-                    <button type="submit">編集</button>
+                    <button type="submit" class="btn-primary">編集</button>
                 </form>
             </td>
 
             <td>
                 <form th:action="@{/admin/shift-application-event/delete}" method="post">
                     <input type="hidden" name="eventId" th:value="${event.eventId}">
-                    <button type="submit" th:disabled="${editingEventId != null}">削除</button>
+                    <button type="submit" class="btn-secondary" th:disabled="${editingEventId != null}">削除</button>
                 </form>
             </td>
 
@@ -118,9 +122,10 @@
         <!-- 編集モード -->
         <th:block th:if="${editingEventId == event.eventId}">
 
-            <td colspan="6">
+            <td colspan="7"><!-- ★列数増加に伴い colspan を 6 から 7 に変更 -->
 
-                <form id="updateForm" th:action="@{/admin/shift-application-event/update}"
+                <!-- 1つのフォーム内にまとめ、二重ネストを回避 -->
+                <form id="updateForm"
                       th:object="${updateShiftApplicationEventForm}"
                       method="post">
 
@@ -142,13 +147,20 @@
                                 <input type="date" th:field="*{applicationEndDate}">
                             </td>
                             <td>
-                                <button type="submit">完了</button>
+                                <!-- formaction で送信先を /update に指定 -->
+                                <button type="submit"
+                                        th:formaction="@{/admin/shift-application-event/update}"
+                                        class="btn-primary">
+                                    完了
+                                </button>
                             </td>
                             <td>
-                                <!-- 追加箇所：キャンセル用フォーム -->
-                                <form th:action="@{/admin/shift-application-event/cancel}" method="post" style="display:inline;">
-                                    <button type="submit">キャンセル</button>
-                                </form>
+                                <!-- formaction で送信先を /cancel に指定（二重フォーム回避） -->
+                                <button type="submit"
+                                        th:formaction="@{/admin/shift-application-event/cancel}"
+                                        class="btn-cancel">
+                                    キャンセル
+                                </button>
                             </td>
                         </tr>
                     </table>
@@ -168,6 +180,7 @@
 <br>
 
 <button type="button"
+        class="btn-secondary"
         th:onclick="|location.href='@{/admin/shift-management}'|"
         th:disabled="${editingEventId != null}">
     戻る
