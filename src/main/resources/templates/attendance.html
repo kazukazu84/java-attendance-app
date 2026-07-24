@@ -3,134 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <title>簡易勤怠</title>
-    <!-- Bootstrap CSS で簡単なレイアウト調整 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #f8f9fa; }
-        .attendance-container { max-width: 500px; margin: 50px auto; padding: 30px; background: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .time-display { font-size: 1.5rem; font-weight: bold; color: #495057; }
-    </style>
-	<style>
-	/* ボタン全般の共通スタイル（基本デザイン） */
-	button, .btn {
-	    display: inline-block;
-	    padding: 10px 20px;
-	    font-size: 16px;
-	    font-weight: bold;
-	    text-align: center;
-	    text-decoration: none;
-	    cursor: pointer;
-	    border: none;
-	    border-radius: 4px;
-	    outline: none;
-	    
-	    /* 👇 押し込まれる動きを滑らかにする設定 */
-	    transition: all 0.1s ease;
-	    
-	    /* （参考）少し立体感を出すための影 */
-	    box-shadow: 0 4px 0 #b3b3b3; 
-	}
-
-	/* 🟢 出勤ボタンなどの色（例） */
-	.btn-clock-in {
-	    background-color: #28a745;
-	    color: white;
-	    box-shadow: 0 4px 0 #1e7e34; /* 濃い目の同系色で立体感を出す */
-	    font-size: 32px;
-		padding-top: 30px;
-		padding-bottom: 30px;
-	}
-
-	/* 🔴 退勤ボタンなどの色（例） */
-	.btn-clock-out {
-	    background-color: #dc3545;
-	    color: white;
-	    box-shadow: 0 4px 0 #bd2130;
-	    font-size: 32px;
-		padding-top: 30px;
-		padding-bottom: 30px;
-	}
-
-	/* ===================================================
-	   ★【重要】クリックされて「アクティブ」になった瞬間の見た目
-	   =================================================== */
-	button:active, .btn:active {
-	    /* 👇 下方向への影を消す、または平らにする */
-	    box-shadow: 0 1px 0 transparent;
-	    
-	    /* 👇 ボタン自体を影の分だけ下に少しずらす */
-	    transform: translateY(3px);
-	}
-
-	/* 🔒 ボタンが非活性（disabled）のときは押し込めないようにする設定 */
-	button:disabled, .btn:disabled {
-	    opacity: 0.6;
-	    cursor: not-allowed;
-	    box-shadow: none !important;
-	    transform: none !important;
-	}
-	</style>
-	<!-- 👇 CSRF対策のため、以下の2行を追加 -->
-	<meta th:name="_csrf" th:content="${_csrf.token}"/>
-	<meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="stylesheet" th:href="@{/css/attendance.css}">
+    <!-- CSRF対策 -->
+    <meta th:name="_csrf" th:content="${_csrf.token}"/>
+    <meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <body>
 
-<div class="container">
+<div class="container d-flex justify-content-center">
     <div class="attendance-container text-center">
-        <h2 class="mb-4">簡易勤怠</h2>
+        <h1 class="page-title mb-4">簡易勤怠</h1>
 
-        <!-- 【ステータス表示部】 -->
-        <div class="alert alert-info mb-3" id="statusMessage" th:text="${status?.statusMessage}">
+        <!-- ステータス表示部 -->
+        <div class="status-box mb-3" id="statusMessage" th:text="${status?.statusMessage}">
             状態を読み込み中...
         </div>
 
-        <!-- 【時刻表示部】 -->
+        <!-- 時刻表示部 -->
         <div class="time-display mb-4" id="realTimeDisplay">
             yyyy/MM/dd HH:mm:ss
         </div>
 
-		<!-- ボタンエリア（中央部） -->
-		<div class="row g-3 mb-5">
-			<!-- 【出勤ボタン】 -->
-			<div class="col-6">
-				<!-- 変更箇所：classに「btn-clock-in」を追加し、不要な「btn-primary」「btn-lg」を削除しました -->
-				<button type="button" id="btnClockIn" class="btn btn-clock-in w-100" 
-						th:disabled="${status == null || !status.canClockIn}">出勤</button>
-			</div>
-			<!-- 【退勤ボタン】 -->
-			<div class="col-6">
-				<!-- 変更箇所：classに「btn-clock-out」を追加し、不要な「btn-success」「btn-lg」を削除しました -->
-				<button type="button" id="btnClockOut" class="btn btn-clock-out w-100" 
-						th:disabled="${status == null || !status.canClockOut}">退勤</button>
-			</div>
-		</div>
+        <!-- ボタンエリア（中央部） -->
+        <div class="row g-3 mb-4">
+            <div class="col-6">
+                <button type="button" id="btnClockIn" class="btn btn-clock-in w-100" 
+                        th:disabled="${status == null || !status.canClockIn}">出勤</button>
+            </div>
+            <div class="col-6">
+                <button type="button" id="btnClockOut" class="btn btn-clock-out w-100" 
+                        th:disabled="${status == null || !status.canClockOut}">退勤</button>
+            </div>
+        </div>
 
-		<hr>
+        <hr class="my-4" style="border-color: var(--border-color);">
 
-		<!-- ボタンエリア（最下部） -->
-		<div class="row mt-4">
-			<!-- 1. 左寄せ：ログアウトボタン（POST送信用のformに変更） -->
-			<div class="col-4 text-start">
-				<form th:action="@{/logout}" method="post" style="display: inline;">
-					<button type="submit" class="btn btn-outline-danger">ログアウト</button>
-				</form>
-			</div>
-			
-			<!-- 2. 中央寄せ：メイン画面へボタン -->
-			<div class="col-4 text-center">
-				<!-- 変更箇所：aタグにth:hrefを適用して/mainに遷移するようにしました -->
-				<a th:href="@{/user/main}" class="btn btn-outline-secondary">メイン画面へ</a>
-			</div>
-			
-			<!-- 3. 右寄せ：空スペース -->
-			<div class="col-4"></div>
-		</div>
+        <!-- ボタンエリア（最下部） -->
+        <div class="row align-items-center">
+            <div class="col-4 text-start">
+                <form th:action="@{/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-logout">ログアウト</button>
+                </form>
+            </div>
+            
+            <div class="col-4 text-center">
+                <a th:href="@{/user/main}" class="btn btn-sub">メイン画面へ</a>
+            </div>
+            
+            <div class="col-4"></div>
+        </div>
     </div>
 </div>
 
 <script>
-    // --- 1. リアルタイム時計の表示処理 ---
+    // 1. リアルタイム時計
     function updateClock() {
         const now = new Date();
         const year = now.getFullYear();
@@ -140,81 +67,53 @@
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
 
-        const formatTime = `${year}/${month}/${date} ${hours}:${minutes}:${seconds}`;
-        document.getElementById('realTimeDisplay').innerText = formatTime;
+        document.getElementById('realTimeDisplay').innerText = `${year}/${month}/${date} ${hours}:${minutes}:${seconds}`;
     }
-    // 1秒ごとに時計を更新
     setInterval(updateClock, 1000);
     updateClock();
 
-
-    // --- 2. 非同期（SPA）打刻処理 ---
-    // サーバーから返ってきた結果（JSON）をもとに画面を書き換える
+    // 2. 打刻処理 (SPA)
     function updateDOM(data) {
         document.getElementById('statusMessage').innerText = data.statusMessage;
         document.getElementById('btnClockIn').disabled = !data.canClockIn;
         document.getElementById('btnClockOut').disabled = !data.canClockOut;
     }
 
-	// 【出勤ボタン】クリック時の処理
-	document.getElementById('btnClockIn').addEventListener('click', () => {
-	// 👇 追加：HTMLのmetaタグからCSRFトークンの情報を取得する
-	const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-	const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-    fetch('/api/attendance/clock-in', { method: 'POST',
-		// 👇 追加：ヘッダーにCSRFトークンをセットして送信する
-		headers: {
-			[header]: token
-		}		
-	 })
-        .then(response => {
-            // 💡 サーバーから400エラーが返ってきた場合
-            if (!response.ok) {
-                // テキスト（エラーメッセージ）を読み込んで、次のcatchにそのまま引き渡す
-                return response.text().then(errorMessage => {
-                    return Promise.reject(errorMessage); 
-                });
-            }
-            return response.json(); // 正常時はJSONとしてパース
+    // 出勤ボタン
+    document.getElementById('btnClockIn').addEventListener('click', () => {
+        const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+        fetch('/api/attendance/clock-in', { 
+            method: 'POST',
+            headers: { [header]: token }
         })
-        .then(data => {
-            // 正常にDTOが戻ってきたら画面を更新
-            updateDOM(data);
-        })
-        .catch(errorText => {
-            // 💡 サーバーから返ってきた日本語のテキストがそのまま「errorText」に入ります
-            alert("【打刻エラー】\n" + errorText);
-        });
-});
-
-	// 【退勤ボタン】クリック時の処理
-	document.getElementById('btnClockOut').addEventListener('click', () => {
-	// 👇 追加
-	const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-	const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-    fetch('/api/attendance/clock-out', { method: 'POST',
-		// 👇 追加
-		headers: {
-			[header]: token
-		}
-	 })
         .then(response => {
-            // 💡 サーバーから400エラーが返ってきた場合
             if (!response.ok) {
-                // テキスト（エラーメッセージ）を読み込んで、次のcatchにそのまま引き受ける
-                return response.text().then(errorMessage => {
-                    return Promise.reject(errorMessage);
-                });
+                return response.text().then(errorMessage => Promise.reject(errorMessage));
             }
             return response.json();
         })
-        .then(data => {
-            updateDOM(data);
+        .then(data => updateDOM(data))
+        .catch(errorText => alert("【打刻エラー】\n" + errorText));
+    });
+
+    // 退勤ボタン
+    document.getElementById('btnClockOut').addEventListener('click', () => {
+        const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+        fetch('/api/attendance/clock-out', { 
+            method: 'POST',
+            headers: { [header]: token }
         })
-        .catch(errorText => {
-            alert("【打刻エラー】\n" + errorText);
-        });
-});
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(errorMessage => Promise.reject(errorMessage));
+            }
+            return response.json();
+        })
+        .then(data => updateDOM(data))
+        .catch(errorText => alert("【打刻エラー】\n" + errorText));
+    });
 </script>
 
 </body>
