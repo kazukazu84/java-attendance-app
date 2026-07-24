@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ダイレクトメッセージ - 社内SNS</title>
+    <link rel="stylesheet" th:href="@{/css/sns.css}">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-brand">
+            <a th:href="@{${basePath + '/timeline'}}">社内SNS</a>
+        </div>
+        <nav class="nav-menu">
+            <a th:href="@{${basePath + '/timeline'}}" class="nav-item">タイムライン</a>
+            <a th:href="@{${basePath + '/post'}}" class="nav-item">投稿</a>
+            <a th:href="@{${basePath + '/dm'}}" class="nav-item active">DM</a>
+            <a th:href="@{${basePath + '/salary/confirm'}}" class="nav-item">給与確認</a>
+        </nav>
+    </header>
+
+    <main class="dm-container">
+        <!-- 2カラム：左側 ユーザー一覧 -->
+        <aside class="dm-user-sidebar card">
+            <div class="sidebar-header">
+                <h3>メッセージ</h3>
+            </div>
+            <ul class="user-list">
+                <li th:each="user : ${users}" 
+                    class="user-item" 
+                    th:classappend="${user.userId == activeReceiverId} ? 'active' : ''">
+                    <a th:href="@{${basePath + '/dm'}(receiverId=${user.userId})}" class="user-link">
+                        <span class="user-name" th:text="${user.userName}">社内 太郎</span>
+                        <span class="user-id" th:text="'@' + ${user.userId}">@taro</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- 2カラム：右側 メッセージ＆送信領域 -->
+        <section class="dm-chat-main card">
+            
+            <!-- チャット相手が選択されている場合 -->
+            <div th:if="${activeReceiverId != null}" class="chat-wrapper">
+                
+                <!-- メッセージ履歴 -->
+                <div class="chat-messages">
+                    <div th:each="msg : ${messages}" 
+                         class="message-bubble-wrapper"
+                         th:classappend="${msg.isMine} ? 'mine' : 'other'">
+                        <div class="message-bubble">
+                            <p class="message-text" th:text="${msg.content}">メッセージ内容</p>
+                            <span class="message-time" th:text="${#temporals.format(msg.createdAt, 'HH:mm')}">12:34</span>
+                        </div>
+                    </div>
+                    <div th:if="${#lists.isEmpty(messages)}" class="empty-state">
+                        <p>メッセージ履歴がありません。会話を始めましょう！</p>
+                    </div>
+                </div>
+
+                <!-- DM送信フォーム -->
+                <form th:action="@{${basePath + '/dm/send'}}" th:object="${messageForm}" method="post" class="chat-input-form">
+                    <input type="hidden" name="receiverId" th:value="${activeReceiverId}" />
+                    <input type="text" th:field="*{content}" placeholder="メッセージを入力..." required autocomplete="off" />
+                    <button type="submit" class="btn btn-primary">送信</button>
+                </form>
+            </div>
+
+            <!-- チャット相手未選択の場合 -->
+            <div th:if="${activeReceiverId == null}" class="empty-chat-selection">
+                <p>左側のユーザーリストから宛先を選択してください。</p>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>

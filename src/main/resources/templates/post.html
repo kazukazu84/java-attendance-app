@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新規投稿 - 社内SNS</title>
+    <link rel="stylesheet" th:href="@{/css/sns.css}">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-brand">
+            <a th:href="@{${basePath + '/timeline'}}">社内SNS</a>
+        </div>
+        <nav class="nav-menu">
+            <a th:href="@{${basePath + '/timeline'}}" class="nav-item">タイムライン</a>
+            <a th:href="@{${basePath + '/post'}}" class="nav-item active">投稿</a>
+            <a th:href="@{${basePath + '/dm'}}" class="nav-item">DM</a>
+            <a th:href="@{${basePath + '/salary/confirm'}}" class="nav-item">給与確認</a>
+        </nav>
+    </header>
+
+    <main class="main-container single-column">
+        <div class="card form-card">
+            <h2>新規投稿作成</h2>
+            <form th:action="@{${basePath + '/post'}}" th:object="${postForm}" method="post">
+                <div class="form-group">
+                    <label for="content">投稿内容</label>
+                    <textarea id="content" th:field="*{content}" rows="6" placeholder="メッセージを入力してください..." required autofocus></textarea>
+                </div>
+                <div class="form-actions space-between">
+                    <a th:href="@{${basePath + '/timeline'}}" class="btn btn-secondary">キャンセル</a>
+                    <button type="submit" class="btn btn-primary">投稿する</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+</body>
+</html>
