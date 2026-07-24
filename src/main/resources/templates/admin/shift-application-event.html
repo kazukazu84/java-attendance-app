@@ -144,7 +144,12 @@
                             <td>
                                 <button type="submit">完了</button>
                             </td>
-                            <td></td>
+                            <td>
+                                <!-- 追加箇所：キャンセル用フォーム -->
+                                <form th:action="@{/admin/shift-application-event/cancel}" method="post" style="display:inline;">
+                                    <button type="submit">キャンセル</button>
+                                </form>
+                            </td>
                         </tr>
                     </table>
 

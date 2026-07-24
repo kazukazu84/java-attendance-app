@@ -39,10 +39,6 @@ public class ShiftApplicationEventController {
         return service.getCreateForm();
     }
 
-    /**
-     * Update用Formの事前初期化
-     * Modelに"updateShiftApplicationEventForm"が存在しない場合のみ空のFormを生成してセットする
-     */
     @ModelAttribute("updateShiftApplicationEventForm")
     public UpdateShiftApplicationEventForm setUpUpdateForm() {
         return new UpdateShiftApplicationEventForm();
@@ -72,7 +68,6 @@ public class ShiftApplicationEventController {
             return VIEW_NAME;
         }
 
-        // JS未確認時：仮想リストでGapチェック
         if (!confirmConfirmed) {
             LocalDate[] dates = service.calculateNextEventDates(form);
             List<GapInfo> simulatedGaps = service.calculateGapsWithSimulation(null, dates[0], dates[1]);
@@ -124,6 +119,15 @@ public class ShiftApplicationEventController {
     }
 
     /**
+     * 編集モードキャンセル（新規追加）
+     */
+    @PostMapping("/cancel")
+    public String cancel() {
+        // DB更新を行わずに一覧画面へリダイレクトして編集モードを解除する
+        return REDIRECT_URL;
+    }
+
+    /**
      * 編集完了（更新）
      */
     @PostMapping("/update")
@@ -141,7 +145,6 @@ public class ShiftApplicationEventController {
             return VIEW_NAME;
         }
 
-        // JS未確認時：仮想リストでGapチェックおよびデータ削除確認メッセージ作成
         if (!confirmConfirmed) {
             List<GapInfo> simulatedGaps = service.calculateGapsWithSimulation(form.getEventId(), form.getTargetStartDate(), form.getTargetEndDate());
             boolean hasDeleteData = service.hasDataToBeDeleted(form.getEventId(), form.getTargetStartDate(), form.getTargetEndDate());
