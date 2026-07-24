@@ -14,7 +14,7 @@ import java.time.LocalTime;
 public class UserShiftDto {
 	
 	//ユーザーID
-	private Long userId;
+	private String userId;
 	
     //勤務日
     private LocalDate workDate;

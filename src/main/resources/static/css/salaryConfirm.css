@@ -1,0 +1,215 @@
+/* ================================
+   ダークパープル × ホログラム × 背景アニメーション
+================================ */
+
+/* 背景アニメーション */
+.bg-animation {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: radial-gradient(circle at 20% 20%, #3a1a5f, #0b0714 60%);
+    overflow: hidden;
+    z-index: -1;
+}
+
+.bg-animation::before,
+.bg-animation::after {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        from 0deg,
+        #9b5cff,
+        #d08cff,
+        #6a2ca0,
+        #9b5cff
+    );
+    opacity: 0.15;
+    animation: spin 18s linear infinite;
+}
+
+.bg-animation::after {
+    animation-duration: 28s;
+    opacity: 0.25;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 全体 */
+body {
+    font-family: "Helvetica Neue", Arial, Meiryo, sans-serif;
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+    color: #e8d9ff;
+}
+
+.container {
+    width: 100%;
+    max-width: 780px;
+}
+
+/* タイトル（ホログラム発光） */
+.page-title {
+    text-align: center;
+    font-size: 2.6rem;
+    margin-bottom: 32px;
+    color: #d08cff;
+    font-weight: 900;
+    text-shadow: 0 0 18px #d08cff, 0 0 32px #9b5cff;
+    animation: glowPulse 3s infinite ease-in-out;
+}
+
+@keyframes glowPulse {
+    0%   { text-shadow: 0 0 12px #d08cff; }
+    50%  { text-shadow: 0 0 32px #9b5cff; }
+    100% { text-shadow: 0 0 12px #d08cff; }
+}
+
+/* ガラスパネル */
+.card {
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(12px);
+    border-radius: 14px;
+    padding: 26px;
+    margin-bottom: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 18px rgba(155, 92, 255, 0.25);
+}
+
+.center {
+    text-align: center;
+}
+
+/* フォーム */
+.form-area {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-label {
+    font-weight: 700;
+    color: #cbb3ff;
+}
+
+.form-select {
+    padding: 12px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid #6a2ca0;
+    color: #e8d9ff;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+
+.form-select:focus {
+    border-color: #d08cff;
+    box-shadow: 0 0 12px #d08cff;
+    outline: none;
+}
+
+/* ボタン */
+.submit-btn {
+    padding: 14px;
+    background: linear-gradient(135deg, #9b5cff, #d08cff);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 0 18px rgba(155, 92, 255, 0.35);
+    transition: 0.3s;
+}
+
+.submit-btn:hover {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 0 28px rgba(208, 140, 255, 0.55);
+}
+
+/* 年間サマリー */
+.summary-box {
+    background: rgba(255,255,255,0.08);
+    padding: 18px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* テーブル */
+.salary-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #e8d9ff;
+}
+
+.salary-table th {
+    padding: 14px;
+    background: rgba(255,255,255,0.08);
+    border-bottom: 2px solid #6a2ca0;
+    text-shadow: 0 0 12px #d08cff;
+}
+
+.salary-table td {
+    padding: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+
+.salary-table tr:hover {
+    background: rgba(155,92,255,0.15);
+    transition: 0.2s;
+}
+
+/* 詳細ボタン */
+.detail-btn {
+    background: #f6e05e;
+    color: #000;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 0 14px #f6e05e;
+    transition: 0.3s;
+}
+
+.detail-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 0 22px #f6e05e;
+}
+
+/* メイン画面リンク */
+.actions {
+    text-align: center;
+    margin-top: 24px;
+}
+
+.back-link {
+    color: #d08cff;
+    font-weight: 800;
+    text-decoration: none;
+    text-shadow: 0 0 12px #9b5cff;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+/* エラーメッセージ */
+.alert-box {
+    margin: 20px auto;
+    padding: 12px 18px;
+    width: 70%;
+    background-color: #3a0f0f;
+    border: 1px solid #ff4d4d;
+    border-radius: 8px;
+    color: #ffb3b3;
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 0 0 18px rgba(255, 0, 0, 0.4);
+}

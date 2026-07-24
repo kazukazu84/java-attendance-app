@@ -32,7 +32,7 @@ public class UserShiftService {
 	 *  @return シフト一覧
 	 */
     public List<UserShiftDto> getMonthlyShift(
-            Long userId,
+            String userId,
             YearMonth yearMonth) {
     	
     	//ShiftScheduleRepository完成後に実装予定
@@ -54,7 +54,7 @@ public class UserShiftService {
      *  @return シフト一覧
      */
     public List<UserShiftDto> getWeeklyShift(
-            Long userId,
+            String userId,
             LocalDate startDate,
             LocalDate endDate) {
     	
