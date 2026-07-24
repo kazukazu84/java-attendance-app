@@ -39,6 +39,15 @@ public class ShiftApplicationEventController {
         return service.getCreateForm();
     }
 
+    /**
+     * Update用Formの事前初期化
+     * Modelに"updateShiftApplicationEventForm"が存在しない場合のみ空のFormを生成してセットする
+     */
+    @ModelAttribute("updateShiftApplicationEventForm")
+    public UpdateShiftApplicationEventForm setUpUpdateForm() {
+        return new UpdateShiftApplicationEventForm();
+    }
+
     @GetMapping
     public String index(Model model) {
         model.addAttribute("eventList", service.getEventList());
