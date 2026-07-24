@@ -1,0 +1,58 @@
+/* static/css/cat-animation.css */
+@keyframes orbitCatFinal {
+    /* 1. 【床】左下 ➔ 右下 */
+    0% {
+        bottom: 10px; left: 10px;
+        transform: scaleX(-1) rotate(0deg);
+    }
+    20% {
+        bottom: 10px; left: calc(100% - 45px);
+        transform: scaleX(-1) rotate(0deg);
+    }
+
+    /* 2. 【右の壁】右下 ➔ 右上 */
+    25% {
+        bottom: 10px; left: calc(100% - 45px);
+        transform: scaleX(-1) rotate(90deg);
+    }
+    45% {
+        bottom: calc(100% - 45px); left: calc(100% - 45px);
+        transform: scaleX(-1) rotate(90deg);
+    }
+
+    /* 3. 【天井】右上 ➔ 左上 */
+    50% {
+        bottom: calc(100% - 45px); left: calc(100% - 45px);
+        transform: scaleX(-1) rotate(180deg);
+    }
+    70% {
+        bottom: calc(100% - 45px); left: 10px;
+        transform: scaleX(-1) rotate(180deg);
+    }
+
+    /* 4. 【左の壁】左上 ➔ 左下 */
+    75% {
+        bottom: calc(100% - 45px); left: 10px;
+        transform: scaleX(1) rotate(90deg);
+    }
+    95% {
+        bottom: 10px; left: 10px;
+        transform: scaleX(1) rotate(90deg);
+    }
+
+    /* 5. ゴール（床に戻る） */
+    100% {
+        bottom: 10px; left: 10px;
+        transform: scaleX(-1) rotate(0deg);
+    }
+}
+
+.orbit-cat {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    font-size: 3rem;
+    z-index: 9999;
+    pointer-events: none;
+    animation: orbitCatFinal 60s linear infinite;
+}
