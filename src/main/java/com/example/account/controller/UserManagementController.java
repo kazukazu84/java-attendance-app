@@ -63,11 +63,7 @@ public class UserManagementController {
         	return "account/error-denied";
         }
 		
-		// 💡 何もチェックされずに届いた場合の安全ガード
-		if (userIds != null && !userIds.isEmpty()) {
-			// 次のステップで作る「サービス」の無効化メソッドを呼び出す
-			accountService.deactivateUsers(userIds);
-		}
+        accountService.deactivateUsers(userIds);
 
 		// 🔄 処理が終わったら、検索が解除された初期の一覧画面（URL）へリダイレクト！
 		return "redirect:/admin/UserManagement"; 
