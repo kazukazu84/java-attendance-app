@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.adminshift.entity.ShiftApplicationEvent;
@@ -13,21 +15,23 @@ import com.example.adminshift.entity.ShiftApplicationEvent;
 public interface ShiftApplicationEventRepository
         extends JpaRepository<ShiftApplicationEvent, Integer> {
 
-    /**
-     * 全イベントを eventId の降順で取得（必要に応じてソート指定）
-     */
     List<ShiftApplicationEvent> findAllByOrderByEventIdDesc();
 
-    /**
-     * eventIdが最も大きい（最新作成）イベントを1件取得
-     */
     Optional<ShiftApplicationEvent> findTopByOrderByEventIdDesc();
-    
-    List<ShiftApplicationEvent>
-    findTop10ByTargetEndDateGreaterThanEqualOrderByTargetStartDate(
-            LocalDate today);
-    
-    Optional<ShiftApplicationEvent>
-    findTopByOrderByTargetEndDateDesc(
-    		);
+
+    List<ShiftApplicationEvent> findTop10ByTargetEndDateGreaterThanEqualOrderByTargetStartDate(LocalDate today);
+
+    Optional<ShiftApplicationEvent> findTopByOrderByTargetEndDateDesc();
+
+    // --- 追加: 新規登録用 重複チェック ---
+    @Query("SELECT COUNT(e) > 0 FROM ShiftApplicationEvent e " +
+           "WHERE e.targetStartDate <= :endDate AND e.targetEndDate >= :startDate")
+    boolean existsOverlappingEvent(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    // --- 追加: 編集用 重複チェック（自分自身を除外） ---
+    @Query("SELECT COUNT(e) > 0 FROM ShiftApplicationEvent e " +
+           "WHERE e.eventId <> :eventId AND e.targetStartDate <= :endDate AND e.targetEndDate >= :startDate")
+    boolean existsOverlappingEventExceptSelf(@Param("eventId") Integer eventId,
+                                            @Param("startDate") LocalDate startDate,
+                                            @Param("endDate") LocalDate endDate);
 }

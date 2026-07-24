@@ -1,16 +1,20 @@
-<!DOCTYPE html> <!--このファイルはHTML5です-->
-<html xmlns:th="http://www.thymeleaf.org"><!--thymeleafを使います-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
 
-<head><!--画面には表示されない情報を書く-->
+<head>
     <meta charset="UTF-8">
-    <title>シフト受付期間設定</title><!--タブに表示する-->
-    <link rel="stylesheet"
-          th:href="@{/css/shift-application-event.css}"><!--CSSを読み込んでいます-->
+    <title>シフト受付期間設定</title>
+    <link rel="stylesheet" th:href="@{/css/shift-application-event.css}">
 </head>
 
 <body>
 
 <h1>シフト受付期間設定</h1>
+
+<!-- グローバルエラーメッセージ表示エリア（#fieldsを使わない実装） -->
+<div th:if="${errorMessage != null}" class="error-msg" style="color: red; font-weight: bold; margin-bottom: 15px;">
+    <p th:text="${errorMessage}"></p>
+</div>
 
 <!-- ========================= -->
 <!-- 新規イベント作成 -->
@@ -60,74 +64,46 @@
 <!-- イベント一覧 -->
 <!-- ========================= -->
 
-<table border="1"><!--テーブルの作成-->
+<table border="1">
 
     <thead>
-
-    <tr><!--１行という意味-->
-
+    <tr>
         <th>対象期間開始</th>
         <th>対象期間終了</th>
         <th>受付開始</th>
         <th>受付終了</th>
         <th>編集</th>
         <th>削除</th>
-
     </tr>
-
     </thead>
 
     <tbody>
 
-    <tr th:each="event : ${eventList}"><!--forと同じ-->
+    <tr th:each="event : ${eventList}">
 
         <!-- ====================== -->
         <!-- 通常表示 -->
         <!-- ====================== -->
 
-        <th:block th:if="${editingEventId != event.eventId}"><!--編集中の行だけ表示しない-->
+        <th:block th:if="${editingEventId != event.eventId}">
 
             <td th:text="${event.targetStartDate}"></td>
-
             <td th:text="${event.targetEndDate}"></td>
-
             <td th:text="${event.applicationStartDate}"></td>
-
             <td th:text="${event.applicationEndDate}"></td>
 
             <td>
-
-                <form th:action="@{/admin/shift-application-event/edit}"
-                      method="post">
-
-                    <input type="hidden"
-                           name="eventId"
-                           th:value="${event.eventId}">
-
-                    <button type="submit">
-                        編集
-                    </button>
-
+                <form th:action="@{/admin/shift-application-event/edit}" method="post">
+                    <input type="hidden" name="eventId" th:value="${event.eventId}">
+                    <button type="submit">編集</button>
                 </form>
-
             </td>
 
             <td>
-
-                <form th:action="@{/admin/shift-application-event/delete}"
-                      method="post">
-
-                    <input type="hidden"
-                           name="eventId"
-                           th:value="${event.eventId}">
-
-                    <button type="submit"
-                            th:disabled="${editingEventId != null}"><!--編集中は削除禁止-->
-                        削除
-                    </button>
-
+                <form th:action="@{/admin/shift-application-event/delete}" method="post">
+                    <input type="hidden" name="eventId" th:value="${event.eventId}">
+                    <button type="submit" th:disabled="${editingEventId != null}">削除</button>
                 </form>
-
             </td>
 
         </th:block>
@@ -142,47 +118,34 @@
 
                 <form th:action="@{/admin/shift-application-event/update}"
                       th:object="${updateShiftApplicationEventForm}"
-                      method="post">
+                      method="post"
+                      onsubmit="return confirmUpdate(this);">
 
-                    <input type="hidden"
-                           th:field="*{eventId}">
+                    <input type="hidden" th:field="*{eventId}">
+
+                    <!-- 元の日付範囲（JavaScript比較用） -->
+                    <input type="hidden" id="origStartDate" th:value="${event.targetStartDate}">
+                    <input type="hidden" id="origEndDate" th:value="${event.targetEndDate}">
 
                     <table>
-
                         <tr>
-
                             <td>
-                                <input type="date"
-                                       th:field="*{targetStartDate}">
+                                <input type="date" id="targetStartDate" th:field="*{targetStartDate}">
                             </td>
-
                             <td>
-                                <input type="date"
-                                       th:field="*{targetEndDate}">
+                                <input type="date" id="targetEndDate" th:field="*{targetEndDate}">
                             </td>
-
                             <td>
-                                <input type="date"
-                                       th:field="*{applicationStartDate}">
+                                <input type="date" th:field="*{applicationStartDate}">
                             </td>
-
                             <td>
-                                <input type="date"
-                                       th:field="*{applicationEndDate}">
+                                <input type="date" th:field="*{applicationEndDate}">
                             </td>
-
                             <td>
-                                <button type="submit">
-                                    完了
-                                </button>
+                                <button type="submit">完了</button>
                             </td>
-
-                            <td>
-                                <!-- 空欄 -->
-                            </td>
-
+                            <td></td>
                         </tr>
-
                     </table>
 
                 </form>
@@ -204,6 +167,23 @@
         th:disabled="${editingEventId != null}">
     戻る
 </button>
+
+<!-- JS制御 -->
+<script>
+function confirmUpdate(form) {
+    var origStart = document.getElementById('origStartDate').value;
+    var origEnd = document.getElementById('origEndDate').value;
+    var newStart = document.getElementById('targetStartDate').value;
+    var newEnd = document.getElementById('targetEndDate').value;
+
+    // 日付範囲が狭まる（前に遅れる、または後ろが早まる）場合は削除対象が発生
+    if ((newStart > origStart) || (newEnd < origEnd)) {
+        var message = "対象期間外になるシフトおよびシフト希望データは削除されます。\n続行しますか？";
+        return confirm(message);
+    }
+    return true;
+}
+</script>
 
 </body>
 

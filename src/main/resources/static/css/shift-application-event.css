@@ -199,3 +199,20 @@ form[action*="/update"] button {
 form[action*="/update"] button:hover:not(:disabled) {
     background-color: #d68910;
 }
+
+/* 既存のスタイルに下記を追加 */
+
+/* エラー表示エリア */
+.error-container {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 12px 20px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.error-container ul {
+    margin: 0;
+    padding-left: 20px;
+}

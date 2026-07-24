@@ -16,92 +16,104 @@ import com.example.adminshift.form.UpdateShiftApplicationEventForm;
 import com.example.adminshift.repository.ShiftApplicationEventRepository;
 import com.example.adminshift.repository.ShiftApplicationSettingRepository;
 import com.example.adminshift.repository.ShiftRepository;
+import com.example.adminshift.repository.ShiftRequestDetailRepository;
 import com.example.adminshift.repository.UsersRepository;
 
 @Service
 @Transactional
 public class ShiftApplicationEventService {
 
-	private final ShiftApplicationEventRepository repository;
-	private final ShiftApplicationSettingRepository settingRepository;
-	private final ShiftRepository shiftRepository;
-	private final UsersRepository userRepository;
+    private final ShiftApplicationEventRepository repository;
+    private final ShiftApplicationSettingRepository settingRepository;
+    private final ShiftRepository shiftRepository;
+    private final ShiftRequestDetailRepository shiftRequestDetailRepository;
+    private final UsersRepository userRepository;
 
-	public ShiftApplicationEventService(
-	        ShiftApplicationEventRepository repository,
-	        ShiftApplicationSettingRepository settingRepository,
-	        ShiftRepository shiftRepository,
-	        UsersRepository userRepository) {
+    public ShiftApplicationEventService(
+            ShiftApplicationEventRepository repository,
+            ShiftApplicationSettingRepository settingRepository,
+            ShiftRepository shiftRepository,
+            ShiftRequestDetailRepository shiftRequestDetailRepository,
+            UsersRepository userRepository) {
 
-	    this.repository = repository;
-	    this.settingRepository = settingRepository;
-	    this.shiftRepository = shiftRepository;
-	    this.userRepository = userRepository;
-	}
+        this.repository = repository;
+        this.settingRepository = settingRepository;
+        this.shiftRepository = shiftRepository;
+        this.shiftRequestDetailRepository = shiftRequestDetailRepository;
+        this.userRepository = userRepository;
+    }
+
+    /**
+     * 重複チェック共通判定
+     */
+    public boolean isOverlapping(Integer eventId, LocalDate startDate, LocalDate endDate) {
+        if (startDate == null || endDate == null) {
+            return false;
+        }
+        if (eventId == null) {
+            return repository.existsOverlappingEvent(startDate, endDate);
+        } else {
+            return repository.existsOverlappingEventExceptSelf(eventId, startDate, endDate);
+        }
+    }
+
+    /**
+     * 削除対象データ（期間外になるShiftまたはShiftRequestDetail）が存在するか判定
+     */
+    public boolean hasDataToBeDeleted(Integer eventId, LocalDate newStartDate, LocalDate newEndDate) {
+        if (eventId == null || newStartDate == null || newEndDate == null) {
+            return false;
+        }
+        boolean hasShift = shiftRepository.existsByEventIdAndShiftDateOutsideRange(eventId, newStartDate, newEndDate);
+        boolean hasRequestDetail = shiftRequestDetailRepository.existsByEventIdAndWorkDateOutsideRange(eventId, newStartDate, newEndDate);
+        return hasShift || hasRequestDetail;
+    }
 
     /**
      * イベント一覧取得
      */
     public List<ShiftApplicationEvent> getEventList() {
-
-        return repository
-                .findTop10ByTargetEndDateGreaterThanEqualOrderByTargetStartDate(
-                        LocalDate.now());
-
+        return repository.findTop10ByTargetEndDateGreaterThanEqualOrderByTargetStartDate(LocalDate.now());
     }
 
     /**
      * イベント新規作成およびシフトの自動生成
      */
-    public void createEvent(
-            CreateShiftApplicationEventForm form) {
+    public boolean createEvent(CreateShiftApplicationEventForm form) {
 
-        ShiftApplicationEvent latest =
-                repository.findTopByOrderByTargetEndDateDesc()
-                        .orElse(null);
+        ShiftApplicationEvent latest = repository.findTopByOrderByTargetEndDateDesc().orElse(null);
 
         LocalDate targetStartDate;
-
         if (latest == null) {
             targetStartDate = LocalDate.now();
         } else {
             targetStartDate = latest.getTargetEndDate().plusDays(1);
         }
 
-        LocalDate targetEndDate =
-                targetStartDate
-                        .plusWeeks(form.getTargetWeeks())
-                        .minusDays(1);
+        LocalDate targetEndDate = targetStartDate
+                .plusWeeks(form.getTargetWeeks())
+                .minusDays(1);
 
-        ShiftApplicationEvent event =
-                new ShiftApplicationEvent();
+        // 重複チェック
+        if (isOverlapping(null, targetStartDate, targetEndDate)) {
+            return false;
+        }
 
+        ShiftApplicationEvent event = new ShiftApplicationEvent();
         event.setTargetStartDate(targetStartDate);
         event.setTargetEndDate(targetEndDate);
+        event.setApplicationStartDate(targetStartDate.minusDays(form.getApplicationStartDays()));
+        event.setApplicationEndDate(targetStartDate.minusDays(form.getApplicationEndDays()));
 
-        event.setApplicationStartDate(
-                targetStartDate.minusDays(form.getApplicationStartDays()));
-
-        event.setApplicationEndDate(
-                targetStartDate.minusDays(form.getApplicationEndDays()));
-
-        // イベントの保存（DB側でIDが採番される）
         ShiftApplicationEvent savedEvent = repository.save(event);
 
-        // 全ユーザー取得
         List<Users> users = userRepository.findAll();
-
-        // シフト生成
         List<Shift> shiftsToCreate = createShiftList(savedEvent, users);
-
-        // ShiftRepository.saveAll() で一括登録
         shiftRepository.saveAll(shiftsToCreate);
 
+        return true;
     }
 
-    /**
-     * 指定されたイベントの対象期間およびユーザー一覧からShiftリストを作成する
-     */
     private List<Shift> createShiftList(ShiftApplicationEvent event, List<Users> users) {
         List<Shift> shifts = new ArrayList<>();
         LocalDate start = event.getTargetStartDate();
@@ -126,89 +138,90 @@ public class ShiftApplicationEventService {
                 currentDate = currentDate.plusDays(1);
             }
         }
-
         return shifts;
     }
 
-    /**
-     * イベント取得
-     */
     public ShiftApplicationEvent getEvent(Integer eventId) {
-
         return repository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("イベントが存在しません。"));
-
     }
 
     /**
-     * イベント更新
+     * イベント更新（差分更新およびデータ整合性の保持）
      */
-    public void updateEvent(
-            UpdateShiftApplicationEventForm form) {
+    public boolean updateEvent(UpdateShiftApplicationEventForm form) {
 
-        ShiftApplicationEvent event =
-                repository.findById(form.getEventId())
-                        .orElseThrow();
+        // 1. 重複チェック（自分自身を除外）
+        if (isOverlapping(form.getEventId(), form.getTargetStartDate(), form.getTargetEndDate())) {
+            return false;
+        }
 
-        event.setTargetStartDate(form.getTargetStartDate());
-        event.setTargetEndDate(form.getTargetEndDate());
+        ShiftApplicationEvent event = repository.findById(form.getEventId()).orElseThrow();
+
+        LocalDate newStart = form.getTargetStartDate();
+        LocalDate newEnd = form.getTargetEndDate();
+
+        // 2. 期間外データの削除 (Shift & ShiftRequestDetail)
+        shiftRepository.deleteByEventIdAndShiftDateOutsideRange(event.getEventId(), newStart, newEnd);
+        shiftRequestDetailRepository.deleteByEventIdAndWorkDateOutsideRange(event.getEventId(), newStart, newEnd);
+
+        // 3. 新規日付に対するShift作成（差分追加）
+        List<LocalDate> existingDates = shiftRepository.findExistingShiftDatesByEventId(event.getEventId());
+        List<Users> users = userRepository.findAll();
+        List<Shift> newShiftsToCreate = new ArrayList<>();
+
+        LocalDate curr = newStart;
+        while (!curr.isAfter(newEnd)) {
+            if (!existingDates.contains(curr)) {
+                for (Users user : users) {
+                    Shift shift = new Shift();
+                    shift.setEventId(event.getEventId());
+                    shift.setUserId(user.getUserId());
+                    shift.setShiftDate(curr);
+                    shift.setStartTime(null);
+                    shift.setEndTime(null);
+                    shift.setMemo(null);
+                    newShiftsToCreate.add(shift);
+                }
+            }
+            curr = curr.plusDays(1);
+        }
+
+        if (!newShiftsToCreate.isEmpty()) {
+            shiftRepository.saveAll(newShiftsToCreate);
+        }
+
+        // 4. イベント本体の更新
+        event.setTargetStartDate(newStart);
+        event.setTargetEndDate(newEnd);
         event.setApplicationStartDate(form.getApplicationStartDate());
         event.setApplicationEndDate(form.getApplicationEndDate());
 
         repository.save(event);
-
+        return true;
     }
 
-    /**
-     * イベント削除（紐づくShiftレコードも連動して自動削除）
-     */
     public void deleteEvent(Integer eventId) {
-
-        // 紐づくShiftデータを一括削除
+        // Shift, ShiftRequestDetail, Event の削除
+        shiftRequestDetailRepository.deleteByEventIdAndWorkDateOutsideRange(eventId, LocalDate.of(9999, 12, 31), LocalDate.of(1000, 1, 1)); // 全削除
         shiftRepository.deleteByEventId(eventId);
-
-        // イベント自体を削除
         repository.deleteById(eventId);
-
     }
-    
-    public CreateShiftApplicationEventForm
-    getCreateForm() {
 
-        ShiftApplicationSetting setting =
-                settingRepository.findById(1).orElseThrow();
-
-        CreateShiftApplicationEventForm form =
-                new CreateShiftApplicationEventForm();
-
-        form.setTargetWeeks(
-                setting.getTargetWeeks());
-
-        form.setApplicationStartDays(
-                setting.getApplicationStartDays());
-
-        form.setApplicationEndDays(
-                setting.getApplicationEndDays());
-
+    public CreateShiftApplicationEventForm getCreateForm() {
+        ShiftApplicationSetting setting = settingRepository.findById(1).orElseThrow();
+        CreateShiftApplicationEventForm form = new CreateShiftApplicationEventForm();
+        form.setTargetWeeks(setting.getTargetWeeks());
+        form.setApplicationStartDays(setting.getApplicationStartDays());
+        form.setApplicationEndDays(setting.getApplicationEndDays());
         return form;
     }
-    
-    public void saveSetting(
-            CreateShiftApplicationEventForm form) {
 
-        ShiftApplicationSetting setting =
-                settingRepository.findById(1).orElseThrow();
-
-        setting.setTargetWeeks(
-                form.getTargetWeeks());
-
-        setting.setApplicationStartDays(
-                form.getApplicationStartDays());
-
-        setting.setApplicationEndDays(
-                form.getApplicationEndDays());
-
+    public void saveSetting(CreateShiftApplicationEventForm form) {
+        ShiftApplicationSetting setting = settingRepository.findById(1).orElseThrow();
+        setting.setTargetWeeks(form.getTargetWeeks());
+        setting.setApplicationStartDays(form.getApplicationStartDays());
+        setting.setApplicationEndDays(form.getApplicationEndDays());
         settingRepository.save(setting);
     }
-    
 }

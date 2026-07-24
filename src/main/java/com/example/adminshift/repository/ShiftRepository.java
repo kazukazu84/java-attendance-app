@@ -5,36 +5,36 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.adminshift.entity.Shift;
 
-/**
- * シフト情報のデータアクセスを提供するリポジトリ
- */
 @Repository
 public interface ShiftRepository extends JpaRepository<Shift, Integer> {
 
-    /**
-     * 指定されたイベントIDに紐づくシフト一覧を取得します
-     *
-     * @param eventId イベントID
-     * @return シフトのリスト
-     */
     List<Shift> findByEventId(Integer eventId);
 
-    /**
-     * 指定されたイベントIDに紐づくShiftレコードを一括削除する
-     */
     void deleteByEventId(Integer eventId);
 
-    /**
-     * イベントID、ユーザーID、勤務日を指定して単一のシフトレコードを取得する
-     *
-     * @param eventId イベントID
-     * @param userId ユーザーID
-     * @param shiftDate 勤務日
-     * @return シフト情報（存在しない場合はEmpty）
-     */
     Optional<Shift> findByEventIdAndUserIdAndShiftDate(Integer eventId, String userId, LocalDate shiftDate);
+
+    // --- 追加: イベント期間外（startDateより前 または endDateより後）のShiftを削除 ---
+    @Modifying
+    @Query("DELETE FROM Shift s WHERE s.eventId = :eventId AND (s.shiftDate < :startDate OR s.shiftDate > :endDate)")
+    void deleteByEventIdAndShiftDateOutsideRange(@Param("eventId") Integer eventId,
+                                                 @Param("startDate") LocalDate startDate,
+                                                 @Param("endDate") LocalDate endDate);
+
+    // --- 追加: イベント期間外になるShiftデータが存在するか確認 ---
+    @Query("SELECT COUNT(s) > 0 FROM Shift s WHERE s.eventId = :eventId AND (s.shiftDate < :startDate OR s.shiftDate > :endDate)")
+    boolean existsByEventIdAndShiftDateOutsideRange(@Param("eventId") Integer eventId,
+                                                    @Param("startDate") LocalDate startDate,
+                                                    @Param("endDate") LocalDate endDate);
+
+    // --- 追加: 既存の日付一覧を取得（差分更新用） ---
+    @Query("SELECT DISTINCT s.shiftDate FROM Shift s WHERE s.eventId = :eventId")
+    List<LocalDate> findExistingShiftDatesByEventId(@Param("eventId") Integer eventId);
 }

@@ -18,8 +18,7 @@ import com.example.adminshift.service.ShiftApplicationEventService;
 
 @Controller
 @RequestMapping("/admin/shift-application-event")
-// 属性名を「頭小文字」に統一します
-@SessionAttributes("createShiftApplicationEventForm") 
+@SessionAttributes("createShiftApplicationEventForm")
 public class ShiftApplicationEventController {
 
     private final ShiftApplicationEventService service;
@@ -31,17 +30,11 @@ public class ShiftApplicationEventController {
         this.service = service;
     }
 
-    /**
-     * フォームの初期化（セッションにない場合に呼ばれます）
-     */
     @ModelAttribute("createShiftApplicationEventForm")
     public CreateShiftApplicationEventForm setUpCreateForm() {
         return service.getCreateForm();
     }
 
-    /**
-     * 初期表示
-     */
     @GetMapping
     public String index(Model model) {
         model.addAttribute("eventList", service.getEventList());
@@ -58,16 +51,20 @@ public class ShiftApplicationEventController {
             Model model) {
 
         if (bindingResult.hasErrors()) {
+            model.addAttribute("errorMessage", "入力内容に不備があります。設定を確認してください。");
             model.addAttribute("eventList", service.getEventList());
             return VIEW_NAME;
         }
 
-        service.createEvent(form);
+        // 重複チェック実行＆登録
+        boolean success = service.createEvent(form);
+        if (!success) {
+            model.addAttribute("errorMessage", "対象期間が他イベントと重複しています");
+            model.addAttribute("eventList", service.getEventList());
+            return VIEW_NAME;
+        }
+
         service.saveSetting(form);
-
-        // 登録後も「最後に選択した設定」を画面に残したい場合は、ここでのセッションクリア（status.setComplete()）を行わずリダイレクトします。
-        // もしDB等の初期設定値に戻したい場合は status.setComplete() を呼び出してください。
-
         return REDIRECT_URL;
     }
 
@@ -96,57 +93,50 @@ public class ShiftApplicationEventController {
         return VIEW_NAME;
     }
 
-  
-/**
- * 編集完了
- */
-@PostMapping("/update")
-public String update(
-        @Validated
-        @ModelAttribute UpdateShiftApplicationEventForm form,
-        BindingResult bindingResult,
-        Model model) {
+    /**
+     * 編集完了（更新）
+     */
+    @PostMapping("/update")
+    public String update(
+            @Validated @ModelAttribute("updateShiftApplicationEventForm") UpdateShiftApplicationEventForm form,
+            BindingResult bindingResult,
+            Model model) {
 
-    if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errorMessage", "入力内容に不備があります。日付形式等を確認してください。");
+            model.addAttribute("editingEventId", form.getEventId());
+            model.addAttribute("eventList", service.getEventList());
+            return VIEW_NAME;
+        }
 
-        model.addAttribute(
-                "eventList",
-                service.getEventList());
+        // 重複チェック実行＆更新
+        boolean success = service.updateEvent(form);
+        if (!success) {
+            model.addAttribute("errorMessage", "対象期間が他イベントと重複しています");
+            model.addAttribute("editingEventId", form.getEventId());
+            model.addAttribute("eventList", service.getEventList());
+            return VIEW_NAME;
+        }
 
-        model.addAttribute(
-                "CreateShiftApplicationEventForm",
-                service.getCreateForm());
-
-        return VIEW_NAME;
+        return REDIRECT_URL;
     }
 
-    service.updateEvent(form);
+    /**
+     * 削除
+     */
+    @PostMapping("/delete")
+    public String delete(
+            @ModelAttribute UpdateShiftApplicationEventForm form) {
 
-    return REDIRECT_URL;
-}
+        service.deleteEvent(form.getEventId());
+        return REDIRECT_URL;
+    }
 
-/**
- * 削除
- */
-@PostMapping("/delete")
-public String delete(
-        @ModelAttribute UpdateShiftApplicationEventForm form) {
-
-    service.deleteEvent(form.getEventId());
-
-    return REDIRECT_URL;
-}
-
-    
-
-/**
- * 戻る
- */
-@GetMapping("/back")
-public String back() {
-
-	return "redirect:/admin/shift-management";
-}
-
-
+    /**
+     * 戻る
+     */
+    @GetMapping("/back")
+    public String back() {
+        return "redirect:/admin/shift-management";
+    }
 }
