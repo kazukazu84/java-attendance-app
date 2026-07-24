@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>シフトテスト</title>
+</head>
+<body>
+
+<h2>シフト一覧（テスト表示）</h2>
+
+
+	<!-- 月間表示 -->
+	<div id="monthlyShiftArea"
+	     th:style="${weeklyMode} ? 'display:none;' : 'display:block;'">
+		    <div>
+
+	        <span>
+	            月間シフト
+	        </span>
+
+	        <select>
+
+	            <option>2026年7月</option>
+
+	        </select>
+
+	        <button id="toWeeklyButton">
+
+	            週間シフト表示
+
+	        </button>
+
+	    </div>
+		
+		    
+
+		       <tr th:each="shift : ${monthlyShiftList}">
+
+				<td th:text="${shift.workDate + '(' +
+				    (shift.workDate.dayOfWeek.name() == 'MONDAY' ? '月' :
+				     shift.workDate.dayOfWeek.name() == 'TUESDAY' ? '火' :
+				     shift.workDate.dayOfWeek.name() == 'WEDNESDAY' ? '水' :
+				     shift.workDate.dayOfWeek.name() == 'THURSDAY' ? '木' :
+				     shift.workDate.dayOfWeek.name() == 'FRIDAY' ? '金' :
+				     shift.workDate.dayOfWeek.name() == 'SATURDAY' ? '土' :
+				     '日')
+				     + ')'}">
+				</td>
+
+		            <td th:text="${shift.startTime == null ?
+		                '休み' :
+		                shift.startTime + '～' + shift.endTime}">
+		            </td>
+
+		        </tr>
+
+		    </table>
+
+		</div>
+		<div id="weeklyShiftArea"
+		     th:style="${weeklyMode} ? 'display:block;' : 'display:none;'">
+			  <div>
+
+		        <span>
+		            週間シフト
+		        </span>
+
+				<form action="/shift-test" method="get">
+
+				    <select name="week"
+				            onchange="this.form.submit()">
+
+				        <option value="1"
+				                th:selected="${week == 1}">
+				            7月 1週目
+				        </option>
+
+				        <option value="2"
+				                th:selected="${week == 2}">
+				            7月 2週目
+				        </option>
+
+				        <option value="3"
+				                th:selected="${week == 3}">
+				            7月 3週目
+				        </option>
+
+				        <option value="4"
+				                th:selected="${week == 4}">
+				            7月 4週目
+				        </option>
+
+				        <option value="5"
+				                th:selected="${week == 5}">
+				            7月 5週目
+				        </option>
+
+				    </select>
+
+				</form>
+
+				  
+		        <button id="toMonthlyButton">
+
+		            月間シフト表示
+
+		        </button>
+
+		    </div>
+			
+			    <table border="1">
+
+			        <tr>
+
+			            <th>日付・曜日</th>
+
+			            <th>シフト情報</th>
+
+			        </tr>
+
+					<tr th:each="shift : ${weeklyShiftList}">
+
+			            <td th:text="${shift.workDate + '(' +
+			                (shift.workDate.dayOfWeek.name() == 'MONDAY' ? '月' :
+			                shift.workDate.dayOfWeek.name() == 'TUESDAY' ? '火' :
+			                shift.workDate.dayOfWeek.name() == 'WEDNESDAY' ? '水' :
+			                shift.workDate.dayOfWeek.name() == 'THURSDAY' ? '木' :
+			                shift.workDate.dayOfWeek.name() == 'FRIDAY' ? '金' :
+			                shift.workDate.dayOfWeek.name() == 'SATURDAY' ? '土' :
+			                '日')
+			                + ')'}">
+
+			            </td>
+
+			            <td th:text="${shift.startTime == null ?
+			                '休み'
+			                : shift.startTime + '～' + shift.endTime}">
+			            </td>
+
+			        </tr>
+
+
+			</div>
+
+
+	
+	
+</table>
+
+<script>
+
+/*
+ * 月間 → 週間
+ */
+document.getElementById("toWeeklyButton")
+    .addEventListener("click", function() {
+
+    document.getElementById("monthlyShiftArea")
+        .style.display = "none";
+
+    document.getElementById("weeklyShiftArea")
+        .style.display = "block";
+
+});
+
+/*
+ * 週間 → 月間
+ */
+document.getElementById("toMonthlyButton")
+    .addEventListener("click", function() {
+
+    document.getElementById("weeklyShiftArea")
+        .style.display = "none";
+
+    document.getElementById("monthlyShiftArea")
+        .style.display = "block";
+
+});
+
+</script>
+
+</body>
+</html>
