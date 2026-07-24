@@ -2,11 +2,13 @@ package com.example.adminshift.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.adminshift.dto.GapInfo;
 import com.example.adminshift.entity.Shift;
 import com.example.adminshift.entity.ShiftApplicationEvent;
 import com.example.adminshift.entity.ShiftApplicationSetting;
@@ -44,6 +46,86 @@ public class ShiftApplicationEventService {
     }
 
     /**
+     * 【共通ロジック】引数のイベント一覧からGap（未作成期間）を判定
+     */
+    public List<GapInfo> findGaps(List<ShiftApplicationEvent> events) {
+        List<GapInfo> gapList = new ArrayList<>();
+        if (events == null || events.size() < 2) {
+            return gapList;
+        }
+
+        // 開始日の昇順でソート
+        List<ShiftApplicationEvent> sorted = events.stream()
+                .filter(e -> e.getTargetStartDate() != null && e.getTargetEndDate() != null)
+                .sorted(Comparator.comparing(ShiftApplicationEvent::getTargetStartDate))
+                .toList();
+
+        for (int i = 0; i < sorted.size() - 1; i++) {
+            ShiftApplicationEvent prev = sorted.get(i);
+            ShiftApplicationEvent next = sorted.get(i + 1);
+
+            LocalDate gapStart = prev.getTargetEndDate().plusDays(1);
+            LocalDate gapEnd = next.getTargetStartDate().minusDays(1);
+
+            // 前イベントの翌日 <= 次イベントの前日 であればGapが存在
+            if (!gapStart.isAfter(gapEnd)) {
+                gapList.add(new GapInfo(gapStart, gapEnd));
+            }
+        }
+        return gapList;
+    }
+
+    /**
+     * 現在のDB状態でのGap一覧を取得（一覧画面用）
+     */
+    public List<GapInfo> getCurrentGaps() {
+        List<ShiftApplicationEvent> allEvents = repository.findAllByOrderByTargetStartDateAsc();
+        return findGaps(allEvents);
+    }
+
+    /**
+     * 【仮想リストによるGap判定】編集/作成中の変更内容をメモリ上で適用した後のGapを判定
+     */
+    public List<GapInfo> calculateGapsWithSimulation(Integer editingEventId, LocalDate newStart, LocalDate newEnd) {
+        List<ShiftApplicationEvent> currentEvents = repository.findAllByOrderByTargetStartDateAsc();
+        List<ShiftApplicationEvent> simulatedList = new ArrayList<>();
+
+        if (editingEventId == null) {
+            // 新規作成シミュレーション
+            simulatedList.addAll(currentEvents);
+            ShiftApplicationEvent newEvent = new ShiftApplicationEvent();
+            newEvent.setTargetStartDate(newStart);
+            newEvent.setTargetEndDate(newEnd);
+            simulatedList.add(newEvent);
+        } else {
+            // 編集シミュレーション
+            for (ShiftApplicationEvent event : currentEvents) {
+                if (event.getEventId().equals(editingEventId)) {
+                    ShiftApplicationEvent updated = new ShiftApplicationEvent();
+                    updated.setEventId(event.getEventId());
+                    updated.setTargetStartDate(newStart);
+                    updated.setTargetEndDate(newEnd);
+                    simulatedList.add(updated);
+                } else {
+                    simulatedList.add(event);
+                }
+            }
+        }
+
+        return findGaps(simulatedList);
+    }
+
+    /**
+     * 新規作成時の次回イベント開始日・終了日を計算（事前チェック用）
+     */
+    public LocalDate[] calculateNextEventDates(CreateShiftApplicationEventForm form) {
+        ShiftApplicationEvent latest = repository.findTopByOrderByTargetEndDateDesc().orElse(null);
+        LocalDate start = (latest == null) ? LocalDate.now() : latest.getTargetEndDate().plusDays(1);
+        LocalDate end = start.plusWeeks(form.getTargetWeeks()).minusDays(1);
+        return new LocalDate[]{start, end};
+    }
+
+    /**
      * 重複チェック共通判定
      */
     public boolean isOverlapping(Integer eventId, LocalDate startDate, LocalDate endDate) {
@@ -58,7 +140,7 @@ public class ShiftApplicationEventService {
     }
 
     /**
-     * 削除対象データ（期間外になるShiftまたはShiftRequestDetail）が存在するか判定
+     * 削除対象データが存在するか判定
      */
     public boolean hasDataToBeDeleted(Integer eventId, LocalDate newStartDate, LocalDate newEndDate) {
         if (eventId == null || newStartDate == null || newEndDate == null) {
@@ -77,24 +159,13 @@ public class ShiftApplicationEventService {
     }
 
     /**
-     * イベント新規作成およびシフトの自動生成
+     * イベント新規作成
      */
     public boolean createEvent(CreateShiftApplicationEventForm form) {
+        LocalDate[] dates = calculateNextEventDates(form);
+        LocalDate targetStartDate = dates[0];
+        LocalDate targetEndDate = dates[1];
 
-        ShiftApplicationEvent latest = repository.findTopByOrderByTargetEndDateDesc().orElse(null);
-
-        LocalDate targetStartDate;
-        if (latest == null) {
-            targetStartDate = LocalDate.now();
-        } else {
-            targetStartDate = latest.getTargetEndDate().plusDays(1);
-        }
-
-        LocalDate targetEndDate = targetStartDate
-                .plusWeeks(form.getTargetWeeks())
-                .minusDays(1);
-
-        // 重複チェック
         if (isOverlapping(null, targetStartDate, targetEndDate)) {
             return false;
         }
@@ -130,10 +201,6 @@ public class ShiftApplicationEventService {
                 shift.setEventId(event.getEventId());
                 shift.setUserId(user.getUserId());
                 shift.setShiftDate(currentDate);
-                shift.setStartTime(null);
-                shift.setEndTime(null);
-                shift.setMemo(null);
-
                 shifts.add(shift);
                 currentDate = currentDate.plusDays(1);
             }
@@ -147,11 +214,9 @@ public class ShiftApplicationEventService {
     }
 
     /**
-     * イベント更新（差分更新およびデータ整合性の保持）
+     * イベント更新
      */
     public boolean updateEvent(UpdateShiftApplicationEventForm form) {
-
-        // 1. 重複チェック（自分自身を除外）
         if (isOverlapping(form.getEventId(), form.getTargetStartDate(), form.getTargetEndDate())) {
             return false;
         }
@@ -161,11 +226,9 @@ public class ShiftApplicationEventService {
         LocalDate newStart = form.getTargetStartDate();
         LocalDate newEnd = form.getTargetEndDate();
 
-        // 2. 期間外データの削除 (Shift & ShiftRequestDetail)
         shiftRepository.deleteByEventIdAndShiftDateOutsideRange(event.getEventId(), newStart, newEnd);
         shiftRequestDetailRepository.deleteByEventIdAndWorkDateOutsideRange(event.getEventId(), newStart, newEnd);
 
-        // 3. 新規日付に対するShift作成（差分追加）
         List<LocalDate> existingDates = shiftRepository.findExistingShiftDatesByEventId(event.getEventId());
         List<Users> users = userRepository.findAll();
         List<Shift> newShiftsToCreate = new ArrayList<>();
@@ -178,9 +241,6 @@ public class ShiftApplicationEventService {
                     shift.setEventId(event.getEventId());
                     shift.setUserId(user.getUserId());
                     shift.setShiftDate(curr);
-                    shift.setStartTime(null);
-                    shift.setEndTime(null);
-                    shift.setMemo(null);
                     newShiftsToCreate.add(shift);
                 }
             }
@@ -191,7 +251,6 @@ public class ShiftApplicationEventService {
             shiftRepository.saveAll(newShiftsToCreate);
         }
 
-        // 4. イベント本体の更新
         event.setTargetStartDate(newStart);
         event.setTargetEndDate(newEnd);
         event.setApplicationStartDate(form.getApplicationStartDate());
@@ -202,8 +261,7 @@ public class ShiftApplicationEventService {
     }
 
     public void deleteEvent(Integer eventId) {
-        // Shift, ShiftRequestDetail, Event の削除
-        shiftRequestDetailRepository.deleteByEventIdAndWorkDateOutsideRange(eventId, LocalDate.of(9999, 12, 31), LocalDate.of(1000, 1, 1)); // 全削除
+        shiftRequestDetailRepository.deleteByEventIdAndWorkDateOutsideRange(eventId, LocalDate.of(9999, 12, 31), LocalDate.of(1000, 1, 1));
         shiftRepository.deleteByEventId(eventId);
         repository.deleteById(eventId);
     }

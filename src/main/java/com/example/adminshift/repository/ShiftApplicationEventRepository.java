@@ -23,15 +23,19 @@ public interface ShiftApplicationEventRepository
 
     Optional<ShiftApplicationEvent> findTopByOrderByTargetEndDateDesc();
 
-    // --- 追加: 新規登録用 重複チェック ---
+    // 重複チェック
     @Query("SELECT COUNT(e) > 0 FROM ShiftApplicationEvent e " +
            "WHERE e.targetStartDate <= :endDate AND e.targetEndDate >= :startDate")
     boolean existsOverlappingEvent(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
-    // --- 追加: 編集用 重複チェック（自分自身を除外） ---
     @Query("SELECT COUNT(e) > 0 FROM ShiftApplicationEvent e " +
            "WHERE e.eventId <> :eventId AND e.targetStartDate <= :endDate AND e.targetEndDate >= :startDate")
     boolean existsOverlappingEventExceptSelf(@Param("eventId") Integer eventId,
                                             @Param("startDate") LocalDate startDate,
                                             @Param("endDate") LocalDate endDate);
+
+    /**
+     * 対象期間開始日の昇順で全イベントを取得
+     */
+    List<ShiftApplicationEvent> findAllByOrderByTargetStartDateAsc();
 }

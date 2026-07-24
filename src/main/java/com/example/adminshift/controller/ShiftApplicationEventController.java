@@ -1,5 +1,8 @@
 package com.example.adminshift.controller;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.example.adminshift.dto.GapInfo;
 import com.example.adminshift.entity.ShiftApplicationEvent;
 import com.example.adminshift.form.CreateShiftApplicationEventForm;
 import com.example.adminshift.form.UpdateShiftApplicationEventForm;
@@ -38,6 +42,7 @@ public class ShiftApplicationEventController {
     @GetMapping
     public String index(Model model) {
         model.addAttribute("eventList", service.getEventList());
+        model.addAttribute("gapList", service.getCurrentGaps());
         return VIEW_NAME;
     }
 
@@ -48,19 +53,34 @@ public class ShiftApplicationEventController {
     public String create(
             @Validated @ModelAttribute("createShiftApplicationEventForm") CreateShiftApplicationEventForm form,
             BindingResult bindingResult,
+            @RequestParam(name = "confirmConfirmed", defaultValue = "false") boolean confirmConfirmed,
             Model model) {
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("errorMessage", "入力内容に不備があります。設定を確認してください。");
+            model.addAttribute("errorMessage", "入力内容に不備があります。");
             model.addAttribute("eventList", service.getEventList());
+            model.addAttribute("gapList", service.getCurrentGaps());
             return VIEW_NAME;
         }
 
-        // 重複チェック実行＆登録
+        // JS未確認時：仮想リストでGapチェック
+        if (!confirmConfirmed) {
+            LocalDate[] dates = service.calculateNextEventDates(form);
+            List<GapInfo> simulatedGaps = service.calculateGapsWithSimulation(null, dates[0], dates[1]);
+            if (!simulatedGaps.isEmpty()) {
+                model.addAttribute("pendingFormType", "create");
+                model.addAttribute("pendingGapMessage", simulatedGaps.get(0).getMessage());
+                model.addAttribute("eventList", service.getEventList());
+                model.addAttribute("gapList", service.getCurrentGaps());
+                return VIEW_NAME;
+            }
+        }
+
         boolean success = service.createEvent(form);
         if (!success) {
             model.addAttribute("errorMessage", "対象期間が他イベントと重複しています");
             model.addAttribute("eventList", service.getEventList());
+            model.addAttribute("gapList", service.getCurrentGaps());
             return VIEW_NAME;
         }
 
@@ -88,6 +108,7 @@ public class ShiftApplicationEventController {
 
         model.addAttribute("editingEventId", eventId);
         model.addAttribute("eventList", service.getEventList());
+        model.addAttribute("gapList", service.getCurrentGaps());
         model.addAttribute("updateShiftApplicationEventForm", form);
 
         return VIEW_NAME;
@@ -100,21 +121,50 @@ public class ShiftApplicationEventController {
     public String update(
             @Validated @ModelAttribute("updateShiftApplicationEventForm") UpdateShiftApplicationEventForm form,
             BindingResult bindingResult,
+            @RequestParam(name = "confirmConfirmed", defaultValue = "false") boolean confirmConfirmed,
             Model model) {
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("errorMessage", "入力内容に不備があります。日付形式等を確認してください。");
+            model.addAttribute("errorMessage", "入力内容に不備があります。");
             model.addAttribute("editingEventId", form.getEventId());
             model.addAttribute("eventList", service.getEventList());
+            model.addAttribute("gapList", service.getCurrentGaps());
             return VIEW_NAME;
         }
 
-        // 重複チェック実行＆更新
+        // JS未確認時：仮想リストでGapチェックおよびデータ削除確認メッセージ作成
+        if (!confirmConfirmed) {
+            List<GapInfo> simulatedGaps = service.calculateGapsWithSimulation(form.getEventId(), form.getTargetStartDate(), form.getTargetEndDate());
+            boolean hasDeleteData = service.hasDataToBeDeleted(form.getEventId(), form.getTargetStartDate(), form.getTargetEndDate());
+
+            if (!simulatedGaps.isEmpty() || hasDeleteData) {
+                StringBuilder messageBuilder = new StringBuilder();
+
+                if (!simulatedGaps.isEmpty()) {
+                    for (GapInfo gap : simulatedGaps) {
+                        messageBuilder.append("【未作成期間】\n").append(gap.getMessage()).append("\n\n");
+                    }
+                }
+                if (hasDeleteData) {
+                    messageBuilder.append("対象期間外になるシフトおよびシフト希望データは削除されます。\n\n");
+                }
+                messageBuilder.append("このまま登録しますか？");
+
+                model.addAttribute("pendingFormType", "update");
+                model.addAttribute("pendingGapMessage", messageBuilder.toString());
+                model.addAttribute("editingEventId", form.getEventId());
+                model.addAttribute("eventList", service.getEventList());
+                model.addAttribute("gapList", service.getCurrentGaps());
+                return VIEW_NAME;
+            }
+        }
+
         boolean success = service.updateEvent(form);
         if (!success) {
             model.addAttribute("errorMessage", "対象期間が他イベントと重複しています");
             model.addAttribute("editingEventId", form.getEventId());
             model.addAttribute("eventList", service.getEventList());
+            model.addAttribute("gapList", service.getCurrentGaps());
             return VIEW_NAME;
         }
 
@@ -125,9 +175,7 @@ public class ShiftApplicationEventController {
      * 削除
      */
     @PostMapping("/delete")
-    public String delete(
-            @ModelAttribute UpdateShiftApplicationEventForm form) {
-
+    public String delete(@ModelAttribute UpdateShiftApplicationEventForm form) {
         service.deleteEvent(form.getEventId());
         return REDIRECT_URL;
     }
