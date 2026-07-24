@@ -41,12 +41,32 @@
         <p th:text="${errorMessage}"></p>
     </div>
 
-    <!-- 年間サマリー -->
-    <div th:if="${salaryList}" class="summary-box">
-        <p>対象年度：<span th:text="${salaryConfirmForm.targetYear}"></span> 年</p>
-        <p>年間勤務時間：<span th:text="${totalWorkingHours}"></span> 時間</p>
-        <p>年間差引支給額：<span th:text="${totalNetSalary}"></span> 円</p>
-    </div>
+	<!-- 年間サマリー（個別カード表示） -->
+	<div th:if="${salaryList}" class="stats-grid">
+
+	    <!-- 対象年度 -->
+	    <div class="stat-card">
+	        <div class="stat-label">対象年度</div>
+	        <div class="stat-value" th:text="${salaryConfirmForm.targetYear}"></div>
+	    </div>
+
+	    <!-- 年間勤務時間 -->
+	    <div class="stat-card">
+	        <div class="stat-label">年間勤務時間</div>
+	        <div class="stat-value">
+	            <span th:text="${totalWorkingHours}"></span> 時間
+	        </div>
+	    </div>
+
+	    <!-- 年間差引支給額 -->
+	    <div class="stat-card">
+	        <div class="stat-label">年間差引支給額</div>
+	        <div class="stat-value">
+	            <span th:text="${totalNetSalary}"></span> 円
+	        </div>
+	    </div>
+
+	</div>
 
     <!-- 一覧テーブル -->
     <div th:if="${salaryList}" class="card">
