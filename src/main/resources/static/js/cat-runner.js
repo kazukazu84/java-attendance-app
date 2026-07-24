@@ -2,8 +2,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const BLACK_CAT = '🐈‍⬛';
 
-    // --- 1. 外周を走る黒猫（40秒ごとに後ろに1匹追加・最大6匹） ---
-    const maxOrbitCount = 6;
+    // --- 1. 外周を走る黒猫（40秒ごとに後ろに1匹追加・最大10匹） ---
+    const maxOrbitCount = 10;
     let currentOrbitCount = 0;
 
 	function spawnOrbitCat() {
@@ -13,15 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
 	        cat.className = 'orbit-cat';
 	        cat.innerText = BLACK_CAT;
 
-			// ディレイ値も少し大きめに調整（秒数指定）
-			        let delay = 0;
-			        if (currentOrbitCount === 1) {
-			            delay = -5; // 2匹目はしっかり離す
-			        } else if (currentOrbitCount > 1) {
-			            delay = -5 - ((currentOrbitCount - 1) * 1.8); // 3匹目以降はトコトコ詰める
-			        }
+	        // 💡 スタート地点（画面端）は揃えつつ、1周のスピード（50秒〜70秒）に個体差をつける
+	        // 足の速い猫が前の猫に追いついて追い越すことでワチャワチャする！
+	        const randomDuration = 60 + (Math.random() * 20 - 10); 
+	        cat.style.animationDuration = `${randomDuration}s`;
 
-	        cat.style.animationDelay = `${delay}s`;
+	        // 💡 delay は設定しない（または 0s）ことで、必ずスタート地点から走り出す
+	        cat.style.animationDelay = '0s';
 
 	        document.body.appendChild(cat);
 	        currentOrbitCount++;
@@ -30,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1匹目は即時スタート
     spawnOrbitCat();
 
-    // 1周（40秒）ごとに1匹ずつ増殖
+    // 1周（60秒）ごとに1匹ずつ増殖
     const orbitInterval = setInterval(() => {
         if (currentOrbitCount < maxOrbitCount) {
             spawnOrbitCat();
