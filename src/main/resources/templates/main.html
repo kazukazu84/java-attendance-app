@@ -19,19 +19,35 @@
             <!-- ⬅️ 左カラム：ヘッダー情報・打刻・ログエリア -->
             <div class="col-md-4">
                 
-                <!-- ①② 簡易ボタン & ログアウト -->
-                <div class="panel-box mb-3">
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <a th:href="@{/user/attendance}" class="btn btn-nav py-1" style="font-size: 0.9rem;">簡易</a>
-                        </div>
-                        <div class="col-6">
-                            <form th:action="@{/logout}" method="post" class="w-100">
-                                <button type="submit" class="btn btn-nav py-1" style="font-size: 0.9rem;">ログアウト</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+				<!-- ①②③ 簡易ボタン & ログアウト & SNS -->
+				<div class="panel-box mb-3">
+				    <div class="row g-2">
+
+				        <!-- 簡易 -->
+				        <div class="col-4">
+				            <a th:href="@{/user/attendance}" class="btn btn-nav py-1" style="font-size: 0.9rem;">
+				                簡易
+				            </a>
+				        </div>
+
+				        <!-- ログアウト -->
+				        <div class="col-4">
+				            <form th:action="@{/logout}" method="post" class="w-100">
+				                <button type="submit" class="btn btn-nav py-1" style="font-size: 0.9rem;">
+				                    ログアウト
+				                </button>
+				            </form>
+				        </div>
+
+				        <!-- SNSへ -->
+				        <div class="col-4">
+				            <a th:href="@{/user/timeline}" class="btn btn-nav py-1" style="font-size: 0.9rem;">
+				                SNSへ
+				            </a>
+				        </div>
+
+				    </div>
+				</div>
 
                 <!-- ユーザーID・ユーザー名表示 -->
                 <div class="panel-box user-info-box mb-3 text-start">

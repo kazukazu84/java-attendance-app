@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>引用リツイート - 社内SNS</title>
+    <link rel="stylesheet" th:href="@{/css/sns.css}">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-brand">
+            <a th:href="@{${basePath + '/timeline'}}">社内SNS</a>
+        </div>
+        <nav class="nav-menu">
+            <a th:href="@{${basePath + '/timeline'}}" class="nav-item">タイムライン</a>
+            <a th:href="@{${basePath + '/post'}}" class="nav-item">投稿</a>
+            <a th:href="@{${basePath + '/dm'}}" class="nav-item">DM</a>
+            <a th:href="@{${basePath + '/salary/confirm'}}" class="nav-item">給与確認</a>
+        </nav>
+    </header>
+
+    <main class="main-container single-column">
+        <div class="card form-card">
+            <h2>引用リツイート</h2>
+
+            <!-- 引用対象の投稿データ -->
+            <div class="target-post-preview">
+                <div class="post-header">
+                    <span class="post-user-id" th:text="'@' + ${targetPost.userId}">@targetUser</span>
+                    <span class="post-time" th:text="${#temporals.format(targetPost.createdAt, 'yyyy/MM/dd HH:mm')}">2026/05/20 10:00</span>
+                </div>
+                <div class="post-content" th:text="${targetPost.content}">
+                    引用対象となる投稿メッセージ本文です。
+                </div>
+            </div>
+
+            <!-- コメント入力用フォーム -->
+            <form th:action="@{${basePath + '/quote-retweet'}}" th:object="${quoteRetweetForm}" method="post">
+                <input type="hidden" th:field="*{postId}" />
+                <div class="form-group">
+                    <label for="comment">コメントを追加</label>
+                    <textarea id="comment" th:field="*{comment}" rows="4" placeholder="コメントを入力..." required autofocus></textarea>
+                </div>
+                <div class="form-actions space-between">
+                    <a th:href="@{${basePath + '/timeline'}}" class="btn btn-secondary">キャンセル</a>
+                    <button type="submit" class="btn btn-primary">引用リツイート送信</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+</body>
+</html>

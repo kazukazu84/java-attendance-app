@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>タイムライン - 社内SNS</title>
+    <link rel="stylesheet" th:href="@{/css/sns.css}">
+</head>
+<body>
+
+    <!-- 共通ナビゲーションヘッダー -->
+    <header class="navbar">
+        <div class="nav-brand">
+            <a th:href="@{${basePath + '/timeline'}}">社内SNS</a>
+        </div>
+        <nav class="nav-menu">
+            <a th:href="@{${basePath + '/timeline'}}" class="nav-item active">タイムライン</a>
+            <a th:href="@{${basePath + '/post'}}" class="nav-item">投稿</a>
+            <a th:href="@{${basePath + '/dm'}}" class="nav-item">DM</a>
+            <a th:href="@{${basePath + '/salary/confirm'}}" class="nav-item">給与確認</a>
+        </nav>
+        <div class="user-badge-container">
+            <span class="user-id-badge" th:text="${currentUser.username}">user01</span>
+            <span class="role-badge" 
+                  th:classappend="${#lists.contains(currentUser.authorities.![authority], 'ROLE_ADMIN')} ? 'admin' : 'user'"
+                  th:text="${#lists.contains(currentUser.authorities.![authority], 'ROLE_ADMIN')} ? '管理者' : '一般'">
+                一般
+            </span>
+        </div>
+    </header>
+
+    <main class="main-container">
+        
+        <!-- 上部 投稿フォーム -->
+        <section class="card form-card">
+            <h3>いまどうしてる？</h3>
+            <form th:action="@{${basePath + '/post'}}" th:object="${postForm}" method="post">
+                <div class="form-group">
+                    <textarea th:field="*{content}" rows="3" placeholder="社内に共有したいことを入力してください..." required></textarea>
+                </div>
+                <div class="form-actions align-right">
+                    <button type="submit" class="btn btn-primary">投稿する</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- 投稿フィード一覧 -->
+        <section class="feed">
+            <div th:each="post : ${posts}" class="card post-card">
+                <div class="post-header">
+                    <div class="post-user-info">
+                        <span class="post-user-name" th:text="${post.userName}">山田 太郎</span>
+                        <span class="post-user-id" th:text="'@' + ${post.userId}">@yamada</span>
+                    </div>
+                    <span class="post-time" th:text="${#temporals.format(post.createdAt, 'yyyy/MM/dd HH:mm')}">2026/05/20 10:00</span>
+                </div>
+
+                <div class="post-content" th:text="${post.content}">
+                    投稿本文がここに入ります。
+                </div>
+
+                <!-- アクションボタンエリア -->
+                <div class="post-actions">
+                    <!-- いいねボタン -->
+                    <form th:action="@{${basePath + '/like'}}" method="post" class="action-form">
+                        <input type="hidden" name="postId" th:value="${post.postId}"/>
+                        <button type="submit" class="btn-icon" th:classappend="${post.likedByCurrentUser} ? 'active-like' : ''">
+                            ♥ <span th:text="${post.likeCount}">0</span>
+                        </button>
+                    </form>
+
+                    <!-- リツイートボタン -->
+                    <form th:action="@{${basePath + '/retweet'}}" method="post" class="action-form">
+                        <input type="hidden" name="postId" th:value="${post.postId}"/>
+                        <button type="submit" class="btn-icon" th:classappend="${post.retweetedByCurrentUser} ? 'active-retweet' : ''">
+                            🔄 <span th:text="${post.retweetCount}">0</span>
+                        </button>
+                    </form>
+
+                    <!-- 引用リツイートボタン -->
+                    <a th:href="@{${basePath + '/quote-retweet'}(postId=${post.postId})}" class="btn-icon-link">
+                        💬 引用 <span th:text="${post.quoteCount}">0</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 投稿が存在しない場合 -->
+            <div th:if="${#lists.isEmpty(posts)}" class="empty-state card">
+                <p>表示できる投稿がありません。</p>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>
