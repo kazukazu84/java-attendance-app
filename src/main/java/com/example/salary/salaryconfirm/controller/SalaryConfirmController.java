@@ -1,5 +1,6 @@
 package com.example.salary.salaryconfirm.controller;
 
+import java.util.List;
 import java.util.Set;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -84,19 +85,26 @@ public class SalaryConfirmController {
         );
         if (redirectUrl != null) return redirectUrl;
 
-        // ★ 権限に応じて basePath を画面へ渡す
         String basePath = loginUser.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))
                 ? "/admin"
                 : "/user";
         model.addAttribute("basePath", basePath);
 
-        // ★ 最新仕様：userId は String
+        // ★ 年度未選択チェック（null → 500防止）
+        if (form.getTargetYear() == null) {
+            model.addAttribute("errorMessage", "年度を選択してください");
+            model.addAttribute("salaryConfirmForm", form);
+            model.addAttribute("yearList",
+                    salaryConfirmService.getAvailableYears(loginUser.getUsername()));
+            return "salaryConfirm";
+        }
+
         String userId = form.getUserId();
         int targetYear = form.getTargetYear();
         Integer targetMonth = form.getTargetMonth();
 
-        // ★ 年間差引支給額（保存済みの値を使用）
+        // ★ 年間差引支給額
         int totalNetSalary = salaryConfirmService.getTotalNetSalary(userId, targetYear);
 
         SalaryConfirmDto dto = new SalaryConfirmDto(
@@ -127,14 +135,24 @@ public class SalaryConfirmController {
             return "salaryConfirm";
         }
 
-        // ★ 一覧データ（保存済みの値を使用）
-        model.addAttribute("salaryConfirmDto", dto);
-        model.addAttribute("salaryList",
-                salaryConfirmService.getSalaryList(userId, targetYear));
+        // ★ 一覧データ取得
+        List<SalaryConfirmDto> salaryList =
+                salaryConfirmService.getSalaryList(userId, targetYear);
 
+        // ★ 0件チェック（年度に給与データがない）
+        if (salaryList.isEmpty()) {
+            model.addAttribute("errorMessage", "該当年度の給与データがありません");
+            model.addAttribute("salaryConfirmForm", form);
+            model.addAttribute("yearList",
+                    salaryConfirmService.getAvailableYears(loginUser.getUsername()));
+            return "salaryConfirm";
+        }
+
+        // ★ 正常時のみ画面へ渡す
+        model.addAttribute("salaryConfirmDto", dto);
+        model.addAttribute("salaryList", salaryList);
         model.addAttribute("totalWorkingHours",
                 (int) salaryConfirmService.getTotalWorkingHours(userId, targetYear));
-
         model.addAttribute("totalNetSalary", totalNetSalary);
 
         model.addAttribute("salaryConfirmForm", form);
