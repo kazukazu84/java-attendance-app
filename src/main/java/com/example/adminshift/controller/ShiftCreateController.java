@@ -62,7 +62,7 @@ public class ShiftCreateController {
             model.addAttribute("shiftForm", new ShiftForm());
         }
 
-        return "shift/shiftCreate";
+        return "admin/shiftCreate";
     }
 
     /**
