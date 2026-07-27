@@ -47,6 +47,7 @@ public class ShiftApplicationEventDateValidator implements ConstraintValidator<V
         // 条件②：受付開始日 ＞ 受付終了日
         if (applicationStartDate.isAfter(applicationEndDate)) {
             context.buildConstraintViolationWithTemplate("受付開始日は受付終了日以前で入力してください。")
+                   .addPropertyNode("applicationStartDate") // ★追加: applicationStartDate フィールドに紐付ける
                    .addConstraintViolation();
             isValid = false;
         }
@@ -62,6 +63,7 @@ public class ShiftApplicationEventDateValidator implements ConstraintValidator<V
         // 条件④：受付終了日 ＞＝ 対象期間開始日
         if (!applicationEndDate.isBefore(targetStartDate)) {
             context.buildConstraintViolationWithTemplate("受付期間は対象期間開始日より前の日付で設定してください。")
+                   .addPropertyNode("applicationEndDate") // ★追加: applicationEndDate フィールドに紐付ける
                    .addConstraintViolation();
             isValid = false;
         }
