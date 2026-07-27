@@ -31,10 +31,10 @@ public class ShiftCreateService {
     /**
      * すべてのイベントリストを取得します（プルダウン表示用）
      *
-     * @return イベントのリスト（eventId降順）
+     * @return イベントのリスト（targetStartDate昇順、eventId昇順）
      */
     public List<ShiftApplicationEvent> getEventList() {
-        return shiftApplicationEventRepository.findAllByOrderByEventIdDesc();
+        return shiftApplicationEventRepository.findAllByOrderByTargetStartDateAscEventIdAsc();
     }
 
     /**
