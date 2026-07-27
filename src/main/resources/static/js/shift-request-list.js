@@ -39,6 +39,24 @@ function openSidebar(buttonElement) {
                 const tdEnd = document.createElement('td');
                 tdEnd.textContent = item.endTimeText;
 
+                // 可否が「×」の場合のハイライト処理
+                if (item.availabilityText === "×") {
+                    tdDate.classList.add('sidebar-unavailable');
+                    tdAvail.classList.add('sidebar-unavailable');
+                    tdStart.classList.add('sidebar-unavailable');
+                    tdEnd.classList.add('sidebar-unavailable');
+                }
+
+                // 日またぎ判定：終了時刻 < 開始時刻 の場合、4セルすべてに専用クラスを付与
+                const startTime = item.startTimeText;
+                const endTime = item.endTimeText;
+                if (startTime && endTime && endTime < startTime) {
+                    tdDate.classList.add('overnight-cell');
+                    tdAvail.classList.add('overnight-cell');
+                    tdStart.classList.add('overnight-cell');
+                    tdEnd.classList.add('overnight-cell');
+                }
+
                 tr.appendChild(tdDate);
                 tr.appendChild(tdAvail);
                 tr.appendChild(tdStart);
