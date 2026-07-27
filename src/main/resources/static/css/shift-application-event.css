@@ -65,9 +65,10 @@ input[type="date"]:focus {
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
+/* ページネーション内のボタンを除外して共通disabledを適用 */
 select:disabled, 
 input:disabled, 
-button:disabled {
+button:not(.pagination-item):disabled {
     background-color: #e9ecef !important;
     border-color: #ced4da !important;
     color: #6c757d !important;
@@ -75,8 +76,8 @@ button:disabled {
     opacity: 0.7;
 }
 
-/* ボタン共通設定 */
-button {
+/* ボタン共通設定（ページネーションアイテムは除外） */
+button:not(.pagination-item) {
     padding: 8px 16px;
     border: none;
     border-radius: 4px;
@@ -86,7 +87,7 @@ button {
     transition: background-color 0.2s, transform 0.1s;
 }
 
-button:active:not(:disabled) {
+button:not(.pagination-item):active:not(:disabled) {
     transform: scale(0.98);
 }
 
@@ -200,8 +201,6 @@ form[action*="/update"] button:hover:not(:disabled) {
     background-color: #d68910;
 }
 
-/* 既存のスタイルに下記を追加 */
-
 /* エラー表示エリア */
 .error-container {
     background-color: #f8d7da;
@@ -237,7 +236,7 @@ form[action*="/update"] button:hover:not(:disabled) {
 
 /* ② 受付中（緑系統） */
 .status-open {
-    background-color: #e8f5e9;
+    background-color: #e8f8e9;
     color: #1b5e20;
     border: 1px solid #a5d6a7;
 }
@@ -247,4 +246,89 @@ form[action*="/update"] button:hover:not(:disabled) {
     background-color: #eceff1;
     color: #37474f;
     border: 1px solid #cfd8dc;
+}
+
+/* ==========================================================================
+   ページネーション設定 (要件①～⑪対応)
+   ========================================================================== */
+
+/* 親コンテナ設定（要件⑤: flexレイアウト・折り返し） */
+.pagination {
+    display: flex;
+    flex-wrap: wrap; /* 桁数やページ数が増えた場合も綺麗に折り返す */
+    align-items: center;
+    justify-content: center; /* 画面中央寄せ */
+    gap: 6px; /* アイテム同士の適度な間隔 */
+    margin: 20px 0;
+}
+
+/* ボタン・リンク共通スタイリング（要件①, ④） */
+.pagination .pagination-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* 要件⑪: 100ページ以上でも文字がはみ出さない可変最小幅設定 */
+    min-width: 36px;
+    height: 36px;
+    padding: 0 8px;
+    box-sizing: border-box;
+    
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    color: #2b4c7e; /* 業務システム向けの落ち着いた青 */
+    text-decoration: none;
+    
+    background-color: #ffffff; /* 要件⑨: 通常ページは白 */
+    border: 1px solid #d0d7de;
+    border-radius: 6px; /* 適度な角丸 */
+    
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    user-select: none;
+    
+    /* ホバー・フォーカス時の自然な遷移 */
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* ホバー時のデザイン（要件①, ⑨） */
+.pagination a.pagination-item:hover {
+    background-color: #edf5ff; /* 淡い青 */
+    border-color: #1a56db;
+    color: #1a56db;
+}
+
+/* クリック中の挙動 */
+.pagination a.pagination-item:active {
+    background-color: #dbeafe;
+}
+
+/* 現在のページ（要件②, ⑨） */
+.pagination .pagination-item.active,
+.pagination .pagination-item.active:disabled {
+    background-color: #1a56db !important; /* 濃い青 */
+    border-color: #1a56db !important;
+    color: #ffffff !important; /* 白文字 */
+    font-weight: 600;
+    cursor: default !important;
+    opacity: 1 !important;
+    box-shadow: 0 2px 4px rgba(26, 86, 219, 0.25);
+}
+
+/* 無効化状態（要件③: 前へ/次へが押せない場合） */
+.pagination .pagination-item:disabled:not(.active) {
+    background-color: #f8f9fa !important;
+    border-color: #e9ecef !important;
+    color: #a0aec0 !important; /* グレーアウト */
+    cursor: not-allowed !important;
+    box-shadow: none;
+    opacity: 0.7 !important;
+}
+
+/* アクセシビリティ・キーボードフォーカス（要件⑧） */
+.pagination .pagination-item:focus-visible {
+    outline: none;
+    border-color: #1a56db;
+    box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.35); /* フォーカスリングを表示 */
 }

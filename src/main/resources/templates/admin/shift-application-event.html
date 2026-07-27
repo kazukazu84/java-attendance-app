@@ -178,28 +178,45 @@
 <!-- ========================= -->
 <!-- ページネーション（11件以上の場合のみ表示） -->
 <!-- ========================= -->
-<div th:if="${eventPage.totalPages > 1}" class="pagination" style="display: flex; gap: 5px; align-items: center;">
+<nav th:if="${eventPage.totalPages > 1}" class="pagination" aria-label="ページネーション">
 
     <!-- 「＜」 前のページボタン -->
-    <a th:if="${!eventPage.first}" th:href="@{/admin/shift-application-event(page=${eventPage.number - 1})}">＜</a>
-    <button th:if="${eventPage.first}" disabled>＜</button>
+    <a th:if="${!eventPage.first}" 
+       th:href="@{/admin/shift-application-event(page=${eventPage.number - 1})}" 
+       class="pagination-item" 
+       aria-label="前へ">＜</a>
+    <button th:if="${eventPage.first}" 
+            class="pagination-item" 
+            disabled 
+            aria-label="前へ">＜</button>
 
     <!-- ページ番号ボタン（1～totalPages） -->
     <th:block th:each="i : ${#numbers.sequence(0, eventPage.totalPages - 1)}">
         <!-- 現在のページ (disabled) -->
-        <button th:if="${i == eventPage.number}" disabled th:text="${i + 1}"></button>
+        <button th:if="${i == eventPage.number}" 
+                class="pagination-item active" 
+                disabled 
+                aria-current="page" 
+                th:text="${i + 1}"></button>
         <!-- 他のページ (リンク) -->
         <a th:if="${i != eventPage.number}"
            th:href="@{/admin/shift-application-event(page=${i})}"
+           class="pagination-item"
            th:text="${i + 1}">
         </a>
     </th:block>
 
     <!-- 「＞」 次のページボタン -->
-    <a th:if="${!eventPage.last}" th:href="@{/admin/shift-application-event(page=${eventPage.number + 1})}">＞</a>
-    <button th:if="${eventPage.last}" disabled>＞</button>
+    <a th:if="${!eventPage.last}" 
+       th:href="@{/admin/shift-application-event(page=${eventPage.number + 1})}" 
+       class="pagination-item" 
+       aria-label="次へ">＞</a>
+    <button th:if="${eventPage.last}" 
+            class="pagination-item" 
+            disabled 
+            aria-label="次へ">＞</button>
 
-</div>
+</nav>
 
 <br>
 

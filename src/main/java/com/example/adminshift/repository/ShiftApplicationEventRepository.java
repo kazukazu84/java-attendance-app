@@ -41,6 +41,11 @@ public interface ShiftApplicationEventRepository
      * 対象期間開始日の昇順で全イベントを取得
      */
     List<ShiftApplicationEvent> findAllByOrderByTargetStartDateAsc();
+
+    /**
+     * 対象期間開始日昇順、同一の場合はイベントID昇順で全イベントを取得
+     */
+    List<ShiftApplicationEvent> findAllByOrderByTargetStartDateAscEventIdAsc();
     
     /**
      * シフト申請一覧画面のプルダウン用イベント取得（最大100件）
