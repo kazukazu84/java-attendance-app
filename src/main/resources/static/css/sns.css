@@ -354,6 +354,26 @@ input[type="text"]:focus {
     text-decoration: underline;
 }
 
+.quote-thread {
+    margin-top: 12px;
+    border-left: 3px solid var(--accent-color);
+    padding-left: 12px;
+}
+
+.quote-thread-item {
+    background: #f7f9fc;
+    padding: 12px 14px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.quote-thread-child {
+    background: #eef2f7;
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin: 8px 0 8px 20px;
+}
+
 /* ============================================================
    DM画面（2カラム）
 ============================================================ */

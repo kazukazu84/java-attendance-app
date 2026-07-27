@@ -1,5 +1,9 @@
 package com.example.sns.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.account.service.CustomUserDetails;
+import com.example.sns.dto.QuoteRetweetDto;
 import com.example.sns.entity.PostEntity;
 import com.example.sns.form.QuoteRetweetForm;
 import com.example.sns.service.PostService;
@@ -29,6 +34,7 @@ public class QuoteRetweetController {
     public String showQuoteForm(
             @AuthenticationPrincipal CustomUserDetails loginUser,
             @RequestParam Long postId,
+            @RequestParam(required = false) Long parentQuoteId,
             HttpServletRequest request,
             Model model) {
 
@@ -45,13 +51,27 @@ public class QuoteRetweetController {
         String basePath = isAdmin ? "/admin" : "/user";
         model.addAttribute("basePath", basePath);
 
+        // ▼ 元投稿
         PostEntity targetPost = postService.getPostById(postId);
+        model.addAttribute("targetPost", targetPost);
 
+        // ▼ フォーム
         QuoteRetweetForm form = new QuoteRetweetForm();
         form.setPostId(postId);
-
-        model.addAttribute("targetPost", targetPost);
+        form.setParentQuoteId(parentQuoteId);
         model.addAttribute("quoteRetweetForm", form);
+
+        // ▼ 親引用RT
+        if (parentQuoteId != null) {
+            QuoteRetweetDto parentQuote = quoteRetweetService.getQuoteById(parentQuoteId);
+            model.addAttribute("parentQuote", parentQuote);
+
+            // ▼ ★ 親引用RTへの返信一覧（childrenMap）を渡す
+            List<QuoteRetweetDto> children = quoteRetweetService.getChildQuotes(parentQuoteId);
+            Map<Long, List<QuoteRetweetDto>> childrenMap = new HashMap<>();
+            childrenMap.put(parentQuoteId, children);
+            model.addAttribute("childrenMap", childrenMap);
+        }
 
         return "quoteRetweet";
     }
@@ -73,7 +93,8 @@ public class QuoteRetweetController {
         quoteRetweetService.createQuoteRetweet(
                 form.getPostId(),
                 loginUser.getUsername(),
-                form.getComment()
+                form.getComment(),
+                form.getParentQuoteId()
         );
 
         boolean isAdmin = loginUser.getAuthorities().stream()

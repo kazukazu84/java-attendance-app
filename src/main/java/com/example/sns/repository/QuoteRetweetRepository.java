@@ -12,5 +12,9 @@ public interface QuoteRetweetRepository extends JpaRepository<QuoteRetweetEntity
 
     boolean existsByPostIdAndUserId(Long postId, String userId);
 
-    List<QuoteRetweetEntity> findByPostIdOrderByCreatedAtDesc(Long postId);
+    // ▼ 元投稿への引用RT（parentQuoteId = null）
+    List<QuoteRetweetEntity> findByPostIdAndParentQuoteIdIsNullOrderByCreatedAtDesc(Long postId);
+
+    // ▼ 引用RTへの返信（parentQuoteId = quoteId）
+    List<QuoteRetweetEntity> findByParentQuoteIdOrderByCreatedAtAsc(Long parentQuoteId);
 }

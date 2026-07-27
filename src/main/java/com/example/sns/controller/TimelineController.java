@@ -3,7 +3,6 @@ package com.example.sns.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -55,31 +54,45 @@ public class TimelineController {
         model.addAttribute("postForm", new PostForm());
         model.addAttribute("currentUser", loginUser);
 
-        // ★ 引用RTプレビュー（最新3件）
+        // ▼ 最新3件プレビュー
         Map<Long, List<QuoteRetweetDto>> quotePreviewMap = new HashMap<>();
 
-        // ★ 引用RT一覧（全件）
+        // ▼ 全引用RT一覧（元投稿への引用RTのみ）
         Map<Long, List<QuoteRetweetDto>> quoteListMap = new HashMap<>();
 
-        for (PostDto post : posts) {
-            List<QuoteRetweetDto> allQuotes = quoteRetweetService.getQuotes(post.getPostId());
-            quoteListMap.put(post.getPostId(), allQuotes);
+        // ▼ 数珠構造（親引用ID → 子引用一覧）
+        Map<Long, List<QuoteRetweetDto>> childrenMap = new HashMap<>();
 
-            List<QuoteRetweetDto> preview = allQuotes.stream()
-                    .limit(3)
-                    .collect(Collectors.toList());
-            quotePreviewMap.put(post.getPostId(), preview);
+        for (PostDto post : posts) {
+
+            // ▼ 元投稿への引用RT（parentQuoteId = null）
+            List<QuoteRetweetDto> rootQuotes = quoteRetweetService.getRootQuotes(post.getPostId());
+            quoteListMap.put(post.getPostId(), rootQuotes);
+
+            // ▼ 最新3件プレビュー
+            quotePreviewMap.put(post.getPostId(),
+                    rootQuotes.stream().limit(3).toList()
+            );
+
+            // ▼ 子引用RT（parentQuoteId = quoteId）
+            for (QuoteRetweetDto root : rootQuotes) {
+                List<QuoteRetweetDto> children =
+                        quoteRetweetService.getChildQuotes(root.getQuoteId());
+
+                if (!children.isEmpty()) {
+                    childrenMap.put(root.getQuoteId(), children);
+                }
+            }
         }
 
-        // ★ 画面へ渡す（最小追加）
+        // ▼ 画面へ渡す
         model.addAttribute("quotePreviewMap", quotePreviewMap);
         model.addAttribute("quoteListMap", quoteListMap);
+        model.addAttribute("childrenMap", childrenMap);
 
         return "timeline";
     }
 
-
-    // ★ 給与管理システムと同じ権限判定ロジック
     private String checkAndRedirect(
             CustomUserDetails loginUser,
             HttpServletRequest request,
