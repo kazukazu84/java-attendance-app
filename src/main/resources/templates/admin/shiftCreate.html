@@ -17,9 +17,9 @@
             <!-- 上部操作エリア -->
             <div class="top-container">
                 <div class="back-btn-container">
-                    <form th:action="@{/admin/shiftCreate/back}" method="get">
-                        <button type="submit" class="btn-secondary" th:disabled="${showModal}">← 戻る</button>
-                    </form>
+                    <a th:href="@{/admin/shiftCreate/back}" 
+                       class="btn-secondary" 
+                       th:classappend="${showModal} ? 'disabled' : ''">← 戻る</a>
                 </div>
 
                 <div class="event-select-container">

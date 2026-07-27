@@ -190,6 +190,17 @@ public class ShiftCreateController {
     }
 
     /**
+     * 戻るボタン押下処理
+     * シフト管理画面（/admin/shift-management）へリダイレクトします。
+     *
+     * @return シフト管理画面へのリダイレクトパス
+     */
+    @GetMapping("/back")
+    public String back() {
+        return "redirect:/admin/shift-management";
+    }
+
+    /**
      * シフト一覧画面に必要な共通データをModelにセットするプライベートメソッド
      */
     private void setupShiftTableData(Integer eventId, Model model) {
