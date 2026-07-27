@@ -50,7 +50,7 @@ public class ShiftApplicationEventService {
      */
     public List<GapInfo> findGaps(List<ShiftApplicationEvent> events) {
         List<GapInfo> gapList = new ArrayList<>();
-        if (events == null || events.size() < 2) {
+        if (events == null || events.isEmpty()) {
             return gapList;
         }
 
@@ -60,14 +60,34 @@ public class ShiftApplicationEventService {
                 .sorted(Comparator.comparing(ShiftApplicationEvent::getTargetStartDate))
                 .toList();
 
+        if (sorted.isEmpty()) {
+            return gapList;
+        }
+
+        LocalDate today = LocalDate.now();
+
+        // 1. 【先頭チェック】今日から最初のイベント開始日前日までのGapチェック
+        ShiftApplicationEvent first = sorted.get(0);
+        if (first.getTargetStartDate().isAfter(today)) {
+            LocalDate gapStart = today;
+            LocalDate gapEnd = first.getTargetStartDate().minusDays(1);
+            if (!gapStart.isAfter(gapEnd)) {
+                gapList.add(new GapInfo(gapStart, gapEnd));
+            }
+        }
+
+        // 2. 【イベント間チェック】隣接するイベント同士の隙間チェック
         for (int i = 0; i < sorted.size() - 1; i++) {
             ShiftApplicationEvent prev = sorted.get(i);
             ShiftApplicationEvent next = sorted.get(i + 1);
 
-            LocalDate gapStart = prev.getTargetEndDate().plusDays(1);
+            LocalDate rawGapStart = prev.getTargetEndDate().plusDays(1);
             LocalDate gapEnd = next.getTargetStartDate().minusDays(1);
 
-            // 前イベントの翌日 <= 次イベントの前日 であればGapが存在
+            // Gap開始日は rawGapStart と today の遅い方（新しい日付）を採用
+            LocalDate gapStart = rawGapStart.isBefore(today) ? today : rawGapStart;
+
+            // 有効な将来のGap期間（gapStart <= gapEnd）であれば追加
             if (!gapStart.isAfter(gapEnd)) {
                 gapList.add(new GapInfo(gapStart, gapEnd));
             }
