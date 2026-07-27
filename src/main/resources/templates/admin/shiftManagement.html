@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シフト管理</title>
+    <!-- シフト管理画面専用CSS -->
+    <link rel="stylesheet" th:href="@{/css/shiftManagement.css}">
+</head>
+<body>
+
+    <div class="container">
+        <h2>シフト管理</h2>
+
+        <!-- メニューボタンエリア（縦に4つ配置） -->
+        <div class="menu-button-group">
+            <!-- ① 申請一覧 -->
+            <a th:href="@{/admin/shift-request-list}" class="menu-btn">
+                申請一覧
+            </a>
+
+            <!-- ② シフト作成 -->
+            <a th:href="@{/admin/shift-create}" class="menu-btn">
+                シフト作成
+            </a>
+
+            <!-- ③ シフト受付 -->
+            <a th:href="@{/admin/shift-application-setting}" class="menu-btn">
+                シフト受付
+            </a>
+
+            <!-- ④ 戻る (既存の管理者メイン画面URLへ遷移) -->
+            <a th:href="@{/admin/main}" class="menu-btn btn-secondary">
+                戻る
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>
