@@ -184,7 +184,7 @@ public class ShiftApplicationEventController {
     }
 
     /**
-     * 削除
+     * 削除ボタン
      */
     @PostMapping("/delete")
     public String delete(@ModelAttribute UpdateShiftApplicationEventForm form) {
