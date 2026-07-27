@@ -38,4 +38,15 @@ public interface ShiftApplicationEventRepository
      * 対象期間開始日の昇順で全イベントを取得
      */
     List<ShiftApplicationEvent> findAllByOrderByTargetStartDateAsc();
+    
+    /**
+     * シフト申請一覧画面のプルダウン用イベント取得（最大100件）
+     * ① 現在受付中（applicationStartDate <= today AND applicationEndDate >= today）
+     * ② 受付終了済みで対象期間終了日が今日以降（applicationEndDate < today AND targetEndDate >= today）
+     */
+    @Query("SELECT e FROM ShiftApplicationEvent e " +
+           "WHERE (e.applicationStartDate <= :today AND e.applicationEndDate >= :today) " +
+           "   OR (e.applicationEndDate < :today AND e.targetEndDate >= :today) " +
+           "ORDER BY e.targetStartDate ASC, e.eventId ASC")
+    List<ShiftApplicationEvent> findTargetEventsForAdminList(@Param("today") LocalDate today);
 }

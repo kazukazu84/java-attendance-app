@@ -1,6 +1,7 @@
 package com.example.adminshift.repository;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -26,4 +27,8 @@ public interface ShiftRequestDetailRepository
     boolean existsByEventIdAndWorkDateOutsideRange(@Param("eventId") Integer eventId,
                                                    @Param("startDate") LocalDate startDate,
                                                    @Param("endDate") LocalDate endDate);
+    /**
+     * サイドバー表示用：特定のユーザー・イベントのシフト希望明細一覧を取得
+     */
+    List<ShiftRequestDetail> findByUserIdAndEventIdOrderByWorkDateAsc(String userId, Integer eventId);
 }
