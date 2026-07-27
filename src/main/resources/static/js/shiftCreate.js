@@ -48,8 +48,8 @@ function cancelModal() {
 
     // 3. GETで初期表示URLへ遷移
     if (selectedEventId) {
-        window.location.href = '/shift/shiftCreate?selectedEventId=' + encodeURIComponent(selectedEventId);
+        window.location.href = '/admin/shiftCreate?selectedEventId=' + encodeURIComponent(selectedEventId);
     } else {
-        window.location.href = '/shift/shiftCreate';
+        window.location.href = '/admin/shiftCreate';
     }
 }
