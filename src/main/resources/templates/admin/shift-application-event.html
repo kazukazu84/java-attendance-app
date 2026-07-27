@@ -99,12 +99,12 @@
             <td th:text="${event.applicationStartDate}"></td>
             <td th:text="${event.applicationEndDate}"></td>
 
-            <td>
-                <form th:action="@{/admin/shift-application-event/edit}" method="post">
-                    <input type="hidden" name="eventId" th:value="${event.eventId}">
-                    <button type="submit">編集</button>
-                </form>
-            </td>
+			<td>
+			    <form th:action="@{/admin/shift-application-event/edit}" method="post">
+			        <input type="hidden" name="eventId" th:value="${event.eventId}">
+			        <button type="submit" th:disabled="${editingEventId != null}">編集</button>
+			    </form>
+			</td>
 
             <td>
                 <form th:action="@{/admin/shift-application-event/delete}" method="post">
@@ -148,12 +148,9 @@
                             <td>
                                 <button type="submit">完了</button>
                             </td>
-                            <td>
-                                <!-- キャンセル用フォーム -->
-                                <form th:action="@{/admin/shift-application-event/cancel}" method="post" style="display:inline;">
-                                    <button type="submit">キャンセル</button>
-                                </form>
-                            </td>
+							<td>
+							    <button type="submit" th:formaction="@{/admin/shift-application-event/cancel}">キャンセル</button>
+							</td>
                         </tr>
                     </table>
 
