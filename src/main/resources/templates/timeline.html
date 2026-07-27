@@ -92,65 +92,90 @@
 
             </div>
 
-			<!-- ▼ リツイート簡易表示（最新3件） -->
-			<div class="quote-preview"
-			     th:attr="data-post-id=${post.postId}"
-			     th:if="${quotePreviewMap[post.postId].size() > 0}">
+            <!-- ▼ リツイート簡易表示（最新3件） -->
+            <div class="quote-preview"
+                 th:attr="data-post-id=${post.postId}"
+                 th:if="${quotePreviewMap[post.postId].size() > 0}">
 
-			    <div th:each="q : ${quotePreviewMap[post.postId]}" class="quote-preview-item">
+                <div th:each="quote : ${quotePreviewMap[post.postId]}" class="quote-preview-item">
 
-			        <!-- ユーザー名 + ID -->
-			        <div class="quote-preview-header">
-			            <span class="quote-user" th:text="${q.userName}"></span>
-			            <span class="quote-user-id" th:text="'@' + ${q.userId}"></span>
-			        </div>
+                    <div class="quote-user" th:text="${quote.userName}"></div>
+                    <div class="quote-comment" th:text="${quote.comment}"></div>
+                    <div class="quote-time"
+                         th:text="${#temporals.format(quote.createdAt, 'yyyy/MM/dd HH:mm')}"></div>
 
-			        <!-- コメント -->
-			        <div class="quote-preview-comment" th:text="${q.comment}"></div>
+                    <!-- ▼ コメントする -->
+                    <a th:href="@{${basePath + '/quote-retweet'}(postId=${post.postId}, parentQuoteId=${quote.quoteId})}"
+                       class="quote-reply-btn">
+                        ↩ コメントする
+                    </a>
 
-			        <!-- 時間 -->
-			        <div class="quote-preview-time"
-			             th:text="${#temporals.format(q.createdAt, 'yyyy/MM/dd HH:mm')}"></div>
+                    <!-- ▼ コメントが付いている場合だけ表示するボタン（完全安全版） -->
+                    <div th:if="${childrenMap != null and childrenMap.containsKey(quote.quoteId)}">
+                        <a th:href="@{${basePath + '/quote-retweet'}(postId=${post.postId}, parentQuoteId=${quote.quoteId})}"
+                           class="quote-reply-btn">
+                            👁 ここに付いたコメントを見る
+                        </a>
+                    </div>
 
-			    </div>
+                </div>
+            </div>
 
-			    <!-- 3件以上なら「もっと見る」 -->
-			    <div th:if="${quoteListMap[post.postId].size() > 3}"
-			         class="quote-more"
-			         th:onclick="'toggleQuoteList(' + ${post.postId} + ')'" >
-			        すべての引用を見る
-			    </div>
-			</div>
+            <!-- ▼ 「すべての引用を見る」 -->
+            <div th:if="${quoteListMap[post.postId].size() > 3}"
+                 class="quote-more"
+                 th:onclick="'toggleQuoteList(' + ${post.postId} + ')'">
+                すべての引用を見る
+            </div>
 
             <!-- ▼ 引用RT一覧 -->
-			<div class="quote-list"
-			     th:id="'quote-list-' + ${post.postId}"
-			     style="display:none;">
+            <div class="quote-list"
+                 th:id="'quote-list-' + ${post.postId}"
+                 style="display:none;">
 
-			    <div th:each="q : ${quoteListMap[post.postId]}" class="quote-list-item">
-			        <div class="quote-user" th:text="${q.userName}"></div>
-			        <div class="quote-comment" th:text="${q.comment}"></div>
+                <div th:each="q : ${quoteListMap[post.postId]}" class="quote-list-item">
 
-			        <div class="quote-source">
-			            <span class="quote-source-label">引用元：</span>
-			            <span th:text="${post.content}"></span>
-			        </div>
+                    <div class="quote-user" th:text="${q.userName}"></div>
+                    <div class="quote-comment" th:text="${q.comment}"></div>
 
-			        <div class="quote-time"
-			             th:text="${#temporals.format(q.createdAt, 'yyyy/MM/dd HH:mm')}"></div>
-			    </div>
+                    <div class="quote-source">
+                        <span class="quote-source-label">引用元：</span>
+                        <span th:text="${post.content}"></span>
+                    </div>
 
-			    <!-- ▼ 元に戻すボタン -->
-			    <div class="quote-back"
-			         th:onclick="'toggleQuoteList(' + ${post.postId} + ')'" >
-			        元の3件に戻す
-			    </div>
+                    <div class="quote-time"
+                         th:text="${#temporals.format(q.createdAt, 'yyyy/MM/dd HH:mm')}"></div>
 
-			</div>
+                    <!-- ▼ 引用RTへの返信 -->
+                    <a th:href="@{${basePath + '/quote-retweet'}(postId=${post.postId}, parentQuoteId=${q.quoteId})}"
+                       class="quote-reply-btn">
+                        ↩ コメントする
+                    </a>
+
+                    <!-- ▼ 数珠構造（子コメント） -->
+                    <div class="quote-thread"
+                         th:if="${childrenMap != null and childrenMap.containsKey(q.quoteId)}">
+
+                        <div th:each="child : ${childrenMap[q.quoteId]}" class="quote-thread-child">
+                            <div class="quote-user" th:text="${child.userName}"></div>
+                            <div class="quote-comment" th:text="${child.comment}"></div>
+                            <div class="quote-time"
+                                 th:text="${#temporals.format(child.createdAt, 'yyyy/MM/dd HH:mm')}"></div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="quote-back"
+                     th:onclick="'toggleQuoteList(' + ${post.postId} + ')'">
+                    元の3件に戻す
+                </div>
+
+            </div>
 
         </div>
 
-        <!-- 投稿がない場合 -->
         <div th:if="${#lists.isEmpty(posts)}" class="empty-state card">
             <p>表示できる投稿がありません。</p>
         </div>

@@ -12,5 +12,6 @@ public class QuoteRetweetDto {
     private String userName; // 追加
     private String comment;
     private LocalDateTime createdAt;
+    private Long parentQuoteId;
 }
 

@@ -46,6 +46,9 @@ public class QuoteRetweetEntity {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+    
+    @Column(name = "parent_quote_id", nullable = true)
+    private Long parentQuoteId;
 
     @PrePersist
     public void prePersist() {

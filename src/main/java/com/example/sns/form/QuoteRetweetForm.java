@@ -6,4 +6,6 @@ import lombok.Data;
 public class QuoteRetweetForm {
     private Long postId;
     private String comment;
+    private Long parentQuoteId;
+
 }
