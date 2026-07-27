@@ -3,6 +3,7 @@ package com.example.adminshift.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -45,8 +46,10 @@ public class ShiftApplicationEventController {
     }
 
     @GetMapping
-    public String index(Model model) {
-        model.addAttribute("eventList", service.getEventList());
+    public String index(@RequestParam(name = "page", defaultValue = "0") int page, Model model) {
+        Page<ShiftApplicationEvent> eventPage = service.getEventList(page);
+        model.addAttribute("eventPage", eventPage);
+        model.addAttribute("eventList", eventPage.getContent());
         model.addAttribute("gapList", service.getCurrentGaps());
         return VIEW_NAME;
     }
@@ -59,11 +62,14 @@ public class ShiftApplicationEventController {
             @Validated @ModelAttribute("createShiftApplicationEventForm") CreateShiftApplicationEventForm form,
             BindingResult bindingResult,
             @RequestParam(name = "confirmConfirmed", defaultValue = "false") boolean confirmConfirmed,
+            @RequestParam(name = "page", defaultValue = "0") int page,
             Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("errorMessage", "入力内容に不備があります。");
-            model.addAttribute("eventList", service.getEventList());
+            Page<ShiftApplicationEvent> eventPage = service.getEventList(page);
+            model.addAttribute("eventPage", eventPage);
+            model.addAttribute("eventList", eventPage.getContent());
             model.addAttribute("gapList", service.getCurrentGaps());
             return VIEW_NAME;
         }
@@ -74,7 +80,9 @@ public class ShiftApplicationEventController {
             if (!simulatedGaps.isEmpty()) {
                 model.addAttribute("pendingFormType", "create");
                 model.addAttribute("pendingGapMessage", simulatedGaps.get(0).getMessage());
-                model.addAttribute("eventList", service.getEventList());
+                Page<ShiftApplicationEvent> eventPage = service.getEventList(page);
+                model.addAttribute("eventPage", eventPage);
+                model.addAttribute("eventList", eventPage.getContent());
                 model.addAttribute("gapList", service.getCurrentGaps());
                 return VIEW_NAME;
             }
@@ -83,7 +91,9 @@ public class ShiftApplicationEventController {
         boolean success = service.createEvent(form);
         if (!success) {
             model.addAttribute("errorMessage", "対象期間が他イベントと重複しています");
-            model.addAttribute("eventList", service.getEventList());
+            Page<ShiftApplicationEvent> eventPage = service.getEventList(page);
+            model.addAttribute("eventPage", eventPage);
+            model.addAttribute("eventList", eventPage.getContent());
             model.addAttribute("gapList", service.getCurrentGaps());
             return VIEW_NAME;
         }
@@ -99,6 +109,7 @@ public class ShiftApplicationEventController {
     public String edit(
             @ModelAttribute("createShiftApplicationEventForm") CreateShiftApplicationEventForm createForm,
             @RequestParam Integer eventId,
+            @RequestParam(name = "page", defaultValue = "0") int page,
             Model model) {
 
         ShiftApplicationEvent event = service.getEvent(eventId);
@@ -110,8 +121,10 @@ public class ShiftApplicationEventController {
         form.setApplicationStartDate(event.getApplicationStartDate());
         form.setApplicationEndDate(event.getApplicationEndDate());
 
+        Page<ShiftApplicationEvent> eventPage = service.getEventList(page);
         model.addAttribute("editingEventId", eventId);
-        model.addAttribute("eventList", service.getEventList());
+        model.addAttribute("eventPage", eventPage);
+        model.addAttribute("eventList", eventPage.getContent());
         model.addAttribute("gapList", service.getCurrentGaps());
         model.addAttribute("updateShiftApplicationEventForm", form);
 
@@ -122,9 +135,8 @@ public class ShiftApplicationEventController {
      * 編集モードキャンセル（新規追加）
      */
     @PostMapping("/cancel")
-    public String cancel() {
-        // DB更新を行わずに一覧画面へリダイレクトして編集モードを解除する
-        return REDIRECT_URL;
+    public String cancel(@RequestParam(name = "page", defaultValue = "0") int page) {
+        return REDIRECT_URL + "?page=" + page;
     }
 
     /**
@@ -135,12 +147,15 @@ public class ShiftApplicationEventController {
             @Validated @ModelAttribute("updateShiftApplicationEventForm") UpdateShiftApplicationEventForm form,
             BindingResult bindingResult,
             @RequestParam(name = "confirmConfirmed", defaultValue = "false") boolean confirmConfirmed,
+            @RequestParam(name = "page", defaultValue = "0") int page,
             Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("errorMessage", "入力内容に不備があります。");
             model.addAttribute("editingEventId", form.getEventId());
-            model.addAttribute("eventList", service.getEventList());
+            Page<ShiftApplicationEvent> eventPage = service.getEventList(page);
+            model.addAttribute("eventPage", eventPage);
+            model.addAttribute("eventList", eventPage.getContent());
             model.addAttribute("gapList", service.getCurrentGaps());
             return VIEW_NAME;
         }
@@ -165,7 +180,9 @@ public class ShiftApplicationEventController {
                 model.addAttribute("pendingFormType", "update");
                 model.addAttribute("pendingGapMessage", messageBuilder.toString());
                 model.addAttribute("editingEventId", form.getEventId());
-                model.addAttribute("eventList", service.getEventList());
+                Page<ShiftApplicationEvent> eventPage = service.getEventList(page);
+                model.addAttribute("eventPage", eventPage);
+                model.addAttribute("eventList", eventPage.getContent());
                 model.addAttribute("gapList", service.getCurrentGaps());
                 return VIEW_NAME;
             }
@@ -175,21 +192,25 @@ public class ShiftApplicationEventController {
         if (!success) {
             model.addAttribute("errorMessage", "対象期間が他イベントと重複しています");
             model.addAttribute("editingEventId", form.getEventId());
-            model.addAttribute("eventList", service.getEventList());
+            Page<ShiftApplicationEvent> eventPage = service.getEventList(page);
+            model.addAttribute("eventPage", eventPage);
+            model.addAttribute("eventList", eventPage.getContent());
             model.addAttribute("gapList", service.getCurrentGaps());
             return VIEW_NAME;
         }
 
-        return REDIRECT_URL;
+        return REDIRECT_URL + "?page=" + page;
     }
 
     /**
      * 削除
      */
     @PostMapping("/delete")
-    public String delete(@ModelAttribute UpdateShiftApplicationEventForm form) {
+    public String delete(
+            @ModelAttribute UpdateShiftApplicationEventForm form,
+            @RequestParam(name = "page", defaultValue = "0") int page) {
         service.deleteEvent(form.getEventId());
-        return REDIRECT_URL;
+        return REDIRECT_URL + "?page=" + page;
     }
 
     /**
