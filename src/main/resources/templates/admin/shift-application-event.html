@@ -78,6 +78,7 @@
 
     <thead>
     <tr>
+        <th>状態</th>
         <th>対象期間開始</th>
         <th>対象期間終了</th>
         <th>受付開始</th>
@@ -94,6 +95,12 @@
         <!-- 通常表示 -->
         <th:block th:if="${editingEventId != event.eventId}">
 
+            <td>
+                <span class="status-badge" 
+                      th:classappend="${event.statusCssClass}" 
+                      th:text="${event.statusName}">
+                </span>
+            </td>
             <td th:text="${event.targetStartDate}"></td>
             <td th:text="${event.targetEndDate}"></td>
             <td th:text="${event.applicationStartDate}"></td>
@@ -116,9 +123,9 @@
         </th:block>
 
         <!-- 編集モード -->
-        <th:block th:if="${editingEventId == event.eventId}">
+		        <th:block th:if="${editingEventId == event.eventId}">
 
-            <td colspan="6">
+		            <td colspan="7">
 
                 <form id="updateForm" th:action="@{/admin/shift-application-event/update}"
                       th:object="${updateShiftApplicationEventForm}"
