@@ -1,6 +1,6 @@
 /* ============================================================
    SNS共通テーマ：ビジネス × ブルー（企業向け）
-   給与一覧と完全統一デザイン
+   完全統合版：構造維持 + 視認性改善 + SNS密度調整
 ============================================================ */
 
 :root {
@@ -12,8 +12,13 @@
     --accent-color: #2b6cb0;
     --accent-light: #4a90e2;
     --accent-hover: #1e4f80;
-    --shadow-light: rgba(0, 0, 0, 0.06);
+    --shadow-light: rgba(0, 0, 0, 0.05);
     --shadow-strong: rgba(0, 0, 0, 0.12);
+
+    /* SNS向けの柔らかい背景 */
+    --soft-bg: #eef2f7;
+    --soft-bg-2: #f0f4f8;
+    --highlight-bg: #ebf8ff;
 }
 
 /* ============================================================
@@ -25,10 +30,11 @@ body {
     margin: 0;
     padding: 0;
     color: var(--text-primary);
+    line-height: 1.55; /* 読みやすさUP */
 }
 
 /* ============================================================
-   ナビゲーションバー（企業向けブルー）
+   ナビゲーションバー
 ============================================================ */
 .navbar {
     display: flex;
@@ -38,7 +44,10 @@ body {
     border-bottom: 1px solid var(--border-color);
     padding: 0 20px;
     height: 60px;
-    box-shadow: 0 2px 6px var(--shadow-light);
+
+    /* 影を自然に */
+    box-shadow: 0 1px 2px var(--shadow-light);
+
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -63,15 +72,15 @@ body {
     border-radius: 8px;
     font-weight: 600;
     font-size: 0.95rem;
-    transition: 0.25s;
+    transition: 0.2s;
 }
 
 .nav-item:hover {
-    background: #e6edf5;
+    background: var(--soft-bg);
 }
 
 .nav-item.active {
-    background: #ebf8ff;
+    background: var(--highlight-bg);
     color: var(--accent-color);
 }
 
@@ -84,20 +93,52 @@ body {
     padding: 0 15px;
 }
 
-/* カード（企業向け） */
+/* ============================================================
+   カード（企業向け × SNS密度）
+============================================================ */
 .card {
     background: var(--card-bg);
     border-radius: 12px;
-    padding: 24px;
+    padding: 24px; /* 元の構造維持 */
     border: 1px solid var(--border-color);
-    box-shadow: 0 4px 12px var(--shadow-light);
+
+    /* 影を軽くしてSNS向けに */
+    box-shadow: 0 1px 4px var(--shadow-light);
+
     margin-bottom: 24px;
-    transition: 0.2s;
+    transition: 0.15s ease;
 }
 
 .card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 18px var(--shadow-strong);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px var(--shadow-strong);
+}
+
+/* ============================================================
+   投稿フォーム（入力欄改善）
+============================================================ */
+textarea,
+input[type="text"] {
+    width: 100%;
+    padding: 16px; /* 視認性UP */
+    border-radius: 12px;
+    background: var(--soft-bg-2);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 1rem;
+    resize: vertical;
+
+    /* SNS向けに広く */
+    min-height: 90px;
+
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+textarea:focus,
+input[type="text"]:focus {
+    border-color: var(--accent-color);
+    outline: none;
+    box-shadow: 0 0 0 3px #cfe2ff;
 }
 
 /* ============================================================
@@ -106,6 +147,7 @@ body {
 .post-card {
     display: flex;
     flex-direction: column;
+    gap: 10px; /* 密度改善 */
 }
 
 .post-header {
@@ -133,7 +175,7 @@ body {
 }
 
 .post-content {
-    font-size: 1rem;
+    font-size: 0.98rem; /* 視認性UP */
     white-space: pre-wrap;
     word-break: break-word;
     margin-bottom: 14px;
@@ -145,14 +187,14 @@ body {
 ============================================================ */
 .post-actions {
     display: flex;
-    gap: 18px;
+    gap: 20px; /* 押しやすさUP */
     border-top: 1px solid var(--border-color);
     padding-top: 10px;
 }
 
 .btn-icon,
 .btn-icon-link {
-    background: #eef2f7;
+    background: var(--soft-bg);
     border: 1px solid var(--border-color);
     color: var(--text-secondary);
     font-size: 0.85rem;
@@ -162,14 +204,16 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
-    border-radius: 8px;
-    transition: 0.25s;
+
+    padding: 8px 14px; /* 押しやすさ改善 */
+    border-radius: 10px;
+
+    transition: 0.2s;
 }
 
 .btn-icon:hover,
 .btn-icon-link:hover {
-    background: #e6edf5;
+    background: var(--highlight-bg);
 }
 
 .btn-icon.active-like {
@@ -183,70 +227,17 @@ body {
 }
 
 /* ============================================================
-   投稿フォーム
-============================================================ */
-textarea,
-input[type="text"] {
-    width: 100%;
-    padding: 14px;
-    border-radius: 10px;
-    background: #f0f4f8;
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    font-size: 1rem;
-    resize: vertical;
-}
-
-textarea:focus,
-input[type="text"]:focus {
-    border-color: var(--accent-color);
-    outline: none;
-    box-shadow: 0 0 0 3px #cfe2ff;
-}
-
-/* 投稿ボタン */
-.btn-primary {
-    padding: 12px 20px;
-    background: var(--accent-color);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.25s;
-}
-
-.btn-primary:hover {
-    background: var(--accent-hover);
-}
-
-/* キャンセルボタン */
-.btn-secondary {
-    padding: 12px 20px;
-    background: #e6edf5;
-    border: 1px solid var(--border-color);
-    color: var(--text-secondary);
-    border-radius: 10px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.25s;
-}
-
-.btn-secondary:hover {
-    background: #dce3ee;
-}
-
-/* ============================================================
-   引用リツイート
+   引用リツイート（引用元の投稿プレビュー）
 ============================================================ */
 .target-post-preview {
-    background: #f0f4f8;
+    background: var(--soft-bg-2);
     border-left: 4px solid var(--accent-color);
     padding: 14px 18px;
     border-radius: 10px;
     margin-bottom: 20px;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    box-shadow: 0 1px 3px var(--shadow-light);
 }
 
 /* ============================================================
@@ -261,6 +252,12 @@ input[type="text"]:focus {
     border-radius: 10px;
     margin-bottom: 10px;
     box-shadow: 0 2px 4px var(--shadow-light);
+    transition: 0.15s ease;
+}
+
+.quote-preview-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px var(--shadow-light);
 }
 
 /* ユーザー名 + ID */
@@ -301,19 +298,31 @@ input[type="text"]:focus {
     cursor: pointer;
     font-weight: 700;
     margin-top: 4px;
+    font-size: 0.9rem;
+    transition: 0.2s;
 }
 
 .quote-more:hover {
     text-decoration: underline;
+    color: var(--accent-hover);
 }
 
-/* 引用RT一覧（展開後） */
+/* ============================================================
+   引用RT一覧（展開後）
+============================================================ */
 .quote-list-item {
     background: #f7f9fc;
     border: 1px solid var(--border-color);
     padding: 14px 16px;
     border-radius: 10px;
     margin-bottom: 12px;
+    box-shadow: 0 1px 3px var(--shadow-light);
+    transition: 0.15s ease;
+}
+
+.quote-list-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px var(--shadow-light);
 }
 
 /* 引用元（元投稿） */
@@ -332,15 +341,6 @@ input[type="text"]:focus {
     color: var(--accent-color);
 }
 
-/* 引用一覧のカード風デザイン */
-.quote-list-item {
-    background: #f7f9fc;
-    border: 1px solid var(--border-color);
-    padding: 14px 16px;
-    border-radius: 10px;
-    margin-bottom: 12px;
-}
-
 /* 元に戻すボタン */
 .quote-back {
     margin-top: 10px;
@@ -348,16 +348,22 @@ input[type="text"]:focus {
     font-weight: 700;
     cursor: pointer;
     font-size: 0.9rem;
+    transition: 0.2s;
 }
 
 .quote-back:hover {
     text-decoration: underline;
+    color: var(--accent-hover);
 }
 
+/* ============================================================
+   数珠構造（親引用＋子コメント）
+============================================================ */
 .quote-thread {
     margin-top: 12px;
     border-left: 3px solid var(--accent-color);
-    padding-left: 12px;
+    padding-left: 14px;
+    margin-left: 4px;
 }
 
 .quote-thread-item {
@@ -365,13 +371,35 @@ input[type="text"]:focus {
     padding: 12px 14px;
     border-radius: 10px;
     margin-bottom: 10px;
+    box-shadow: 0 1px 3px var(--shadow-light);
 }
 
 .quote-thread-child {
     background: #eef2f7;
     padding: 10px 12px;
     border-radius: 8px;
-    margin: 8px 0 8px 20px;
+    margin: 8px 0 8px 24px;
+    font-size: 0.9rem;
+    box-shadow: 0 1px 2px var(--shadow-light);
+}
+
+/* コメントする / コメントを見る */
+.quote-reply-btn {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 6px 12px;
+    background: var(--soft-bg);
+    border-radius: 8px;
+    color: var(--accent-color);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.quote-reply-btn:hover {
+    background: var(--highlight-bg);
+    color: var(--accent-hover);
 }
 
 /* ============================================================
@@ -410,6 +438,8 @@ input[type="text"]:focus {
     list-style: none;
     overflow-y: auto;
     flex-grow: 1;
+    margin: 0;
+    padding: 0;
 }
 
 .user-item {
@@ -426,6 +456,11 @@ input[type="text"]:focus {
     padding: 14px 16px;
     text-decoration: none;
     color: var(--text-primary);
+    transition: 0.15s ease;
+}
+
+.user-link:hover {
+    background: var(--soft-bg);
 }
 
 .user-link .user-name {
@@ -438,7 +473,9 @@ input[type="text"]:focus {
     color: var(--text-secondary);
 }
 
-/* 右側メッセージ表示 */
+/* ============================================================
+   DM画面（右側メッセージ表示）
+============================================================ */
 .dm-chat-main {
     flex-grow: 1;
     display: flex;
@@ -446,10 +483,14 @@ input[type="text"]:focus {
     background: var(--card-bg);
     border-radius: 12px;
     border: 1px solid var(--border-color);
-    box-shadow: 0 4px 12px var(--shadow-light);
+
+    /* SNS向けに軽い影へ */
+    box-shadow: 0 2px 6px var(--shadow-light);
+
     overflow: hidden;
 }
 
+/* メッセージ一覧 */
 .chat-messages {
     flex-grow: 1;
     padding: 20px;
@@ -459,6 +500,7 @@ input[type="text"]:focus {
     gap: 14px;
 }
 
+/* メッセージ吹き出しの配置 */
 .message-bubble-wrapper {
     display: flex;
 }
@@ -471,37 +513,82 @@ input[type="text"]:focus {
     justify-content: flex-start;
 }
 
+/* メッセージ吹き出し本体 */
 .message-bubble {
     max-width: 65%;
     padding: 12px 16px;
-    border-radius: 12px;
+
+    /* 改善：丸みを少し増やして柔らかく */
+    border-radius: 14px;
+
     word-break: break-word;
     font-size: 0.95rem;
+    line-height: 1.5;
+
+    /* SNSらしい軽さ */
+    box-shadow: 0 1px 3px var(--shadow-light);
 }
 
+/* 自分のメッセージ */
 .message-bubble-wrapper.mine .message-bubble {
     background: var(--accent-light);
     color: #fff;
 }
 
+/* 相手のメッセージ */
 .message-bubble-wrapper.other .message-bubble {
-    background: #eef2f7;
+    background: var(--soft-bg);
     color: var(--text-primary);
 }
 
+/* ============================================================
+   DM入力欄
+============================================================ */
 .chat-input-form {
     display: flex;
     gap: 10px;
     padding: 14px;
     border-top: 1px solid var(--border-color);
-    background: #f0f4f8;
+    background: var(--soft-bg-2);
 }
 
 .chat-input-form input[type="text"] {
+    flex-grow: 1;
+    padding: 12px 16px;
     border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    font-size: 0.95rem;
+    color: var(--text-primary);
+
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* 空状態 */
+.chat-input-form input[type="text"]:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px #cfe2ff;
+}
+
+/* 送信ボタン（SNS向けに軽く） */
+.chat-input-form button {
+    padding: 10px 18px;
+    background: var(--accent-color);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.chat-input-form button:hover {
+    background: var(--accent-hover);
+}
+
+/* ============================================================
+   空状態
+============================================================ */
 .empty-state {
     display: flex;
     justify-content: center;
@@ -509,4 +596,8 @@ input[type="text"]:focus {
     height: 100%;
     color: var(--text-secondary);
     font-size: 0.95rem;
+    text-align: center;
+
+    /* SNS向けに軽い余白 */
+    padding: 20px;
 }
