@@ -131,21 +131,25 @@
                         <tr>
                             <td>
                                 <input type="date" id="targetStartDate" th:field="*{targetStartDate}">
+                                <div th:if="${#fields.hasErrors('targetStartDate')}" th:errors="*{targetStartDate}" style="color: red; font-size: 0.8em;"></div>
                             </td>
                             <td>
                                 <input type="date" id="targetEndDate" th:field="*{targetEndDate}">
+                                <div th:if="${#fields.hasErrors('targetEndDate')}" th:errors="*{targetEndDate}" style="color: red; font-size: 0.8em;"></div>
                             </td>
                             <td>
                                 <input type="date" th:field="*{applicationStartDate}">
+                                <div th:if="${#fields.hasErrors('applicationStartDate')}" th:errors="*{applicationStartDate}" style="color: red; font-size: 0.8em;"></div>
                             </td>
                             <td>
                                 <input type="date" th:field="*{applicationEndDate}">
+                                <div th:if="${#fields.hasErrors('applicationEndDate')}" th:errors="*{applicationEndDate}" style="color: red; font-size: 0.8em;"></div>
                             </td>
                             <td>
                                 <button type="submit">完了</button>
                             </td>
                             <td>
-                                <!-- 追加箇所：キャンセル用フォーム -->
+                                <!-- キャンセル用フォーム -->
                                 <form th:action="@{/admin/shift-application-event/cancel}" method="post" style="display:inline;">
                                     <button type="submit">キャンセル</button>
                                 </form>
