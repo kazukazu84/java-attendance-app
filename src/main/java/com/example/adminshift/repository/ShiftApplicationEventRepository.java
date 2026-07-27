@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,7 +21,8 @@ public interface ShiftApplicationEventRepository
 
     Optional<ShiftApplicationEvent> findTopByOrderByEventIdDesc();
 
-    List<ShiftApplicationEvent> findTop10ByTargetEndDateGreaterThanEqualOrderByTargetStartDate(LocalDate today);
+    // 変更箇所：Pageableを受け取り、Page<ShiftApplicationEvent> を返すメソッドに変更
+    Page<ShiftApplicationEvent> findByTargetEndDateGreaterThanEqualOrderByTargetStartDateAsc(LocalDate today, Pageable pageable);
 
     Optional<ShiftApplicationEvent> findTopByOrderByTargetEndDateDesc();
 
@@ -41,8 +44,6 @@ public interface ShiftApplicationEventRepository
     
     /**
      * シフト申請一覧画面のプルダウン用イベント取得（最大100件）
-     * ① 現在受付中（applicationStartDate <= today AND applicationEndDate >= today）
-     * ② 受付終了済みで対象期間終了日が今日以降（applicationEndDate < today AND targetEndDate >= today）
      */
     @Query("SELECT e FROM ShiftApplicationEvent e " +
            "WHERE (e.applicationStartDate <= :today AND e.applicationEndDate >= :today) " +
