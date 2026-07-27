@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
  * シフト作成画面の遷移・イベント制御を行うコントローラー
  */
 @Controller
-@RequestMapping("/shift/shiftCreate")
+@RequestMapping("/admin/shiftCreate")
 @RequiredArgsConstructor
 public class ShiftCreateController {
 
@@ -186,7 +186,7 @@ public class ShiftCreateController {
 
         shiftCreateService.saveShift(shift);
 
-        return "redirect:/shift/shiftCreate?selectedEventId=" + shiftForm.getEventId();
+        return "redirect:/admin/shiftCreate?selectedEventId=" + shiftForm.getEventId();
     }
 
     /**

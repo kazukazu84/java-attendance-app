@@ -17,13 +17,13 @@
             <!-- 上部操作エリア -->
             <div class="top-container">
                 <div class="back-btn-container">
-                    <form th:action="@{/shift/shiftCreate/back}" method="get">
+                    <form th:action="@{/admin/shiftCreate/back}" method="get">
                         <button type="submit" class="btn-secondary" th:disabled="${showModal}">← 戻る</button>
                     </form>
                 </div>
 
                 <div class="event-select-container">
-                    <form th:action="@{/shift/shiftCreate/changeEvent}" th:object="${searchForm}" method="post" class="event-form">
+                    <form th:action="@{/admin/shiftCreate/changeEvent}" th:object="${searchForm}" method="post" class="event-form">
                         <label for="eventSelect">イベント選択：</label>
                         <select id="eventSelect" th:field="*{selectedEventId}" th:disabled="${showModal}">
                             <option th:each="event : ${eventList}"
@@ -81,7 +81,7 @@
                                     <th:block th:with="targetShift=${#lists.isEmpty(shiftList) ? null : shiftList.^[shiftDate != null and shiftDate.equals(#vars.d) and userId == #vars.user.userId]}">
                                         
                                         <!-- ① Shiftレコードが存在する場合（編集モード） -->
-                                        <form th:if="${targetShift != null}" th:action="@{/shift/shiftCreate/edit}" method="get" class="cell-form">
+                                        <form th:if="${targetShift != null}" th:action="@{/admin/shiftCreate/edit}" method="get" class="cell-form">
                                             <input type="hidden" name="shiftId" th:value="${targetShift.id}" />
                                             <input type="hidden" name="eventId" th:value="${searchForm.selectedEventId}" />
                                             
@@ -106,7 +106,7 @@
                                         </form>
 
                                         <!-- ② Shiftレコードが存在しない場合（新規作成モード：「未」表示セル） -->
-                                        <form th:if="${targetShift == null}" th:action="@{/shift/shiftCreate/new}" method="get" class="cell-form">
+                                        <form th:if="${targetShift == null}" th:action="@{/admin/shiftCreate/new}" method="get" class="cell-form">
                                             <input type="hidden" name="eventId" th:value="${searchForm.selectedEventId}" />
                                             <input type="hidden" name="userId" th:value="${user.userId}" />
                                             <input type="hidden" name="shiftDate" th:value="${#temporals.format(d, 'yyyy-MM-dd')}" />
@@ -132,7 +132,7 @@
             <div class="modal-header">
                 <h3 th:text="${shiftForm.id == null ? 'シフト新規登録' : 'シフト編集'}">シフト編集</h3>
             </div>
-			<form th:action="@{/shift/shiftCreate/update}" th:object="${shiftForm}" method="post">
+			<form th:action="@{/admin/shiftCreate/update}" th:object="${shiftForm}" method="post">
 			    <input type="hidden" th:field="*{id}" />
 			    <!-- ↓ name="eventId" が入っていることを確認 (th:field="*{eventId}" で自動セットされます) -->
 			    <input type="hidden" th:field="*{eventId}" />
