@@ -1,6 +1,9 @@
 package com.example.sns.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -11,8 +14,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.example.account.service.CustomUserDetails;
 import com.example.sns.dto.PostDto;
+import com.example.sns.dto.QuoteRetweetDto;
 import com.example.sns.form.PostForm;
 import com.example.sns.service.PostService;
+import com.example.sns.service.QuoteRetweetService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class TimelineController {
 
     private final PostService postService;
+    private final QuoteRetweetService quoteRetweetService;
 
     @GetMapping({"/user/timeline", "/admin/timeline"})
     public String timeline(
@@ -30,14 +36,12 @@ public class TimelineController {
 
         if (loginUser == null) return "redirect:/login";
 
-        // 権限に応じてURLを正規化
         String redirectUrl = checkAndRedirect(
                 loginUser, request,
                 "/user/timeline", "/admin/timeline"
         );
         if (redirectUrl != null) return redirectUrl;
 
-        // basePath を画面へ渡す
         String basePath = loginUser.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))
                 ? "/admin"
@@ -51,8 +55,29 @@ public class TimelineController {
         model.addAttribute("postForm", new PostForm());
         model.addAttribute("currentUser", loginUser);
 
+        // ★ 引用RTプレビュー（最新3件）
+        Map<Long, List<QuoteRetweetDto>> quotePreviewMap = new HashMap<>();
+
+        // ★ 引用RT一覧（全件）
+        Map<Long, List<QuoteRetweetDto>> quoteListMap = new HashMap<>();
+
+        for (PostDto post : posts) {
+            List<QuoteRetweetDto> allQuotes = quoteRetweetService.getQuotes(post.getPostId());
+            quoteListMap.put(post.getPostId(), allQuotes);
+
+            List<QuoteRetweetDto> preview = allQuotes.stream()
+                    .limit(3)
+                    .collect(Collectors.toList());
+            quotePreviewMap.put(post.getPostId(), preview);
+        }
+
+        // ★ 画面へ渡す（最小追加）
+        model.addAttribute("quotePreviewMap", quotePreviewMap);
+        model.addAttribute("quoteListMap", quoteListMap);
+
         return "timeline";
     }
+
 
     // ★ 給与管理システムと同じ権限判定ロジック
     private String checkAndRedirect(

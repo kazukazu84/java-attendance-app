@@ -250,6 +250,111 @@ input[type="text"]:focus {
 }
 
 /* ============================================================
+   引用RT表示（タイムライン）
+============================================================ */
+
+/* ▼ リツイート簡易表示（ミニカード） */
+.quote-preview-item {
+    background: #f7f9fc;
+    border: 1px solid var(--border-color);
+    padding: 12px 14px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px var(--shadow-light);
+}
+
+/* ユーザー名 + ID */
+.quote-preview-header {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.quote-user {
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+.quote-user-id {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* コメント */
+.quote-preview-comment {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    white-space: pre-wrap;
+}
+
+/* 時間 */
+.quote-preview-time {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* 「すべての引用を見る」 */
+.quote-more {
+    color: var(--accent-color);
+    cursor: pointer;
+    font-weight: 700;
+    margin-top: 4px;
+}
+
+.quote-more:hover {
+    text-decoration: underline;
+}
+
+/* 引用RT一覧（展開後） */
+.quote-list-item {
+    background: #f7f9fc;
+    border: 1px solid var(--border-color);
+    padding: 14px 16px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+}
+
+/* 引用元（元投稿） */
+.quote-source {
+    background: #eef2f7;
+    border-left: 4px solid var(--accent-color);
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-top: 6px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.quote-source-label {
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+/* 引用一覧のカード風デザイン */
+.quote-list-item {
+    background: #f7f9fc;
+    border: 1px solid var(--border-color);
+    padding: 14px 16px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+}
+
+/* 元に戻すボタン */
+.quote-back {
+    margin-top: 10px;
+    color: var(--accent-color);
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.quote-back:hover {
+    text-decoration: underline;
+}
+
+/* ============================================================
    DM画面（2カラム）
 ============================================================ */
 .dm-container {
