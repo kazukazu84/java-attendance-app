@@ -18,9 +18,9 @@ class ShiftManagementControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-<<<<<<< HEAD
-}
-=======
+
+
+
     @MockitoBean
     private ShiftManagementService shiftManagementService;
 
@@ -32,7 +32,7 @@ class ShiftManagementControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/shiftManagement"))
                 .andExpect(model().attributeExists("shiftManagementForm"));
+  
     }
-
 }
->>>>>>> refs/remotes/origin/masuda
+
