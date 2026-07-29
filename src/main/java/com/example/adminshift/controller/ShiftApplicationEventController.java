@@ -65,17 +65,19 @@ public class ShiftApplicationEventController {
             @RequestParam(name = "page", defaultValue = "0") int page,
             Model model) {
 
-    	if (bindingResult.hasErrors()) {
-    	    model.addAttribute("errorMessage", "入力内容に不備があります。");
+        // Formに付与された @ValidShiftApplicationEventDate により、
+        // 不正な日付（受付開始日 > 受付終了日）の場合 bindingResult.hasErrors() が true になります
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errorMessage", "入力内容に不備があります。");
 
-    	    Page<ShiftApplicationEvent> eventPage = service.getEventList(page);
+            Page<ShiftApplicationEvent> eventPage = service.getEventList(page);
 
-    	    model.addAttribute("eventPage", eventPage);
-    	    model.addAttribute("eventList", eventPage.getContent());
-    	    model.addAttribute("gapList", service.getCurrentGaps());
+            model.addAttribute("eventPage", eventPage);
+            model.addAttribute("eventList", eventPage.getContent());
+            model.addAttribute("gapList", service.getCurrentGaps());
 
-    	    return VIEW_NAME;
-    	}
+            return VIEW_NAME;
+        }
 
         if (!confirmConfirmed) {
             LocalDate[] dates = service.calculateNextEventDates(form);

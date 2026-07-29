@@ -5,69 +5,33 @@ import java.time.LocalDate;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-import org.springframework.stereotype.Component;
+import com.example.adminshift.form.ShiftApplicationDateHolder;
 
-import com.example.adminshift.form.UpdateShiftApplicationEventForm;
-
-/**
- * シフト受付イベントの日付妥当性チェックを行うValidatorクラス
- */
-@Component
-public class ShiftApplicationEventDateValidator implements ConstraintValidator<ValidShiftApplicationEventDate, UpdateShiftApplicationEventForm> {
+public class ShiftApplicationEventDateValidator implements ConstraintValidator<ValidShiftApplicationEventDate, ShiftApplicationDateHolder> {
 
     @Override
-    public boolean isValid(UpdateShiftApplicationEventForm form, ConstraintValidatorContext context) {
+    public boolean isValid(ShiftApplicationDateHolder form, ConstraintValidatorContext context) {
         if (form == null) {
             return true;
         }
 
-        LocalDate targetStartDate = form.getTargetStartDate();
-        LocalDate targetEndDate = form.getTargetEndDate();
-        LocalDate applicationStartDate = form.getApplicationStartDate();
-        LocalDate applicationEndDate = form.getApplicationEndDate();
+        LocalDate startDate = form.getApplicationStartDate();
+        LocalDate endDate = form.getApplicationEndDate();
 
-        // 必須チェック（未入力の場合は他のアノテーションまたはNull安全のために判定スキップ）
-        if (targetStartDate == null || targetEndDate == null || applicationStartDate == null || applicationEndDate == null) {
+        // 単体チェック（@NotNullなど）でエラーになる場合はここではチェックをスキップ
+        if (startDate == null || endDate == null) {
             return true;
         }
 
-        boolean isValid = true;
-
-        // デフォルトのエラーメッセージ生成を無効化
-        context.disableDefaultConstraintViolation();
-
-        // 条件①：対象期間開始日 ＞ 対象期間終了日
-        if (targetStartDate.isAfter(targetEndDate)) {
-            context.buildConstraintViolationWithTemplate("対象期間開始日は対象期間終了日以前で入力してください。")
-                   .addPropertyNode("targetStartDate")
+        // 受付開始日が受付終了日より後（未来）になっている場合はエラー
+        if (startDate.isAfter(endDate)) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(context.getDefaultConstraintMessageTemplate())
+                   .addPropertyNode("applicationStartDays") // 画面のフィールドに紐付ける場合（必要に応じて）
                    .addConstraintViolation();
-            isValid = false;
+            return false;
         }
 
-        // 条件②：受付開始日 ＞ 受付終了日
-        if (applicationStartDate.isAfter(applicationEndDate)) {
-            context.buildConstraintViolationWithTemplate("受付開始日は受付終了日以前で入力してください。")
-                   .addPropertyNode("applicationStartDate") // ★追加: applicationStartDate フィールドに紐付ける
-                   .addConstraintViolation();
-            isValid = false;
-        }
-
-        // 条件③：受付開始日 ＞＝ 対象期間開始日
-        if (!applicationStartDate.isBefore(targetStartDate)) {
-            context.buildConstraintViolationWithTemplate("受付期間は対象期間開始日より前の日付で設定してください。")
-                   .addPropertyNode("applicationStartDate")
-                   .addConstraintViolation();
-            isValid = false;
-        }
-
-        // 条件④：受付終了日 ＞＝ 対象期間開始日
-        if (!applicationEndDate.isBefore(targetStartDate)) {
-            context.buildConstraintViolationWithTemplate("受付期間は対象期間開始日より前の日付で設定してください。")
-                   .addPropertyNode("applicationEndDate") // ★追加: applicationEndDate フィールドに紐付ける
-                   .addConstraintViolation();
-            isValid = false;
-        }
-
-        return isValid;
+        return true;
     }
 }
