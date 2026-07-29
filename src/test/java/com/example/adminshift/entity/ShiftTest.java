@@ -1,119 +1,342 @@
 package com.example.adminshift.entity;
 
+
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import org.junit.jupiter.api.Test;
 
+
+
 class ShiftTest {
 
-	@Test
-	void testHashCode() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testIsNightShift() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testGetId() {
-		fail("まだ実装されていません");
-	}
+    /**
+     * 夜勤判定
+     *
+     * startTime > endTime
+     * 例:
+     * 22:00～05:00
+     */
+    @Test
+    void isNightShift_夜勤の場合true(){
 
-	@Test
-	void testGetEventId() {
-		fail("まだ実装されていません");
-	}
+        Shift shift =
+                new Shift();
 
-	@Test
-	void testGetUserId() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testGetShiftDate() {
-		fail("まだ実装されていません");
-	}
+        shift.setIsAvailable(1);
 
-	@Test
-	void testGetStartTime() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testGetEndTime() {
-		fail("まだ実装されていません");
-	}
+        shift.setStartTime(
+                LocalTime.of(22,0)
+        );
 
-	@Test
-	void testGetMemo() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testGetIsAvailable() {
-		fail("まだ実装されていません");
-	}
+        shift.setEndTime(
+                LocalTime.of(5,0)
+        );
 
-	@Test
-	void testSetId() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testSetEventId() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testSetUserId() {
-		fail("まだ実装されていません");
-	}
+        assertTrue(
+                shift.isNightShift()
+        );
 
-	@Test
-	void testSetShiftDate() {
-		fail("まだ実装されていません");
-	}
+    }
 
-	@Test
-	void testSetStartTime() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testSetEndTime() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testSetMemo() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testSetIsAvailable() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testEqualsObject() {
-		fail("まだ実装されていません");
-	}
+    /**
+     * 通常勤務
+     *
+     * 09:00～18:00
+     */
+    @Test
+    void isNightShift_通常勤務の場合false(){
 
-	@Test
-	void testCanEqual() {
-		fail("まだ実装されていません");
-	}
+        Shift shift =
+                new Shift();
 
-	@Test
-	void testToString() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testShift() {
-		fail("まだ実装されていません");
-	}
+        shift.setIsAvailable(1);
+
+
+        shift.setStartTime(
+                LocalTime.of(9,0)
+        );
+
+
+        shift.setEndTime(
+                LocalTime.of(18,0)
+        );
+
+
+
+        assertFalse(
+                shift.isNightShift()
+        );
+
+    }
+
+
+
+
+
+    /**
+     * 休みの場合
+     *
+     * isAvailable=0
+     */
+    @Test
+    void isNightShift_休みの場合false(){
+
+        Shift shift =
+                new Shift();
+
+
+        shift.setIsAvailable(0);
+
+
+        shift.setStartTime(
+                LocalTime.of(22,0)
+        );
+
+
+        shift.setEndTime(
+                LocalTime.of(5,0)
+        );
+
+
+
+        assertFalse(
+                shift.isNightShift()
+        );
+
+    }
+
+
+
+
+
+    /**
+     * 開始時間null
+     */
+    @Test
+    void isNightShift_開始時間nullの場合false(){
+
+        Shift shift =
+                new Shift();
+
+
+        shift.setIsAvailable(1);
+
+
+        shift.setStartTime(null);
+
+
+        shift.setEndTime(
+                LocalTime.of(5,0)
+        );
+
+
+
+        assertFalse(
+                shift.isNightShift()
+        );
+
+    }
+
+
+
+
+
+    /**
+     * 終了時間null
+     */
+    @Test
+    void isNightShift_終了時間nullの場合false(){
+
+        Shift shift =
+                new Shift();
+
+
+        shift.setIsAvailable(1);
+
+
+        shift.setStartTime(
+                LocalTime.of(22,0)
+        );
+
+
+        shift.setEndTime(null);
+
+
+
+        assertFalse(
+                shift.isNightShift()
+        );
+
+    }
+
+
+
+
+
+    /**
+     * 同一時刻の場合
+     *
+     * startTime.isAfter()
+     * がfalseになることを確認
+     */
+    @Test
+    void isNightShift_開始終了同時刻の場合false(){
+
+        Shift shift =
+                new Shift();
+
+
+        shift.setIsAvailable(1);
+
+
+        shift.setStartTime(
+                LocalTime.of(9,0)
+        );
+
+
+        shift.setEndTime(
+                LocalTime.of(9,0)
+        );
+
+
+
+        assertFalse(
+                shift.isNightShift()
+        );
+
+    }
+
+
+
+
+
+    /**
+     * Entity項目設定確認
+     */
+    @Test
+    void getterSetter確認(){
+
+        Shift shift =
+                new Shift();
+
+
+        shift.setId(1);
+
+
+        shift.setEventId(10);
+
+
+        shift.setUserId("U001");
+
+
+        shift.setShiftDate(
+                LocalDate.of(2026,8,1)
+        );
+
+
+        shift.setStartTime(
+                LocalTime.of(9,0)
+        );
+
+
+        shift.setEndTime(
+                LocalTime.of(18,0)
+        );
+
+
+        shift.setMemo("備考");
+
+
+        shift.setIsAvailable(1);
+
+
+
+        assertEquals(
+                1,
+                shift.getId()
+        );
+
+
+        assertEquals(
+                10,
+                shift.getEventId()
+        );
+
+
+        assertEquals(
+                "U001",
+                shift.getUserId()
+        );
+
+
+        assertEquals(
+                LocalDate.of(2026,8,1),
+                shift.getShiftDate()
+        );
+
+
+        assertEquals(
+                LocalTime.of(9,0),
+                shift.getStartTime()
+        );
+
+
+        assertEquals(
+                LocalTime.of(18,0),
+                shift.getEndTime()
+        );
+
+
+        assertEquals(
+                "備考",
+                shift.getMemo()
+        );
+
+
+        assertEquals(
+                1,
+                shift.getIsAvailable()
+        );
+
+    }
+
+
+
+
+
+    /**
+     * 初期値確認
+     *
+     * isAvailableは1
+     */
+    @Test
+    void isAvailable_初期値確認(){
+
+        Shift shift =
+                new Shift();
+
+
+
+        assertEquals(
+                1,
+                shift.getIsAvailable()
+        );
+
+    }
 
 }
