@@ -1,44 +1,37 @@
 package com.example.adminshift.validation;
 
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+
+
 class ValidShiftTimeTest {
 
-	@Test
-	void testMessage() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testGroups() {
-		fail("まだ実装されていません");
-	}
+    @Test
+    void annotationデフォルトメッセージ確認() {
 
-	@Test
-	void testPayload() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testEquals() {
-		fail("まだ実装されていません");
-	}
+        ValidShiftTime annotation =
+                Dummy.class.getAnnotation(
+                        ValidShiftTime.class
+                );
 
-	@Test
-	void testHashCode() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testToString() {
-		fail("まだ実装されていません");
-	}
+        assertEquals(
+                "出勤の場合は出勤時間と退勤時間の両方を入力してください。",
+                annotation.message()
+        );
 
-	@Test
-	void testAnnotationType() {
-		fail("まだ実装されていません");
-	}
+    }
+
+
+
+    @ValidShiftTime
+    static class Dummy {
+
+    }
 
 }

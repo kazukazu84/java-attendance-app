@@ -1,154 +1,356 @@
 package com.example.adminshift.entity;
 
+
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
 
+
+
 class ShiftApplicationEventTest {
 
-	@Test
-	void testHashCode() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testGetDisplayName() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testGetStatusName() {
-		fail("まだ実装されていません");
-	}
+    /**
+     * 表示期間取得
+     */
+    @Test
+    void getDisplayName_正常(){
 
-	@Test
-	void testGetStatusCssClass() {
-		fail("まだ実装されていません");
-	}
+        ShiftApplicationEvent event =
+                new ShiftApplicationEvent();
 
-	@Test
-	void testGetEventId() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testGetTargetStartDate() {
-		fail("まだ実装されていません");
-	}
+        event.setTargetStartDate(
+                LocalDate.of(2026,8,1)
+        );
 
-	@Test
-	void testGetTargetEndDate() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testGetApplicationStartDate() {
-		fail("まだ実装されていません");
-	}
+        event.setTargetEndDate(
+                LocalDate.of(2026,8,31)
+        );
 
-	@Test
-	void testGetApplicationEndDate() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testSetEventId() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testSetTargetStartDate() {
-		fail("まだ実装されていません");
-	}
+        assertEquals(
+                "2026/08/01～2026/08/31",
+                event.getDisplayName()
+        );
 
-	@Test
-	void testSetTargetEndDate() {
-		fail("まだ実装されていません");
-	}
+    }
 
-	@Test
-	void testSetApplicationStartDate() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testSetApplicationEndDate() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testEqualsObject() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testCanEqual() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testToString() {
-		fail("まだ実装されていません");
-	}
+    /**
+     * 開始日null
+     */
+    @Test
+    void getDisplayName_開始日null(){
 
-	@Test
-	void testShiftApplicationEvent() {
-		fail("まだ実装されていません");
-	}
+        ShiftApplicationEvent event =
+                new ShiftApplicationEvent();
 
-	@Test
-	void testObject() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testGetClass() {
-		fail("まだ実装されていません");
-	}
+        event.setTargetStartDate(null);
 
-	@Test
-	void testEqualsObject1() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testClone() {
-		fail("まだ実装されていません");
-	}
+        event.setTargetEndDate(
+                LocalDate.of(2026,8,31)
+        );
 
-	@Test
-	void testToString1() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testNotify() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testNotifyAll() {
-		fail("まだ実装されていません");
-	}
+        assertEquals(
+                "",
+                event.getDisplayName()
+        );
 
-	@Test
-	void testWait() {
-		fail("まだ実装されていません");
-	}
+    }
 
-	@Test
-	void testWaitLong() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testWaitLongInt() {
-		fail("まだ実装されていません");
-	}
 
-	@Test
-	void testFinalize() {
-		fail("まだ実装されていません");
-	}
+
+
+    /**
+     * 終了日null
+     */
+    @Test
+    void getDisplayName_終了日null(){
+
+        ShiftApplicationEvent event =
+                new ShiftApplicationEvent();
+
+
+        event.setTargetStartDate(
+                LocalDate.of(2026,8,1)
+        );
+
+
+        event.setTargetEndDate(null);
+
+
+
+        assertEquals(
+                "",
+                event.getDisplayName()
+        );
+
+    }
+
+
+
+
+
+    /**
+     * 受付前
+     *
+     * 現在日より未来
+     */
+    @Test
+    void getStatusName_受付前(){
+
+        ShiftApplicationEvent event =
+                new ShiftApplicationEvent();
+
+
+        event.setApplicationStartDate(
+                LocalDate.now().plusDays(10)
+        );
+
+
+        event.setApplicationEndDate(
+                LocalDate.now().plusDays(20)
+        );
+
+
+
+        assertEquals(
+                "受付前",
+                event.getStatusName()
+        );
+
+    }
+
+
+
+
+
+    /**
+     * 受付中
+     */
+    @Test
+    void getStatusName_受付中(){
+
+        ShiftApplicationEvent event =
+                new ShiftApplicationEvent();
+
+
+        event.setApplicationStartDate(
+                LocalDate.now().minusDays(10)
+        );
+
+
+        event.setApplicationEndDate(
+                LocalDate.now().plusDays(10)
+        );
+
+
+
+        assertEquals(
+                "受付中",
+                event.getStatusName()
+        );
+
+    }
+
+
+
+
+
+    /**
+     * 受付終了
+     */
+    @Test
+    void getStatusName_受付終了(){
+
+        ShiftApplicationEvent event =
+                new ShiftApplicationEvent();
+
+
+        event.setApplicationStartDate(
+                LocalDate.now().minusDays(20)
+        );
+
+
+        event.setApplicationEndDate(
+                LocalDate.now().minusDays(10)
+        );
+
+
+
+        assertEquals(
+                "受付終了",
+                event.getStatusName()
+        );
+
+    }
+
+
+
+
+
+    /**
+     * CSS 受付前
+     */
+    @Test
+    void getStatusCssClass_受付前(){
+
+        ShiftApplicationEvent event =
+                new ShiftApplicationEvent();
+
+
+        event.setApplicationStartDate(
+                LocalDate.now().plusDays(10)
+        );
+
+
+        event.setApplicationEndDate(
+                LocalDate.now().plusDays(20)
+        );
+
+
+
+        assertEquals(
+                "status-before",
+                event.getStatusCssClass()
+        );
+
+    }
+
+
+
+
+
+    /**
+     * CSS 受付中
+     */
+    @Test
+    void getStatusCssClass_受付中(){
+
+        ShiftApplicationEvent event =
+                new ShiftApplicationEvent();
+
+
+        event.setApplicationStartDate(
+                LocalDate.now().minusDays(10)
+        );
+
+
+        event.setApplicationEndDate(
+                LocalDate.now().plusDays(10)
+        );
+
+
+
+        assertEquals(
+                "status-open",
+                event.getStatusCssClass()
+        );
+
+    }
+
+
+
+
+
+    /**
+     * CSS 受付終了
+     */
+    @Test
+    void getStatusCssClass_受付終了(){
+
+        ShiftApplicationEvent event =
+                new ShiftApplicationEvent();
+
+
+        event.setApplicationStartDate(
+                LocalDate.now().minusDays(20)
+        );
+
+
+        event.setApplicationEndDate(
+                LocalDate.now().minusDays(10)
+        );
+
+
+
+        assertEquals(
+                "status-closed",
+                event.getStatusCssClass()
+        );
+
+    }
+
+
+
+
+
+    /**
+     * 受付日null
+     */
+    @Test
+    void getStatusName_受付日null(){
+
+        ShiftApplicationEvent event =
+                new ShiftApplicationEvent();
+
+
+        event.setApplicationStartDate(null);
+
+
+        event.setApplicationEndDate(
+                LocalDate.now()
+        );
+
+
+
+        assertEquals(
+                "",
+                event.getStatusName()
+        );
+
+    }
+
+
+
+
+
+    /**
+     * CSS null
+     */
+    @Test
+    void getStatusCssClass_受付日null(){
+
+        ShiftApplicationEvent event =
+                new ShiftApplicationEvent();
+
+
+        event.setApplicationStartDate(null);
+
+
+        event.setApplicationEndDate(null);
+
+
+
+        assertEquals(
+                "",
+                event.getStatusCssClass()
+        );
+
+    }
 
 }
