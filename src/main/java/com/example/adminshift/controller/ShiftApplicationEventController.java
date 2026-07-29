@@ -65,14 +65,17 @@ public class ShiftApplicationEventController {
             @RequestParam(name = "page", defaultValue = "0") int page,
             Model model) {
 
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("errorMessage", "入力内容に不備があります。");
-            Page<ShiftApplicationEvent> eventPage = service.getEventList(page);
-            model.addAttribute("eventPage", eventPage);
-            model.addAttribute("eventList", eventPage.getContent());
-            model.addAttribute("gapList", service.getCurrentGaps());
-            return VIEW_NAME;
-        }
+    	if (bindingResult.hasErrors()) {
+    	    model.addAttribute("errorMessage", "入力内容に不備があります。");
+
+    	    Page<ShiftApplicationEvent> eventPage = service.getEventList(page);
+
+    	    model.addAttribute("eventPage", eventPage);
+    	    model.addAttribute("eventList", eventPage.getContent());
+    	    model.addAttribute("gapList", service.getCurrentGaps());
+
+    	    return VIEW_NAME;
+    	}
 
         if (!confirmConfirmed) {
             LocalDate[] dates = service.calculateNextEventDates(form);
