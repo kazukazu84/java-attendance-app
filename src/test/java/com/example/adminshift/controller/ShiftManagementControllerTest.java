@@ -1,5 +1,14 @@
 package com.example.adminshift.controller;
 
-public class ShiftManagementControllerTest {
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
+
+class ShiftManagementControllerTest {
+
+	@Test
+	void test() {
+		fail("まだ実装されていません");
+	}
 
 }
