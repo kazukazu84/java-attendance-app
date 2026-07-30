@@ -1,4 +1,4 @@
-package com.example.adminshift.userShiftRequest.select.service;
+package com.example.userShiftRequest.service;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -8,11 +8,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.adminshift.userShiftRequest.select.dto.ShiftRequestDto;
-import com.example.adminshift.userShiftRequest.select.entity.ShiftRequestDetailsEntity;
-import com.example.adminshift.userShiftRequest.select.form.ShiftRequestForm;
-import com.example.adminshift.userShiftRequest.select.repository.ShiftRequestDetailsRepository;
-import com.example.adminshift.userShiftRequest.select.validation.ShiftRequestValidator;
+import com.example.userShiftRequest.dto.ShiftRequestDto;
+import com.example.userShiftRequest.entity.ShiftRequestDetailsEntity;
+import com.example.userShiftRequest.form.ShiftRequestForm;
+import com.example.userShiftRequest.repository.ShiftRequestDetailsRepository;
+import com.example.userShiftRequest.validation.ShiftRequestValidator;
 
 @Service
 public class ShiftRequestService {

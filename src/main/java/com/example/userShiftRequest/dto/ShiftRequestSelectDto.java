@@ -1,4 +1,4 @@
-package com.example.adminshift.userShiftRequest.select.dto;
+package com.example.userShiftRequest.dto;
 
 public class ShiftRequestSelectDto {
 

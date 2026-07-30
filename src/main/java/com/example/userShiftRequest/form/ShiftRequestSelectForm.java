@@ -1,8 +1,8 @@
-package com.example.adminshift.userShiftRequest.select.form;
+package com.example.userShiftRequest.form;
 
 import java.util.List;
 
-import com.example.adminshift.userShiftRequest.select.dto.ShiftRequestSelectDto;
+import com.example.userShiftRequest.dto.ShiftRequestSelectDto;
 
 public class ShiftRequestSelectForm {
 
