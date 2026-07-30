@@ -42,6 +42,7 @@
         <option value="3">3週間</option>
         <option value="4">4週間</option>
     </select>
+    <div th:if="${#fields.hasErrors('targetWeeks')}" th:errors="*{targetWeeks}" style="color: red; font-size: 0.8em;"></div>
 
     <label>受付開始</label>
     <select th:field="*{applicationStartDays}"
@@ -51,6 +52,8 @@
                 th:text="${i + '日前'}">
         </option>
     </select>
+    <!-- ★追加: 相関チェックおよび単体チェックのエラーメッセージ表示エリア -->
+    <div th:if="${#fields.hasErrors('applicationStartDays')}" th:errors="*{applicationStartDays}" style="color: red; font-size: 0.8em;"></div>
 
     <label>受付締切</label>
     <select th:field="*{applicationEndDays}"
@@ -60,6 +63,8 @@
                 th:text="${i + '日前'}">
         </option>
     </select>
+    <!-- ★追加: 単体チェックのエラーメッセージ表示エリア -->
+    <div th:if="${#fields.hasErrors('applicationEndDays')}" th:errors="*{applicationEndDays}" style="color: red; font-size: 0.8em;"></div>
 
     <button type="submit"
             th:disabled="${editingEventId != null}">
