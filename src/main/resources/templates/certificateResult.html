@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>遅延証明書</title>
+    <link rel="stylesheet" th:href="@{/css/certificate.css}">
+</head>
+<body>
+    <h1>遅延証明書</h1>
+
+    <div th:if="${certificate != null}">
+        <p>証明書ID: <span th:text="${certificate.certificateId}">ID</span></p>
+        <p>対象路線: <span th:text="${certificate.lineName}">路線</span></p>
+
+        <!-- ★ 最新仕様：statusText をそのまま表示 -->
+        <p>運行状況: <span th:text="${certificate.statusText}">STATUS</span></p>
+
+        <!-- ★ 最新仕様：detailText をそのまま表示 -->
+        <p>詳細情報: <span th:text="${certificate.detailText}">DETAIL</span></p>
+
+        <!-- ★ 最新仕様：updatedText をそのまま表示 -->
+        <p>更新情報: <span th:text="${certificate.updatedText}">UPDATED</span></p>
+
+        <p>遅延時間: <span th:text="${certificate.delayMinutes}">0</span> 分</p>
+        <p>遅延理由: <span th:text="${certificate.reason}">理由</span></p>
+
+        <p>発行対象ユーザー: <span th:text="${certificate.issuedToUserId}">User</span></p>
+        <p>発行日時: 
+            <span th:text="${#temporals.format(certificate.issuedAt, 'yyyy-MM-dd HH:mm:ss')}">
+                日時
+            </span>
+        </p>
+    </div>
+
+    <br/>
+    <a th:href="@{/rail/status}">運行状況へ戻る</a>
+</body>
+</html>

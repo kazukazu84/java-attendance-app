@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>遅延証明書発行申請</title>
+    <link rel="stylesheet" th:href="@{/css/certificate.css}">
+</head>
+<body>
+    <h1>遅延証明書発行フォーム</h1>
+
+    <form th:action="@{/rail/certificate}" method="post" th:object="${certificateForm}">
+        <div>
+            <label>対象路線名:</label>
+            <input type="text" th:field="*{lineName}" required placeholder="例: 山手線"/>
+        </div>
+        <div>
+            <label>ユーザーID:</label>
+            <input type="text" th:field="*{userId}" required placeholder="例: user123"/>
+        </div>
+        <button type="submit">証明書を発行する</button>
+    </form>
+
+    <br/>
+    <a th:href="@{/rail/status}">運行状況に戻る</a>
+</body>
+</html>

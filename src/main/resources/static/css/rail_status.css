@@ -1,0 +1,526 @@
+/* ============================================================
+   共通テーマ（ビジネス × ブルー）
+============================================================ */
+:root {
+    --bg-color: #f5f7fa;
+    --card-bg: #ffffff;
+    --text-primary: #1a2b4c;
+    --text-secondary: #4a5b75;
+    --border-color: #d3d9e3;
+    --accent-color: #2b6cb0;
+    --accent-light: #4a90e2;
+    --accent-hover: #1e4f80;
+    --soft-bg: #eef2f7;
+    --soft-bg-2: #f0f4f8;
+    --highlight-bg: #ebf8ff;
+    --shadow-light: rgba(0, 0, 0, 0.05);
+    --shadow-strong: rgba(0, 0, 0, 0.12);
+}
+
+/* ============================================================
+   全体
+============================================================ */
+body {
+    background: var(--bg-color);
+    font-family: "Helvetica Neue", Arial, Meiryo, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: var(--text-primary);
+    line-height: 1.55;
+}
+
+.container {
+    max-width: 760px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* ============================================================
+   見出し
+============================================================ */
+h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 20px;
+}
+
+/* ============================================================
+   プロフィール情報（上部の簡易カード）
+============================================================ */
+.profile-info {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 4px var(--shadow-light);
+    margin-bottom: 24px;
+}
+
+.profile-info p {
+    margin: 6px 0;
+    font-size: 0.95rem;
+}
+
+.profile-info strong {
+    color: var(--text-secondary);
+}
+
+/* ============================================================
+   運行状況カード
+============================================================ */
+.status-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 4px var(--shadow-light);
+    margin-bottom: 24px;
+}
+
+.status-card p {
+    margin: 10px 0;
+    font-size: 1rem;
+}
+
+.status-card strong {
+    color: var(--accent-color);
+}
+
+/* ============================================================
+   参照元リンク
+============================================================ */
+.reference-block {
+    background: var(--soft-bg-2);
+    border-left: 4px solid var(--accent-color);
+    padding: 16px 20px;
+    border-radius: 10px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px var(--shadow-light);
+}
+
+.reference-block a {
+    color: var(--accent-color);
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.reference-block a:hover {
+    text-decoration: underline;
+    color: var(--accent-hover);
+}
+
+/* ============================================================
+   遅延証明書案内カード
+============================================================ */
+.certificate-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 4px var(--shadow-light);
+    margin-bottom: 24px;
+}
+
+.certificate-card h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 16px;
+}
+
+/* ▼ ボタン（開閉式） */
+#btn-check-certificate,
+#btn-company-links {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--soft-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    cursor: pointer;
+    transition: 0.2s;
+    margin-bottom: 12px;
+}
+
+#btn-check-certificate:hover,
+#btn-company-links:hover {
+    background: var(--highlight-bg);
+    color: var(--accent-hover);
+}
+
+/* ▼ チェック結果表示 */
+#certificate-check {
+    background: var(--soft-bg-2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px var(--shadow-light);
+}
+
+#certificate-result {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+/* ▼ 他社リンク一覧 */
+#company-links ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#company-links li {
+    margin: 8px 0;
+}
+
+#company-links a {
+    color: var(--accent-color);
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+#company-links a:hover {
+    text-decoration: underline;
+    color: var(--accent-hover);
+}
+
+/* ============================================================
+   運行状況カード：SNS風の軽い浮き感
+============================================================ */
+.status-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.status-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px var(--shadow-strong);
+}
+
+/* ============================================================
+   運行状況テキストの視認性向上
+============================================================ */
+.status-card p {
+    line-height: 1.6;
+}
+
+.status-card strong {
+    font-size: 1rem;
+}
+
+/* ============================================================
+   区切り線（SNS向け）
+============================================================ */
+hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 24px 0;
+}
+
+/* ============================================================
+   遅延証明書案内カード：内部余白調整
+============================================================ */
+.certificate-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.certificate-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px var(--shadow-strong);
+}
+
+.certificate-card p {
+    margin: 8px 0;
+}
+
+/* ============================================================
+   開閉ボタン（SNS風の柔らかいUI）
+============================================================ */
+#btn-check-certificate,
+#btn-company-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#btn-check-certificate::after,
+#btn-company-links::after {
+    content: "▼";
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* ============================================================
+   開閉領域のアニメーション
+============================================================ */
+#certificate-check,
+#company-links {
+    transition: all 0.25s ease;
+}
+
+/* ============================================================
+   他社リンク一覧：カード風リスト
+============================================================ */
+#company-links ul {
+    background: var(--soft-bg-2);
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px var(--shadow-light);
+}
+
+#company-links li {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+#company-links li:last-child {
+    border-bottom: none;
+}
+
+/* ============================================================
+   他社リンク：アクセントカラー強調
+============================================================ */
+#company-links a {
+    font-size: 0.95rem;
+}
+
+#company-links a:hover {
+    padding-left: 4px;
+}
+
+/* ============================================================
+   プロフィール情報カード：SNS密度調整
+============================================================ */
+.profile-info {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profile-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px var(--shadow-strong);
+}
+
+/* ============================================================
+   アクションボタン（下部）
+============================================================ */
+.actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.actions .btn {
+    padding: 10px 18px;
+    background: var(--accent-color);
+    color: #fff;
+    border-radius: 10px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.2s;
+    min-width: 160px;
+    text-align: center;
+}
+
+.actions .btn:hover {
+    background: var(--accent-hover);
+}
+
+.actions .btn-secondary {
+    background: var(--soft-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.actions .btn-secondary:hover {
+    background: var(--highlight-bg);
+}
+
+/* ============================================================
+   レスポンシブ対応（スマホ最適化）
+============================================================ */
+@media (max-width: 600px) {
+    .container {
+        padding: 0 12px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .profile-info,
+    .status-card,
+    .certificate-card,
+    .reference-block {
+        padding: 18px;
+    }
+
+    #btn-check-certificate,
+    #btn-company-links {
+        padding: 10px 14px;
+    }
+
+    #company-links ul {
+        padding: 12px;
+    }
+
+    .actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .actions .btn,
+    .actions .btn-secondary {
+        width: 100%;
+    }
+}
+
+/* ============================================================
+   運行状況：強調テキスト（ステータス表示）
+============================================================ */
+.status-emphasis {
+    background: var(--highlight-bg);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-weight: 700;
+    color: var(--accent-color);
+    display: inline-block;
+    margin-top: 6px;
+}
+
+/* ============================================================
+   運行状況：詳細テキスト（読みやすさ向上）
+============================================================ */
+.status-detail {
+    background: var(--soft-bg-2);
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-top: 10px;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    box-shadow: 0 1px 3px var(--shadow-light);
+}
+
+/* ============================================================
+   運行状況：更新情報の強調
+============================================================ */
+.status-updated {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+/* ============================================================
+   遅延証明書案内：リンク強調
+============================================================ */
+.certificate-card a {
+    color: var(--accent-color);
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.certificate-card a:hover {
+    text-decoration: underline;
+    color: var(--accent-hover);
+}
+
+/* ============================================================
+   遅延証明書案内：結果表示の強調
+============================================================ */
+#certificate-result a {
+    display: inline-block;
+    background: var(--accent-light);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+#certificate-result a:hover {
+    background: var(--accent-hover);
+}
+
+/* ============================================================
+   他社リンク一覧：アイコン風余白
+============================================================ */
+#company-links li::before {
+    content: "•";
+    color: var(--accent-color);
+    margin-right: 6px;
+    font-weight: 700;
+}
+
+/* ============================================================
+   他社リンク一覧：行のホバー
+============================================================ */
+#company-links li:hover {
+    background: var(--soft-bg);
+    border-radius: 6px;
+    transition: 0.15s ease;
+}
+
+/* ============================================================
+   下部アクション：カード風余白
+============================================================ */
+.actions {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* ============================================================
+   下部アクション：ボタンの影
+============================================================ */
+.actions .btn,
+.actions .btn-secondary {
+    box-shadow: 0 1px 3px var(--shadow-light);
+}
+
+.actions .btn:hover,
+.actions .btn-secondary:hover {
+    box-shadow: 0 3px 6px var(--shadow-light);
+}
+
+/* ============================================================
+   運行状況：カードの最終余白調整
+============================================================ */
+.status-card,
+.profile-info,
+.certificate-card,
+.reference-block {
+    margin-bottom: 28px;
+}
+
+/* ============================================================
+   運行状況：スマホ最適化（最終）
+============================================================ */
+@media (max-width: 480px) {
+    .status-card p {
+        font-size: 0.95rem;
+    }
+
+    .status-detail {
+        padding: 12px 14px;
+        font-size: 0.9rem;
+    }
+
+    #certificate-result a {
+        width: 100%;
+        text-align: center;
+        padding: 10px 16px;
+    }
+
+    #company-links li {
+        padding: 10px 0;
+    }
+
+    .actions {
+        padding-top: 12px;
+    }
+}

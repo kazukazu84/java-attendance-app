@@ -1,0 +1,419 @@
+/* ============================================================
+   共通テーマ（ビジネス × ブルー）
+============================================================ */
+:root {
+    --bg-color: #f5f7fa;
+    --card-bg: #ffffff;
+    --text-primary: #1a2b4c;
+    --text-secondary: #4a5b75;
+    --border-color: #d3d9e3;
+    --accent-color: #2b6cb0;
+    --accent-light: #4a90e2;
+    --accent-hover: #1e4f80;
+    --soft-bg: #eef2f7;
+    --soft-bg-2: #f0f4f8;
+    --highlight-bg: #ebf8ff;
+    --shadow-light: rgba(0, 0, 0, 0.05);
+    --shadow-strong: rgba(0, 0, 0, 0.12);
+}
+
+/* ============================================================
+   全体
+============================================================ */
+body {
+    background: var(--bg-color);
+    font-family: "Helvetica Neue", Arial, Meiryo, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: var(--text-primary);
+    line-height: 1.55;
+}
+
+.container {
+    max-width: 720px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* ============================================================
+   見出し
+============================================================ */
+h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 20px;
+}
+
+/* ============================================================
+   プロフィール情報カード
+============================================================ */
+.section {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 4px var(--shadow-light);
+    margin-bottom: 24px;
+}
+
+.profile-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.profile-table th {
+    text-align: left;
+    padding: 12px 0;
+    font-weight: 700;
+    color: var(--text-secondary);
+    width: 30%;
+}
+
+.profile-table td {
+    padding: 12px 0;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+/* ============================================================
+   ボタン
+============================================================ */
+.actions {
+    display: flex;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.btn {
+    padding: 10px 18px;
+    background: var(--accent-color);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 700;
+    transition: 0.2s;
+}
+
+.btn:hover {
+    background: var(--accent-hover);
+}
+
+.btn-secondary {
+    background: var(--soft-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background: var(--highlight-bg);
+}
+
+/* ============================================================
+   プロフィールカードの強調（SNS風の軽い浮き感）
+============================================================ */
+.section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px var(--shadow-strong);
+    transition: 0.2s ease;
+}
+
+/* ============================================================
+   テーブルの視認性向上
+============================================================ */
+.profile-table tr + tr th,
+.profile-table tr + tr td {
+    border-top: 1px solid var(--border-color);
+}
+
+.profile-table th {
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+.profile-table td {
+    font-size: 1rem;
+}
+
+/* ============================================================
+   未設定時の表示
+============================================================ */
+.profile-table td span {
+    color: var(--text-secondary);
+}
+
+/* ============================================================
+   戻る / 編集ボタンのレイアウト調整
+============================================================ */
+.actions .btn,
+.actions .btn-secondary {
+    min-width: 160px;
+    text-align: center;
+}
+
+/* ボタンのアイコン風余白（SNS風） */
+.btn::after,
+.btn-secondary::after {
+    content: "";
+    display: inline-block;
+    width: 0;
+    height: 0;
+}
+
+/* ============================================================
+   カード内の余白調整（SNS密度）
+============================================================ */
+.section p,
+.section span,
+.section td,
+.section th {
+    margin: 0;
+    padding: 0;
+}
+
+/* ============================================================
+   プロフィール画面の補助テキスト
+============================================================ */
+.helper-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 6px;
+}
+
+/* ============================================================
+   レスポンシブ対応
+============================================================ */
+@media (max-width: 600px) {
+    .container {
+        padding: 0 12px;
+    }
+
+    .actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .btn,
+    .btn-secondary {
+        width: 100%;
+    }
+
+    .profile-table th {
+        width: 40%;
+    }
+}
+
+/* ============================================================
+   プロフィール画面専用の強調見出し
+============================================================ */
+.profile-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* ============================================================
+   カードの上下余白（SNS風）
+============================================================ */
+.section {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/* ============================================================
+   プロフィール画面の区切り線
+============================================================ */
+.section-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 20px 0;
+}
+
+/* ============================================================
+   プロフィール画面のラベル強調
+============================================================ */
+.profile-label {
+    font-weight: 700;
+    color: var(--accent-color);
+    font-size: 1rem;
+}
+
+/* ============================================================
+   プロフィール画面の値
+============================================================ */
+.profile-value {
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+/* ============================================================
+   プロフィール画面のカード影（SNS軽量）
+============================================================ */
+.section {
+    box-shadow: 0 1px 4px var(--shadow-light);
+}
+
+/* ============================================================
+   プロフィール画面のテーブル行ホバー
+============================================================ */
+.profile-table tr:hover {
+    background: var(--soft-bg);
+    transition: 0.15s ease;
+}
+
+/* ============================================================
+   プロフィール画面：カード内の強調テキスト
+============================================================ */
+.profile-highlight {
+    background: var(--highlight-bg);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-weight: 700;
+    color: var(--accent-color);
+    display: inline-block;
+    margin-top: 6px;
+}
+
+/* ============================================================
+   プロフィール画面：情報ブロック（SNS風）
+============================================================ */
+.profile-block {
+    background: var(--soft-bg-2);
+    border-left: 4px solid var(--accent-color);
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px var(--shadow-light);
+}
+
+.profile-block-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 6px;
+}
+
+.profile-block-content {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+/* ============================================================
+   プロフィール画面：リンクのスタイル
+============================================================ */
+.profile-link {
+    color: var(--accent-color);
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.profile-link:hover {
+    text-decoration: underline;
+    color: var(--accent-hover);
+}
+
+/* ============================================================
+   プロフィール画面：カードのアニメーション
+============================================================ */
+.section {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px var(--shadow-strong);
+}
+
+/* ============================================================
+   プロフィール画面：区切り線（SNS向け）
+============================================================ */
+.profile-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 16px 0;
+}
+
+/* ============================================================
+   プロフィール画面：テーブルの行間調整
+============================================================ */
+.profile-table th,
+.profile-table td {
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+/* ============================================================
+   プロフィール画面：テーブルのホバー強調
+============================================================ */
+.profile-table tr:hover {
+    background: var(--soft-bg);
+    cursor: default;
+}
+
+/* ============================================================
+   プロフィール画面：ボタンの影（SNS軽量）
+============================================================ */
+.btn,
+.btn-secondary {
+    box-shadow: 0 1px 3px var(--shadow-light);
+}
+
+.btn:hover,
+.btn-secondary:hover {
+    box-shadow: 0 3px 6px var(--shadow-light);
+}
+
+/* ============================================================
+   プロフィール画面：ボタンのフォーカス
+============================================================ */
+.btn:focus,
+.btn-secondary:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px #cfe2ff;
+}
+
+/* ============================================================
+   プロフィール画面：余白の最終調整
+============================================================ */
+.section {
+    padding: 26px;
+}
+
+.actions {
+    margin-top: 28px;
+}
+
+/* ============================================================
+   プロフィール画面：スマホ最適化（最終）
+============================================================ */
+@media (max-width: 480px) {
+    h2 {
+        font-size: 1.4rem;
+    }
+
+    .profile-table th {
+        font-size: 0.9rem;
+    }
+
+    .profile-table td {
+        font-size: 0.95rem;
+    }
+
+    .section {
+        padding: 20px;
+    }
+
+    .actions {
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .btn,
+    .btn-secondary {
+        width: 100%;
+        padding: 12px 20px;
+    }
+}
