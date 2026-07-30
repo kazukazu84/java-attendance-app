@@ -1,6 +1,6 @@
-package com.example.adminshift.userShiftRequest.select.validation;
+package com.example.userShiftRequest.validation;
 
-import com.example.adminshift.userShiftRequest.select.dto.ShiftRequestDto;
+import com.example.userShiftRequest.dto.ShiftRequestDto;
 
 public class ShiftRequestValidator {
 

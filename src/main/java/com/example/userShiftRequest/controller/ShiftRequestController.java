@@ -1,4 +1,4 @@
-package com.example.adminshift.userShiftRequest.select.controller;
+package com.example.userShiftRequest.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.adminshift.userShiftRequest.select.dto.ShiftRequestDto;
-import com.example.adminshift.userShiftRequest.select.form.ShiftRequestForm;
-import com.example.adminshift.userShiftRequest.select.service.ShiftRequestService;
+import com.example.userShiftRequest.dto.ShiftRequestDto;
+import com.example.userShiftRequest.form.ShiftRequestForm;
+import com.example.userShiftRequest.service.ShiftRequestService;
 
 @Controller
 public class ShiftRequestController {

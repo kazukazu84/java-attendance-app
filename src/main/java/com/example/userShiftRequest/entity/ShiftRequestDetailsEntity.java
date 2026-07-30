@@ -1,4 +1,4 @@
-package com.example.adminshift.userShiftRequest.select.entity;
+package com.example.userShiftRequest.entity;
 
 import java.sql.Date;
 import java.sql.Time;

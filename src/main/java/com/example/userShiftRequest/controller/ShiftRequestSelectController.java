@@ -1,4 +1,4 @@
-package com.example.adminshift.userShiftRequest.select.controller;
+package com.example.userShiftRequest.controller;
 
 import java.time.LocalDate;
 
@@ -8,8 +8,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.adminshift.userShiftRequest.select.form.ShiftRequestSelectForm;
-import com.example.adminshift.userShiftRequest.select.service.ShiftRequestSelectService;
+import com.example.userShiftRequest.form.ShiftRequestSelectForm;
+import com.example.userShiftRequest.service.ShiftRequestSelectService;
 
 
 // シフト申請選択画面

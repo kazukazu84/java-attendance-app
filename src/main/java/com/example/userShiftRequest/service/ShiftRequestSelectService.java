@@ -1,12 +1,12 @@
-package com.example.adminshift.userShiftRequest.select.service;
+package com.example.userShiftRequest.service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.example.adminshift.userShiftRequest.select.dto.ShiftRequestSelectDto;
-import com.example.adminshift.userShiftRequest.select.form.ShiftRequestSelectForm;
+import com.example.userShiftRequest.dto.ShiftRequestSelectDto;
+import com.example.userShiftRequest.form.ShiftRequestSelectForm;
 
 @Service
 public class ShiftRequestSelectService {
