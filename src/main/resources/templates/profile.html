@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>プロフィール</title>
+    <link rel="stylesheet" th:href="@{/css/rail_profile.css}">
+</head>
+<body>
+
+<div class="container">
+
+    <h2>プロフィール</h2>
+
+    <div class="section">
+
+        <table class="profile-table">
+            <tr>
+                <th>ユーザーID</th>
+                <td th:text="${profile.userId}"></td>
+            </tr>
+
+            <tr>
+                <th>お気に入り路線</th>
+                <td>
+                    <span th:if="${lineMaster != null}"
+                          th:text="${lineMaster.companyName + ' - ' + lineMaster.lineName}">
+                    </span>
+
+                    <span th:if="${lineMaster == null}">
+                        未設定
+                    </span>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+
+	<div class="actions" style="margin-top: 24px; display: flex; gap: 16px;">
+
+	    <!-- 編集ボタン -->
+	    <a th:href="@{${basePath + '/rail/profile/setup'}}" class="btn">
+	        プロフィールを編集する
+	    </a>
+
+	    <!-- 戻るボタン（運行状況へ） -->
+	    <a th:href="@{${basePath + '/rail/status'}}" class="btn btn-secondary">
+	        戻る
+	    </a>
+
+	</div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
