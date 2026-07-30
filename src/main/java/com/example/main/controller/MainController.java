@@ -17,7 +17,6 @@ import com.example.attendance.dto.AttendanceDto;
 import com.example.attendance.service.AttendanceService;
 import com.example.main.dto.LogDto;
 import com.example.main.service.LogService;
-import com.example.main.service.UserShiftService;
 
 @Controller
 public class MainController {
@@ -26,9 +25,6 @@ public class MainController {
 
     @Autowired
     private AttendanceService attendanceService;
-
-    @Autowired
-    private UserShiftService userShiftService;
     
     @Autowired
     private UserInfoRepository userRepository;
@@ -90,58 +86,6 @@ public class MainController {
         
         return "main";
     }
-    
-    /**
-     * 給与確認画面（仮）
-     */
-//    @GetMapping({"/user/salary", "/admin/salary"})
-//    public String salaryView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
-//        if (loginUser == null) return "redirect:/login";
-//
-//        String redirectUrl = checkAndRedirect(loginUser, request, "/user/salary", "/admin/salary");
-//        if (redirectUrl != null) return redirectUrl;
-//
-//        return "tempSalary";
-//    }
-
-    /**
-     * シフト申請画面（仮）
-     */
-    @GetMapping({"/user/shift-request", "/admin/shift-request"})
-    public String shiftRequestView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
-        if (loginUser == null) return "redirect:/login";
-
-        String redirectUrl = checkAndRedirect(loginUser, request, "/user/shift-request", "/admin/shift-request");
-        if (redirectUrl != null) return redirectUrl;
-
-        return "tempShiftRequest";
-    }
-//
-//    /**
-//     * ユーザー管理画面（仮）
-//     */
-//    @GetMapping({"/user/user-management", "/admin/user-management"})
-//    public String userManagementView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
-//        if (loginUser == null) return "redirect:/login";
-//
-//        String redirectUrl = checkAndRedirect(loginUser, request, "/user/user-management", "/admin/user-management");
-//        if (redirectUrl != null) return redirectUrl;
-//
-//        return "tempUserManagement";
-//    }
-
-    /**
-     * シフト管理画面（仮）
-     */
-//    @GetMapping({"/user/shift-management", "/admin/shift-management"})
-//    public String shiftManagementView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
-//        if (loginUser == null) return "redirect:/login";
-//
-//        String redirectUrl = checkAndRedirect(loginUser, request, "/user/shift-management", "/admin/shift-management");
-//        if (redirectUrl != null) return redirectUrl;
-//
-//        return "tempShiftManagement";
-//    }
 
     /**
      * 【共通処理】権限とリクエストURLに応じたリダイレクト判定

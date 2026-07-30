@@ -8,7 +8,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
 
-import com.example.rail.dto.DelayInfoDto;
 import com.example.rail.dto.RailStatusDto;
 import com.example.rail.service.RailFetcher;
 
@@ -82,41 +81,6 @@ public class RailFetcherImpl implements RailFetcher {
                     .detailText("情報取得失敗")
                     .updatedText("不明")
                     .lastUpdated(LocalDateTime.now())
-                    .build();
-        }
-    }
-
-    @Override
-    public DelayInfoDto fetchDelayInfo(String diainfoUrl) {
-        try {
-            // HEAD → 本体の高速化構成
-            Jsoup.connect(diainfoUrl)
-                    .userAgent("Mozilla/5.0")
-                    .timeout(1500)
-                    .ignoreContentType(true)
-                    .method(Connection.Method.HEAD)
-                    .execute();
-
-            Document doc = Jsoup.connect(diainfoUrl)
-                    .userAgent("Mozilla/5.0")
-                    .timeout(1500)
-                    .get();
-
-            Element statusBlock = doc.selectFirst("#mdServiceStatus");
-            String reason = statusBlock.select("dd p").text().trim();
-
-            return DelayInfoDto.builder()
-                    .lineName(doc.selectFirst("h1.title").text().trim())
-                    .reason(reason)
-                    .occurredAt(LocalDateTime.now())
-                    .build();
-
-        } catch (Exception e) {
-            log.error("遅延情報の取得に失敗しました", e);
-            return DelayInfoDto.builder()
-                    .lineName("不明")
-                    .reason("情報取得失敗")
-                    .occurredAt(LocalDateTime.now())
                     .build();
         }
     }
