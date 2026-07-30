@@ -6,13 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class JavaAttendanceAppApplication {
 
-    public static void main(String[] args) {
-
-    	//アプリケーション実行
-        SpringApplication.run(
-                JavaAttendanceAppApplication.class,
-                args);
-
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(JavaAttendanceAppApplication.class, args);
+	}
 
 }

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>プロフィール設定</title>
+    <link rel="stylesheet" th:href="@{/css/rail_profileSetup.css}">
+    <script src="/js/profileSetup.js" defer></script>
+</head>
+<body>
+
+<div class="container">
+
+    <h2>プロフィール設定</h2>
+
+    <form th:action="@{${basePath + '/rail/profile/setup'}}" th:object="${form}" method="post">
+
+        <input type="hidden" th:field="*{userId}" th:value="${#authentication.name}"/>
+
+        <div class="section">
+            <h3>お気に入り路線を選択してください</h3>
+
+            <!-- ★ 会社ごとにグループ化 -->
+            <div th:each="companyGroup : ${linesGroupedByCompany}" class="company-group">
+
+                <div class="company-header"
+                     th:text="${companyGroup.key}">
+                </div>
+
+                <div class="company-lines">
+
+                    <div th:each="line : ${companyGroup.value}" class="line-item">
+                        <label>
+                            <input type="radio"
+                                   th:field="*{favoriteRailCode}"
+                                   th:value="${line.railCode}"
+                                   required>
+                            <span th:text="${line.companyName + ' - ' + line.lineName}"></span>
+                        </label>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="actions">
+            <button type="submit" class="btn">設定する</button>
+
+            <!-- ★ 戻るボタン -->
+            <a th:href="@{${basePath + '/rail/profile'}}" class="btn btn-secondary">
+                戻る
+            </a>
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+</html>

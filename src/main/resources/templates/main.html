@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>メイン画面</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <!-- CSRFトークン -->
+    <meta th:name="_csrf" th:content="${_csrf.token}"/>
+    <meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+<body>
+
+<div class="container">
+    <div class="main-container">
+        <div class="row g-3">
+            
+            <!-- ⬅️ 左カラム：ヘッダー情報・打刻・ログエリア -->
+            <div class="col-md-4">
+                
+				<!-- ①②③ 簡易ボタン & ログアウト & SNS -->
+				<div class="panel-box mb-3">
+				    <div class="row g-2">
+
+				        <!-- 簡易 -->
+				        <div class="col-4">
+				            <a th:href="@{/user/attendance}" class="btn btn-nav py-1" style="font-size: 0.9rem;">
+				                簡易
+				            </a>
+				        </div>
+
+				        <!-- ログアウト -->
+				        <div class="col-4">
+				            <form th:action="@{/logout}" method="post" class="w-100">
+				                <button type="submit" class="btn btn-nav py-1" style="font-size: 0.9rem;">
+				                    ログアウト
+				                </button>
+				            </form>
+				        </div>
+
+				        <!-- SNSへ -->
+				        <div class="col-4">
+				            <a th:href="@{/user/timeline}" class="btn btn-nav py-1" style="font-size: 0.9rem;">
+				                SNSへ
+				            </a>
+				        </div>
+						
+						<!-- 運行状況 -->
+				        <div class="col-4">
+				            <a th:href="@{/user/rail/status}" class="btn btn-nav py-1" style="font-size: 0.9rem;">
+				               運行状況
+				            </a>
+				        </div>
+
+				    </div>
+				</div>
+
+                <!-- ユーザーID・ユーザー名表示 -->
+                <div class="panel-box user-info-box mb-3 text-start">
+                    <div>ユーザーID: <span th:text="${user.userId}">0</span></div>
+                    <div>名前: <span th:text="${user.userName}">ゲスト</span></div>
+                </div>
+
+                <!-- ③ 時刻 & 出退勤ボタンエリア -->
+                <div class="panel-box mb-3">
+                    <div class="time-display text-center py-2 mb-3" id="realTimeDisplay">
+                        yyyy/MM/dd HH:mm:ss
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <button type="button" id="btnClockIn" class="btn btn-clock-in w-100" 
+                                    th:disabled="${!status.canClockIn}">出勤</button>
+                        </div>
+                        <div class="col-6">
+                            <button type="button" id="btnClockOut" class="btn btn-clock-out w-100" 
+                                    th:disabled="${!status.canClockOut}">退勤</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ログ表示エリア -->
+                <div class="log-box" id="logDisplayBox">
+                    <div th:each="log : ${logList}" th:text="'・' + ${log.formattedLogMessage}" class="mb-1"></div>
+                </div>
+
+            </div>
+
+            <!-- ➡️ 右カラム：ナビゲーションボタン & シフト表示エリア -->
+            <div class="col-md-8">
+                <div class="right-panel-wrapper">
+                    
+                    <!-- ④⑤⑥⑩ ナビゲーションボタンエリア -->
+                    <div class="mb-3">
+                        <!-- 一般ユーザー時の表示 -->
+                        <div sec:authorize="!hasRole('ADMIN')" class="row g-2 mb-2">
+                            <div class="col-12">
+                                <a th:href="@{/user/salary/confirm}" class="btn btn-nav">給与確認</a>
+                            </div>
+                            <div class="col-12">
+                                <a th:href="@{/user/shift-request}" class="btn btn-nav">シフト申請</a>
+                            </div>
+                        </div>
+
+                        <!-- 管理者時の表示 -->
+                        <div sec:authorize="hasRole('ADMIN')" class="row g-2 mb-2">
+                            <div class="col-6">
+                                <a th:href="@{/admin/UserManagement}" class="btn btn-nav">ユーザー管理</a>
+                            </div>
+                            <div class="col-6">
+                                <a th:href="@{/user/salary/confirm}" class="btn btn-nav">給与確認</a>
+                            </div>
+                            <div class="col-6">
+                                <a th:href="@{/user/shift-request}" class="btn btn-nav">シフト申請</a>
+                            </div>
+                            <div class="col-6">
+                                <a th:href="@{/admin/shift-management}" class="btn btn-nav">シフト管理</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ⑦⑧ シフト表示枠 -->
+                    <div class="shift-box">
+                        <div class="shift-content">
+                            
+                            <!-- 月間シフト表示エリア -->
+                            <div id="monthlyShiftArea" class="h-100 d-flex flex-column">
+                                <div class="shift-header">
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                        <span class="fw-bold fs-5">月間シフト</span>
+                                        <select id="monthSelect">
+                                            <option>2026年7月</option>
+                                            <option>2026年6月</option>
+                                            <option>2026年5月</option>
+                                            <option>2026年4月</option>
+                                        </select>
+                                    </div>
+                                    <div class="toggle-area">
+                                        <button id="toWeeklyButton" type="button" class="btn btn-sm-custom">
+                                            週間シフト表示
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="text-muted border rounded w-100 flex-grow-1 d-flex align-items-center justify-content-center">
+                                    ※ここに月間のシフトカレンダーテーブルが配置されます
+                                </div>
+                            </div>
+
+                            <!-- 週間シフト表示エリア -->
+                            <div id="weeklyShiftArea" style="display:none;" class="h-100 flex-column">
+                                <div class="shift-header">
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                        <span class="fw-bold fs-5">週間シフト</span>
+                                        <select id="weekSelect">
+                                            <option value="1">7月 1週目</option>
+                                            <option value="2">7月 2週目</option>
+                                            <option value="3">7月 3週目</option>
+                                            <option value="4">7月 4週目</option>
+                                            <option value="5">7月 5週目</option>
+                                        </select>
+                                    </div>
+                                    <div class="toggle-area">
+                                        <button id="toMonthlyButton" type="button" class="btn btn-sm-custom">
+                                            月間シフト表示
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="text-muted border rounded w-100 flex-grow-1 d-flex align-items-center justify-content-center">
+                                    ※ここに１週間ごとのシフトテーブルが配置されます
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. リアルタイム時計
+    function updateClock() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const date = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        document.getElementById('realTimeDisplay').innerText = `${year}/${month}/${date} ${hours}:${minutes}:${seconds}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 2. 打刻処理 (SPA)
+    function updateDOM(data) {
+        document.getElementById('btnClockIn').disabled = !data.canClockIn;
+        document.getElementById('btnClockOut').disabled = !data.canClockOut;
+        fetchLatestLogs();
+    }
+
+    function fetchLatestLogs() {
+        fetch('/user/main')
+            .then(response => response.text())
+            .then(htmlText => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlText, 'text/html');
+                const newLogBox = doc.getElementById('logDisplayBox');
+                if (newLogBox) {
+                    document.getElementById('logDisplayBox').innerHTML = newLogBox.innerHTML;
+                }
+            })
+            .catch(error => console.error('Log update error:', error));
+    }
+
+    // 出勤ボタン
+    document.getElementById('btnClockIn').addEventListener('click', () => {
+        const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+        fetch('/api/attendance/clock-in', { 
+            method: 'POST',
+            headers: { [header]: token }
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(errorMessage => Promise.reject(errorMessage));
+            }
+            return response.json();
+        })
+        .then(data => updateDOM(data))
+        .catch(errorText => alert("【打刻エラー】\n" + errorText));
+    });
+
+    // 退勤ボタン
+    document.getElementById('btnClockOut').addEventListener('click', () => {
+        const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+        fetch('/api/attendance/clock-out', { 
+            method: 'POST',
+            headers: { [header]: token }
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(errorMessage => Promise.reject(errorMessage));
+            }
+            return response.json();
+        })
+        .then(data => updateDOM(data))
+        .catch(errorText => alert("【打刻エラー】\n" + errorText));
+    });
+
+    // 3. シフト切り替え
+    document.getElementById("toWeeklyButton").addEventListener("click", function() {
+        const monthlyArea = document.getElementById("monthlyShiftArea");
+        const weeklyArea = document.getElementById("weeklyShiftArea");
+        
+        monthlyArea.classList.remove("d-flex");
+        monthlyArea.style.display = "none";
+        
+        weeklyArea.style.display = "flex";
+        weeklyArea.classList.add("d-flex");
+    });
+
+    document.getElementById("toMonthlyButton").addEventListener("click", function() {
+        const monthlyArea = document.getElementById("monthlyShiftArea");
+        const weeklyArea = document.getElementById("weeklyShiftArea");
+        
+        weeklyArea.classList.remove("d-flex");
+        weeklyArea.style.display = "none";
+        
+        monthlyArea.style.display = "flex";
+        monthlyArea.classList.add("d-flex");
+    });
+</script>
+</body>
+</html>
