@@ -12,10 +12,21 @@ import com.example.adminshift.validation.ValidShiftApplicationEventDate;
 import lombok.Data;
 
 @Data
+
+
+
 @ValidCreateShiftApplicationEvent
+
+
+
+
+
 @ValidShiftApplicationEventDate
-public class CreateShiftApplicationEventForm
-        implements ShiftApplicationDateHolder {
+
+
+public class CreateShiftApplicationEventForm implements ShiftApplicationDateHolder {
+
+
 
     @NotNull
     @Min(1)
