@@ -107,15 +107,15 @@ public class MainController {
     /**
      * シフト申請画面（仮）
      */
-    @GetMapping({"/user/shift-request", "/admin/shift-request"})
-    public String shiftRequestView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
-        if (loginUser == null) return "redirect:/login";
-
-        String redirectUrl = checkAndRedirect(loginUser, request, "/user/shift-request", "/admin/shift-request");
-        if (redirectUrl != null) return redirectUrl;
-
-        return "tempShiftRequest";
-    }
+//    @GetMapping({"/user/shift-request", "/admin/shift-request"})
+//    public String shiftRequestView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
+//        if (loginUser == null) return "redirect:/login";
+//
+//        String redirectUrl = checkAndRedirect(loginUser, request, "/user/shift-request", "/admin/shift-request");
+//        if (redirectUrl != null) return redirectUrl;
+//
+//        return "tempShiftRequest";
+//    }
 //
 //    /**
 //     * ユーザー管理画面（仮）
@@ -133,15 +133,15 @@ public class MainController {
     /**
      * シフト管理画面（仮）
      */
-    @GetMapping({"/user/shift-management", "/admin/shift-management"})
-    public String shiftManagementView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
-        if (loginUser == null) return "redirect:/login";
-
-        String redirectUrl = checkAndRedirect(loginUser, request, "/user/shift-management", "/admin/shift-management");
-        if (redirectUrl != null) return redirectUrl;
-
-        return "tempShiftManagement";
-    }
+    //@GetMapping({"/user/shift-management", "/admin/shift-management"})
+//    public String shiftManagementView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
+//        if (loginUser == null) return "redirect:/login";
+//
+//        String redirectUrl = checkAndRedirect(loginUser, request, "/user/shift-management", "/admin/shift-management");
+//        if (redirectUrl != null) return redirectUrl;
+//
+//        return "tempShiftManagement";
+//    }
 
     /**
      * 【共通処理】権限とリクエストURLに応じたリダイレクト判定
