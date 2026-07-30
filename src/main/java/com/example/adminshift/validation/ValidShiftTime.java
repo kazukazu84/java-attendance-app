@@ -11,14 +11,22 @@ import jakarta.validation.Payload;
 
 /**
  * シフト時間の相関バリデーション用アノテーション
+ *
+ * 以下をチェックします。
+ * ・出勤の場合は開始・終了時刻が入力されていること
+ * ・開始時刻と終了時刻が同じでないこと
  */
 @Documented
 @Constraint(validatedBy = ShiftTimeValidator.class)
-@Target({ ElementType.TYPE })
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidShiftTime {
 
-    String message() default "出勤の場合は出勤時間と退勤時間の両方を入力してください。";
+    /**
+     * デフォルトメッセージ
+     * （Validator側で個別メッセージを設定するため通常は表示されません）
+     */
+    String message() default "シフト時間が正しくありません。";
 
     Class<?>[] groups() default {};
 
