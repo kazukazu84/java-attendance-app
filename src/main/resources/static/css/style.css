@@ -1,6 +1,11 @@
-/* 基本スタイル */
+```css
+/* =========================================================
+   基本スタイル
+   ========================================================= */
+
 body {
-    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN",
+                 "Hiragino Sans", Meiryo, sans-serif;
     margin: 0;
     padding: 20px;
     background-color: #f5f7fa;
@@ -12,7 +17,11 @@ body {
     margin: 0 auto;
 }
 
-/* ヘッダーエリア */
+
+/* =========================================================
+   ヘッダーエリア
+   ========================================================= */
+
 .app-header {
     margin-bottom: 20px;
 }
@@ -34,7 +43,11 @@ body {
     margin-bottom: 10px;
 }
 
-/* ボタン類 */
+
+/* =========================================================
+   ボタン類
+   ========================================================= */
+
 .btn-primary {
     background-color: #0066cc;
     color: #fff;
@@ -66,7 +79,11 @@ body {
     cursor: pointer;
 }
 
-/* テーブル・レイアウトエリア */
+
+/* =========================================================
+   テーブル・レイアウトエリア
+   ========================================================= */
+
 .table-outer-container {
     position: relative;
     background: #fff;
@@ -91,7 +108,11 @@ body {
     max-height: 600px;
 }
 
-/* シフトテーブル構造 */
+
+/* =========================================================
+   シフトテーブル構造
+   ========================================================= */
+
 .shift-table {
     border-collapse: separate;
     border-spacing: 0;
@@ -109,7 +130,11 @@ body {
     background-color: #fff;
 }
 
-/* ヘッダー固定 (Sticky) */
+
+/* =========================================================
+   ヘッダー固定 (Sticky)
+   ========================================================= */
+
 .sticky-header {
     position: sticky;
     top: 0;
@@ -132,7 +157,11 @@ th.sticky-header.sticky-col {
     z-index: 20;
 }
 
-/* セルボタン基本スタイル */
+
+/* =========================================================
+   セルボタン基本スタイル
+   ========================================================= */
+
 .cell-form {
     width: 100%;
     height: 100%;
@@ -158,7 +187,11 @@ th.sticky-header.sticky-col {
     background-color: #eaf4ff;
 }
 
-/* 時間表示コンテナ */
+
+/* =========================================================
+   時間表示コンテナ
+   ========================================================= */
+
 .time-container {
     display: flex;
     flex-direction: column;
@@ -170,7 +203,11 @@ th.sticky-header.sticky-col {
     color: #888;
 }
 
-/* 休みボタン表示 */
+
+/* =========================================================
+   休みボタン表示
+   ========================================================= */
+
 .cell-btn.is-rest-btn {
     background-color: #fff0f0;
 }
@@ -185,7 +222,11 @@ th.sticky-header.sticky-col {
     font-size: 14px;
 }
 
-/* 「未」表示ボタン（追加） */
+
+/* =========================================================
+   「未」表示ボタン
+   ========================================================= */
+
 .cell-btn.is-unsubmitted-btn {
     background-color: #fafafa;
 }
@@ -199,7 +240,30 @@ th.sticky-header.sticky-col {
     font-size: 13px;
 }
 
-/* モーダル表示スタイル */
+
+/* =========================================================
+   夜勤セルスタイル
+   ========================================================= */
+
+.cell-btn.is-night-btn {
+    background-color: #4a154b;
+    color: #ffffff;
+    border: 1px solid #350d36;
+}
+
+.cell-btn.is-night-btn:hover {
+    background-color: #611f69;
+}
+
+.cell-btn.is-night-btn .time-sep {
+    color: #d1d5db;
+}
+
+
+/* =========================================================
+   モーダル表示スタイル
+   ========================================================= */
+
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -269,17 +333,91 @@ th.sticky-header.sticky-col {
     margin-top: 3px;
 }
 
-/* 夜勤セルスタイル追加 */
-.cell-btn.is-night-btn {
-    background-color: #4a154b; /* ダークパープル背景 */
-    color: #ffffff; /* 白文字で可読性を維持 */
-    border: 1px solid #350d36;
+
+/* =========================================================
+   バリデーションエラー表示
+   赤く光って少し点滅するエラー
+   ========================================================= */
+
+.text-danger {
+    color: #ff3333;
+    font-weight: bold;
+    margin-top: 5px;
+    text-shadow:
+        0 0 3px rgba(255, 0, 0, 0.6),
+        0 0 8px rgba(255, 0, 0, 0.4);
+    animation: error-glow 1.2s ease-in-out infinite alternate;
 }
 
-.cell-btn.is-night-btn:hover {
-    background-color: #611f69; /* ホバー時に少し明るめのパープル */
+@keyframes error-glow {
+    from {
+        opacity: 0.75;
+        text-shadow:
+            0 0 3px rgba(255, 0, 0, 0.4);
+    }
+
+    to {
+        opacity: 1;
+        text-shadow:
+            0 0 5px rgba(255, 0, 0, 0.8),
+            0 0 12px rgba(255, 0, 0, 0.6);
+    }
 }
 
-.cell-btn.is-night-btn .time-sep {
-    color: #d1d5db; /* 区切り記号の視認性を担保 */
+
+/* =========================================================
+   月間勤務合計
+   ========================================================= */
+
+.monthly-summary-row th,
+.monthly-summary-row td {
+    height: auto;
+    min-height: 70px;
+    background-color: #fafafa;
+    border-top: 2px solid #999;
 }
+
+.monthly-summary-label {
+    background-color: #d3d3d3 !important;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.monthly-summary-cell {
+    padding: 8px !important;
+    vertical-align: middle;
+}
+
+.monthly-summary-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.25;
+    margin-bottom: 6px;
+}
+
+.monthly-summary-item:last-child {
+    margin-bottom: 0;
+}
+
+.monthly-summary-month {
+    font-size: 11px;
+    color: #666;
+    font-weight: bold;
+}
+
+.monthly-summary-days {
+    font-size: 13px;
+    color: #333;
+}
+
+.monthly-summary-time {
+    font-size: 13px;
+    color: #333;
+}
+
+.monthly-summary-empty {
+    color: #999;
+    font-size: 13px;
+}
+
