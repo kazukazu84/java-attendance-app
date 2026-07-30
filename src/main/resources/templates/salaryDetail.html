@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>給与詳細</title>
+    <link rel="stylesheet" th:href="@{/css/salaryDetail.css}">
+</head>
+<body>
+
+<div class="container">
+
+    <h1 class="page-title">給与詳細</h1>
+
+    <h2 class="page-subtitle">
+        <span th:text="${targetYear}"></span>年
+        <span th:text="${targetMonth}"></span>月 の給与
+    </h2>
+
+    <!-- 給与情報カード（元の構成を維持） -->
+    <div class="card">
+        <table class="salary-table">
+            <tbody>
+                <tr>
+                    <th>勤務時間</th>
+                    <td><span th:text="${detail.workingHours}"></span> 時間</td>
+                </tr>
+                <tr>
+                    <th>時給</th>
+                    <td><span th:text="${detail.appliedHourlyWage}"></span> 円</td>
+                </tr>
+                <tr>
+                    <th>総支給額</th>
+                    <td><span th:text="${detail.grossSalary}"></span> 円</td>
+                </tr>
+                <tr>
+                    <th>雇用保険料</th>
+                    <td class="minus">- <span th:text="${detail.insuranceFee}"></span> 円</td>
+                </tr>
+                <tr class="highlight">
+                    <th>差引支給額</th>
+                    <td><span th:text="${detail.netSalary}"></span> 円</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ★ 当月の勤怠一覧（DTO 対応版） -->
+    <div class="card">
+        <h2 class="section-title">当月の勤怠一覧</h2>
+
+        <table class="salary-table">
+            <thead>
+                <tr>
+                    <th>勤務日</th>
+                    <th>出勤</th>
+                    <th>退勤</th>
+                    <th>休憩</th>
+                    <th>勤務時間</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr th:each="att : ${attendanceList}">
+                    <td th:text="${att.workDate}"></td>
+                    <td th:text="${att.clockIn}"></td>
+                    <td th:text="${att.clockOut}"></td>
+                    <td th:text="${att.restTime}"></td>
+                    <td th:text="${att.workingHours}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ★ 戻るリンク（構文エラー修正済み） -->
+    <a th:href="${basePath + '/salary/confirm'}" class="back-link">← 給与一覧へ戻る</a>
+
+</div>
+
+</body>
+</html>
