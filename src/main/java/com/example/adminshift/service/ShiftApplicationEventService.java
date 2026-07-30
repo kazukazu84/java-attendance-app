@@ -215,9 +215,23 @@ public class ShiftApplicationEventService {
     }
 
     public boolean updateEvent(UpdateShiftApplicationEventForm form) {
+        // 日付の前後関係が不正な場合は更新を中止
+        if (form.getTargetStartDate() != null && form.getTargetEndDate() != null) {
+            if (form.getTargetStartDate().isAfter(form.getTargetEndDate())) {
+                return false;
+            }
+        }
+        if (form.getApplicationStartDate() != null && form.getApplicationEndDate() != null) {
+            if (form.getApplicationStartDate().isAfter(form.getApplicationEndDate())) {
+                return false;
+            }
+        }
+
         if (isOverlapping(form.getEventId(), form.getTargetStartDate(), form.getTargetEndDate())) {
             return false;
         }
+
+        // --- 以下、既存の処理 ---
 
         ShiftApplicationEvent event = repository.findById(form.getEventId()).orElseThrow();
 

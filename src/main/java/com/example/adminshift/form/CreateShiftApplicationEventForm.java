@@ -6,22 +6,19 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-<<<<<<< HEAD
 import com.example.adminshift.validation.ValidCreateShiftApplicationEvent;
-=======
 import com.example.adminshift.validation.ValidShiftApplicationEventDate;
->>>>>>> branch 'masuda' of https://github.com/kazukazu84/java-attendance-app.git
 
 import lombok.Data;
 
 @Data
-<<<<<<< HEAD
+
 @ValidCreateShiftApplicationEvent
-public class CreateShiftApplicationEventForm {
-=======
+
+
 @ValidShiftApplicationEventDate
 public class CreateShiftApplicationEventForm implements ShiftApplicationDateHolder {
->>>>>>> branch 'masuda' of https://github.com/kazukazu84/java-attendance-app.git
+
 
     @NotNull
     @Min(1)
