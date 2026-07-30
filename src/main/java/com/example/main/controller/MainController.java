@@ -1,5 +1,7 @@
 package com.example.main.controller;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,13 +12,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.account.entity.UserInfo;
 import com.example.account.repository.UserInfoRepository;
 import com.example.attendance.dto.AttendanceDto;
 import com.example.attendance.service.AttendanceService;
 import com.example.main.dto.LogDto;
+import com.example.main.entity.ShiftScheduleTest;
 import com.example.main.service.LogService;
+import com.example.main.service.ShiftScheduleTestService;
 import com.example.main.service.UserShiftService;
 
 @Controller
@@ -31,15 +36,28 @@ public class MainController {
     private UserShiftService userShiftService;
     
     @Autowired
+    private ShiftScheduleTestService shiftScheduleTestService;
+    
+    @Autowired
     private UserInfoRepository userRepository;
 
     /**
      * メイン画面の表示（一般ユーザー用・管理者用の両方のURLを受け付けます）
      */
     @GetMapping({"/user/main", "/admin/main"})
-    public String mainView(@AuthenticationPrincipal UserDetails loginUser, 
-                           HttpServletRequest request, 
-                           Model model) {
+    public String mainView(@AuthenticationPrincipal UserDetails loginUser,
+            HttpServletRequest request,
+
+            @RequestParam(required = false)
+            Integer month,
+
+            @RequestParam(required = false)
+            Integer week,
+            
+            @RequestParam(required = false)
+            String mode,
+
+            Model model) {
         
         if (loginUser == null) {
             // 未認証（未ログイン）状態の場合はログイン画面へリダイレクト
@@ -47,10 +65,10 @@ public class MainController {
         }
 
         // 1. 権限チェック＆URL正規化リダイレクト
-        String redirectUrl = checkAndRedirect(loginUser, request, "/user/main", "/admin/main");
-        if (redirectUrl != null) {
-            return redirectUrl;
-        }
+      //  String redirectUrl = checkAndRedirect(loginUser, request, "/user/main", "/admin/main");
+        //if (redirectUrl != null) {
+          //  return redirectUrl;
+        //}
 
         // 2. ログイン中のユーザーIDを取得
         String currentUserId = loginUser.getUsername();
@@ -87,81 +105,138 @@ public class MainController {
          * 週間表示
          * userShiftService.getWeeklyShift()
          */
+        boolean weeklyMode =  "week".equals(mode);
         
-        return "main";
-    }
+        if (week == null) {
+            week = 1;
+        }
+
+        if (month == null) {
+            month = 7;
+        }
+
+        LocalDate monthStart =
+                LocalDate.of(2026, month, 1);
+
+        LocalDate monthEnd =
+                monthStart.withDayOfMonth(
+                        monthStart.lengthOfMonth());
+
+        int startDay;
+
+        switch (week) {
+
+            case 2:
+                startDay = 8;
+                break;
+
+            case 3:
+                startDay = 15;
+                break;
+
+            case 4:
+                startDay = 22;
+                break;
+
+            case 5:
+                startDay = 29;
+                break;
+
+            default:
+                startDay = 1;
+                break;
+        }
+
+        LocalDate startDate =
+                LocalDate.of(2026, month, startDay);
+
+        LocalDate endDate =
+                startDate.plusDays(6);
+
+        if (endDate.isAfter(monthEnd)) {
+
+            endDate = monthEnd;
+
+        }
     
-    /**
-     * 給与確認画面（仮）
-     */
-//    @GetMapping({"/user/salary", "/admin/salary"})
-//    public String salaryView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
-//        if (loginUser == null) return "redirect:/login";
-//
-//        String redirectUrl = checkAndRedirect(loginUser, request, "/user/salary", "/admin/salary");
-//        if (redirectUrl != null) return redirectUrl;
-//
-//        return "tempSalary";
-//    }
+    List<ShiftScheduleTest> monthlyShiftList =
+            shiftScheduleTestService.getShiftByWeek(
+                    monthStart,
+                    monthEnd);
 
-    /**
-     * シフト申請画面（仮）
-     */
-    @GetMapping({"/user/shift-request", "/admin/shift-request"})
-    public String shiftRequestView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
-        if (loginUser == null) return "redirect:/login";
+    List<ShiftScheduleTest> weeklyShiftList =
+            shiftScheduleTestService.getShiftByWeek(
+                    startDate,
+                    endDate);
+    List<Integer> days = new ArrayList<>();
 
-        String redirectUrl = checkAndRedirect(loginUser, request, "/user/shift-request", "/admin/shift-request");
-        if (redirectUrl != null) return redirectUrl;
+    int blankDays =
+            monthStart.getDayOfWeek().getValue() % 7;
 
-        return "tempShiftRequest";
-    }
-//
-//    /**
-//     * ユーザー管理画面（仮）
-//     */
-//    @GetMapping({"/user/user-management", "/admin/user-management"})
-//    public String userManagementView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
-//        if (loginUser == null) return "redirect:/login";
-//
-//        String redirectUrl = checkAndRedirect(loginUser, request, "/user/user-management", "/admin/user-management");
-//        if (redirectUrl != null) return redirectUrl;
-//
-//        return "tempUserManagement";
-//    }
+    for (int i = 0; i < blankDays; i++) {
 
-    /**
-     * シフト管理画面（仮）
-     */
-    @GetMapping({"/user/shift-management", "/admin/shift-management"})
-    public String shiftManagementView(@AuthenticationPrincipal UserDetails loginUser, HttpServletRequest request) {
-        if (loginUser == null) return "redirect:/login";
+        days.add(0);
 
-        String redirectUrl = checkAndRedirect(loginUser, request, "/user/shift-management", "/admin/shift-management");
-        if (redirectUrl != null) return redirectUrl;
-
-        return "tempShiftManagement";
     }
 
-    /**
-     * 【共通処理】権限とリクエストURLに応じたリダイレクト判定
-     */
-    private String checkAndRedirect(UserDetails loginUser, HttpServletRequest request, String userPath, String adminPath) {
-        boolean isAdmin = loginUser.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-        
-        String requestUri = request.getRequestURI();
+    for (int day = 1;
+            day <= monthStart.lengthOfMonth();
+            day++) {
 
-        // 管理者が一般用URLにアクセスした場合 ➔ 管理者用URLへ転送
-        if (isAdmin && requestUri.endsWith(userPath)) {
-            return "redirect:" + adminPath;
-        }
-        
-        // 一般ユーザーが管理者用URLにアクセスした場合 ➔ 一般用URLへ転送
-        if (!isAdmin && requestUri.endsWith(adminPath)) {
-            return "redirect:" + userPath;
+        days.add(day);
+
+    }
+
+    while (days.size() % 7 != 0) {
+
+        days.add(0);
+
+    }
+
+    List<List<Integer>> calendarWeeks =
+            new ArrayList<>();
+
+    for (int i = 0; i < days.size(); i += 7) {
+
+        List<Integer> weekList =
+                new ArrayList<>();
+
+        for (int j = i;
+                j < Math.min(i + 7, days.size());
+                j++) {
+
+            weekList.add(days.get(j));
+
         }
 
-        return null; // リダイレクト不要
+        calendarWeeks.add(weekList);
+
+    }
+    model.addAttribute(
+            "monthlyShiftList",
+            monthlyShiftList);
+
+    model.addAttribute(
+            "weeklyShiftList",
+            weeklyShiftList);
+
+    model.addAttribute(
+            "calendarWeeks",
+            calendarWeeks);
+
+    model.addAttribute(
+            "month",
+            month);
+
+    model.addAttribute(
+            "week",
+            week);
+
+    model.addAttribute(
+            "weeklyMode",
+            weeklyMode);
+
+    return "main";
+
     }
 }

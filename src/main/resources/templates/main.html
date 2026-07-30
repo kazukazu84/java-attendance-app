@@ -97,59 +97,239 @@
                     </div>
 
                     <!-- ⑦⑧ シフト表示枠 -->
-                    <div class="shift-box">
-                        <div class="shift-content">
-                            
-                            <!-- 月間シフト表示エリア -->
-                            <div id="monthlyShiftArea" class="h-100 d-flex flex-column">
-                                <div class="shift-header">
-                                    <div class="d-flex align-items-center justify-content-center gap-2">
-                                        <span class="fw-bold fs-5">月間シフト</span>
-                                        <select id="monthSelect">
-                                            <option>2026年7月</option>
-                                            <option>2026年6月</option>
-                                            <option>2026年5月</option>
-                                            <option>2026年4月</option>
-                                        </select>
-                                    </div>
-                                    <div class="toggle-area">
-                                        <button id="toWeeklyButton" type="button" class="btn btn-sm-custom">
-                                            週間シフト表示
-                                        </button>
-                                    </div>
-                                </div>
+									<div class="shift-box">
+					    <div class="shift-content">
 
-                                <div class="text-muted border rounded w-100 flex-grow-1 d-flex align-items-center justify-content-center">
-                                    ※ここに月間のシフトカレンダーテーブルが配置されます
-                                </div>
-                            </div>
+					        <!-- 月間シフト表示エリア -->
+							<div id="monthlyShiftArea"
+							     th:style="${weeklyMode} ? 'display:none;' : 'display:block;'">
 
-                            <!-- 週間シフト表示エリア -->
-                            <div id="weeklyShiftArea" style="display:none;" class="h-100 flex-column">
-                                <div class="shift-header">
-                                    <div class="d-flex align-items-center justify-content-center gap-2">
-                                        <span class="fw-bold fs-5">週間シフト</span>
-                                        <select id="weekSelect">
-                                            <option value="1">7月 1週目</option>
-                                            <option value="2">7月 2週目</option>
-                                            <option value="3">7月 3週目</option>
-                                            <option value="4">7月 4週目</option>
-                                            <option value="5">7月 5週目</option>
-                                        </select>
-                                    </div>
-                                    <div class="toggle-area">
-                                        <button id="toMonthlyButton" type="button" class="btn btn-sm-custom">
-                                            月間シフト表示
-                                        </button>
-                                    </div>
-                                </div>
+					            <div class="shift-header">
 
-                                <div class="text-muted border rounded w-100 flex-grow-1 d-flex align-items-center justify-content-center">
-                                    ※ここに１週間ごとのシフトテーブルが配置されます
-                                </div>
-                            </div>
+					                <div class="d-flex align-items-center justify-content-center gap-2">
 
-                        </div>
+					                    <span class="fw-bold fs-5">
+					                        月間シフト
+					                    </span>
+										
+										<form method="get">
+
+										    <input type="hidden"
+										           name="mode"
+										           value="month">
+												   
+					                        <select name="month"
+					                                onchange="this.form.submit()">
+
+					                            <option value="7"
+					                                    th:selected="${month == 7}">
+					                                2026年7月
+					                            </option>
+
+					                            <option value="6"
+					                                    th:selected="${month == 6}">
+					                                2026年6月
+					                            </option>
+
+					                            <option value="5"
+					                                    th:selected="${month == 5}">
+					                                2026年5月
+					                            </option>
+
+					                        </select>
+
+					                    </form>
+
+					                </div>
+
+					                <div class="toggle-area">
+
+					                    <button id="toWeeklyButton"
+					                            type="button"
+					                            class="btn btn-sm-custom">
+
+					                        週間シフト表示
+
+					                    </button>
+
+					                </div>
+
+					            </div>
+
+								<table border="1"
+								       style="width:100%;
+								              text-align:center;
+								              border-top:1px solid #cccccc;">
+					                <tr>
+										<th style="border:1px solid #cccccc;">日</th>
+										<th style="border:1px solid #cccccc;">月</th>
+										<th style="border:1px solid #cccccc;">火</th>
+										<th style="border:1px solid #cccccc;">水</th>
+										<th style="border:1px solid #cccccc;">木</th>
+										<th style="border:1px solid #cccccc;">金</th>
+										<th style="border:1px solid #cccccc;">土</th>
+					                </tr>
+
+					                <tr th:each="week : ${calendarWeeks}">
+
+										<td th:each="day : ${week}"
+										    style="width:120px;
+										           height:80px;
+										           vertical-align:top;
+										           border:1px solid #cccccc;
+										           text-align:center;">
+
+					                        <div style="height:25px;
+					                                    border-bottom:1px solid #cccccc;">
+
+					                            <span th:text="${day == 0 ? '' : day}">
+					                            </span>
+
+					                        </div>
+
+					                        <div style="height:55px;">
+
+					                            <span th:each="shift : ${monthlyShiftList}"
+					                                  th:if="${shift.workDate.dayOfMonth == day}"
+					                                  th:text="${shift.startTime == null ?
+					                                        '休み'
+					                                        : shift.startTime + '～' + shift.endTime}">
+					                            </span>
+
+					                        </div>
+
+					                    </td>
+
+					                </tr>
+
+					            </table>
+
+					        </div>
+
+					        <!-- 週間シフト表示エリア -->
+					        <div id="weeklyShiftArea"
+					             th:style="${weeklyMode} ? 'display:block;' : 'display:none;'"
+					             class="h-100 flex-column">
+
+					            <div class="shift-header">
+
+					                <div class="d-flex align-items-center justify-content-center gap-2">
+
+					                    <span class="fw-bold fs-5">
+					                        週間シフト
+					                    </span>
+
+										<form method="get">
+
+										    <input type="hidden"
+										           name="mode"
+										           value="week">
+
+					                        <select name="month"
+					                                onchange="this.form.submit()">
+
+					                            <option value="7"
+					                                    th:selected="${month == 7}">
+					                                2026年7月
+					                            </option>
+
+					                            <option value="6"
+					                                    th:selected="${month == 6}">
+					                                2026年6月
+					                            </option>
+
+					                            <option value="5"
+					                                    th:selected="${month == 5}">
+					                                2026年5月
+					                            </option>
+
+					                        </select>
+
+					                        <select name="week"
+					                                onchange="this.form.submit()">
+
+					                            <option value="1"
+					                                    th:selected="${week == 1}">
+					                                1週目
+					                            </option>
+
+					                            <option value="2"
+					                                    th:selected="${week == 2}">
+					                                2週目
+					                            </option>
+
+					                            <option value="3"
+					                                    th:selected="${week == 3}">
+					                                3週目
+					                            </option>
+
+					                            <option value="4"
+					                                    th:selected="${week == 4}">
+					                                4週目
+					                            </option>
+
+					                            <option value="5"
+					                                    th:selected="${week == 5}">
+					                                5週目
+					                            </option>
+
+					                        </select>
+
+					                    </form>
+
+					                </div>
+
+					                <div class="toggle-area">
+
+					                    <button id="toMonthlyButton"
+					                            type="button"
+					                            class="btn btn-sm-custom">
+
+					                        月間シフト表示
+
+					                    </button>
+
+					                </div>
+
+					            </div>
+
+								<table border="1"
+								       style="width:100%;
+								              border-collapse:collapse;
+								              text-align:center;">
+
+					                <tr>
+					                    <th>日付・曜日</th>
+					                    <th>シフト情報</th>
+					                </tr>
+
+					                <tr th:each="shift : ${weeklyShiftList}">
+
+					                    <td th:text="${shift.workDate + '(' +
+					                        (shift.workDate.dayOfWeek.name() == 'MONDAY' ? '月' :
+					                        shift.workDate.dayOfWeek.name() == 'TUESDAY' ? '火' :
+					                        shift.workDate.dayOfWeek.name() == 'WEDNESDAY' ? '水' :
+					                        shift.workDate.dayOfWeek.name() == 'THURSDAY' ? '木' :
+					                        shift.workDate.dayOfWeek.name() == 'FRIDAY' ? '金' :
+					                        shift.workDate.dayOfWeek.name() == 'SATURDAY' ? '土' :
+					                        '日')
+					                        + ')'}">
+
+					                    </td>
+
+					                    <td th:text="${shift.startTime == null ?
+					                            '休み'
+					                            : shift.startTime + '～' + shift.endTime}">
+					                    </td>
+
+					                </tr>
+
+					            </table>
+
+					        </div>
+
+					    </div>
+					</div>
                     </div>
 
                 </div>
@@ -231,28 +411,34 @@
         .catch(errorText => alert("【打刻エラー】\n" + errorText));
     });
 
-    // 3. シフト切り替え
-    document.getElementById("toWeeklyButton").addEventListener("click", function() {
-        const monthlyArea = document.getElementById("monthlyShiftArea");
-        const weeklyArea = document.getElementById("weeklyShiftArea");
-        
-        monthlyArea.classList.remove("d-flex");
-        monthlyArea.style.display = "none";
-        
-        weeklyArea.style.display = "flex";
-        weeklyArea.classList.add("d-flex");
-    });
+ 	// 3. シフト切り替え
+	document.getElementById("toWeeklyButton").addEventListener("click", function() {
 
-    document.getElementById("toMonthlyButton").addEventListener("click", function() {
-        const monthlyArea = document.getElementById("monthlyShiftArea");
-        const weeklyArea = document.getElementById("weeklyShiftArea");
-        
-        weeklyArea.classList.remove("d-flex");
-        weeklyArea.style.display = "none";
-        
-        monthlyArea.style.display = "flex";
-        monthlyArea.classList.add("d-flex");
-    });
+	    const monthlyArea =
+	            document.getElementById("monthlyShiftArea");
+
+	    const weeklyArea =
+	            document.getElementById("weeklyShiftArea");
+
+	    monthlyArea.style.display = "none";
+
+	    weeklyArea.style.display = "block";
+
+	});
+
+	document.getElementById("toMonthlyButton").addEventListener("click", function() {
+
+	    const monthlyArea =
+	            document.getElementById("monthlyShiftArea");
+
+	    const weeklyArea =
+	            document.getElementById("weeklyShiftArea");
+
+	    weeklyArea.style.display = "none";
+
+	    monthlyArea.style.display = "block";
+
+	});
 </script>
 </body>
 </html>
