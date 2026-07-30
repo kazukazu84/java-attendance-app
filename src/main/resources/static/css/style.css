@@ -1,4 +1,4 @@
-```css
+
 /* =========================================================
    基本スタイル
    ========================================================= */
@@ -419,5 +419,11 @@ th.sticky-header.sticky-col {
 .monthly-summary-empty {
     color: #999;
     font-size: 13px;
+}
+
+.sticky-header.unsubmitted-user-header {
+    background-color: #ffcccc !important;
+    color: #b30000;
+    font-weight: bold;
 }
 

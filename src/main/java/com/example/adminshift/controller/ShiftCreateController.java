@@ -1,7 +1,10 @@
+
 package com.example.adminshift.controller;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -316,10 +319,10 @@ public class ShiftCreateController {
     /**
      * シフト保存・更新処理
      *
-     * @param shiftForm    シフトフォーム
-     * @param result       バリデーション結果
-     * @param searchForm   検索フォーム
-     * @param model        画面保持モデル
+     * @param shiftForm  シフトフォーム
+     * @param result     バリデーション結果
+     * @param searchForm 検索フォーム
+     * @param model      画面保持モデル
      * @return 遷移先
      */
     @PostMapping("/update")
@@ -487,19 +490,68 @@ public class ShiftCreateController {
          * 月間勤務集計
          * ============================================
          *
-         * Serviceで
-         *
          * userId
          *   ↓
          * 月別勤務集計
-         *
-         * のMapを作成
          */
         var monthlySummaryMap =
                 shiftCreateService.getMonthlySummaryMap(
                         shiftList,
                         userList
                 );
+
+
+        /*
+         * ============================================
+         * ユーザーごとの提出状況
+         * ============================================
+         *
+         * true  = 提出済み
+         * false = 未提出
+         *
+         * 現在選択しているイベントの
+         * shiftListにユーザーのデータが
+         * 1件でも存在すれば提出済みとします。
+         */
+        Map<String, Boolean> userSubmissionMap =
+                new HashMap<>();
+
+
+        for (Users user : userList) {
+
+            /*
+             * ユーザーIDがnullの場合はスキップ
+             */
+            if (user == null
+                    || user.getUserId() == null) {
+
+                continue;
+            }
+
+
+            /*
+             * 現在のイベントに
+             * ユーザーのシフトが1件でもあれば提出済み
+             */
+            boolean submitted =
+                    shiftList.stream()
+                            .anyMatch(
+                                    shift ->
+                                            user.getUserId()
+                                                    .equals(
+                                                            shift.getUserId()
+                                                    )
+                            );
+
+
+            /*
+             * 提出状況をMapへ格納
+             */
+            userSubmissionMap.put(
+                    user.getUserId(),
+                    submitted
+            );
+        }
 
 
         /*
@@ -531,6 +583,14 @@ public class ShiftCreateController {
         model.addAttribute(
                 "monthlySummaryMap",
                 monthlySummaryMap
+        );
+
+        /*
+         * ユーザーごとの提出状況
+         */
+        model.addAttribute(
+                "userSubmissionMap",
+                userSubmissionMap
         );
     }
 }

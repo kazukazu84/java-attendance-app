@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
 
@@ -120,12 +120,14 @@
                                 </th>
 
                                 <!-- 横軸：ユーザーID + ユーザー名 -->
-                                <th th:each="user : ${userList}"
-                                    class="sticky-header"
-                                    th:text="${user.userId + ' ' + user.userName}">
-                                    1001 山田太郎
-                                </th>
-
+								<th th:each="user : ${userList}"
+								    class="sticky-header"
+								    th:classappend="${userSubmissionMap[user.userId] == false
+								                    ? ' unsubmitted-user-header'
+								                    : ''}"
+								    th:text="${user.userId + ' ' + user.userName}">
+								    1001 山田太郎
+								</th>
                             </tr>
 
                         </thead>
