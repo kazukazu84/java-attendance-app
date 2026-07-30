@@ -7,7 +7,7 @@ import com.example.adminshift.form.UpdateShiftApplicationEventForm;
 
 public class ShiftTargetDateValidator 
         implements ConstraintValidator<ValidShiftTargetDate, UpdateShiftApplicationEventForm> {
-
+//
     @Override
     public boolean isValid(UpdateShiftApplicationEventForm form, ConstraintValidatorContext context) {
         if (form == null) {
