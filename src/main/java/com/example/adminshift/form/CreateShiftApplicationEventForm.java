@@ -4,9 +4,12 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
+import com.example.adminshift.validation.ValidCreateShiftApplicationEvent;
+
 import lombok.Data;
 
 @Data
+@ValidCreateShiftApplicationEvent
 public class CreateShiftApplicationEventForm {
 
     /*
