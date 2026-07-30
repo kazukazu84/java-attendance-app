@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+	<meta charset="UTF-8">
+
+	<title>シフト申請選択画面</title>
+	
+	<link rel = "stylesheet"
+				th:href = "@{/css/shiftRequest.css}">
+
+</head>
+
+
+<div class = "container">	
+	
+	<h2 class="page-title">
+    	シフト申請選択画面
+	</h2>
+
+<div class = "card">
+	
+    <div class="year-area">
+		
+		<form method = "get"
+			th:action = "@{/shiftRequestSelect}">
+		
+			<label>年度</labe>
+		
+			 <select name = "selectedYear"
+					 onchange = "this.form.submit()">
+				 
+			<option value="2025"
+				th:selected = "${form.selectedYear == 2025}">
+					2025
+			</option>
+			
+			<option value="2026"
+				th:selected = "${form.selectedYear == 2026}">
+					2026
+			</option>
+			
+			<option value="2027"
+				th:selected = "${form.selectedYear == 2027}">
+					2027
+			</option>
+			
+			</select>
+		
+		</form>
+		
+	</div>
+	
+
+    <table class = "shift-table">
+
+        <thead>
+            <tr>
+                <th>提出</th>
+                <th>対象期間</th>
+                <th>締め</th>
+                <th>開始</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr th:each="shift : ${form.shiftList}">
+
+                <td th:text="${shift.submissionStatus}">
+                    未提出
+                </td>
+
+                <td th:text="${shift.targetPeriod}">
+                    12/22～12/29
+                </td>
+
+                <td th:text="${shift.deadlineDate}">
+                    12/21
+                </td>
+
+				<td>
+				
+					<form th:action="@{/shiftRequest}" method = "get">
+				   		 	<input type="hidden"
+				        			name="eventId"
+				         			th:value="${shift.eventId}" />
+									
+							<input type="hidden"
+									name="selectedYear"
+									th:value="${form.selectedYear}" />
+
+				    	<button type="submit">
+				        	受付中
+				    	</button>
+					</form>
+					
+				</td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+	
+    <div class="back-area">
+		<button type = "button">
+			メイン画面へ戻る
+		</button>
+
+    </div>
+	
+</div>
+
+
+</div> <!-- 「カード」のレイアウト適用範囲 -->
+
+
+</body>
+
+</html>

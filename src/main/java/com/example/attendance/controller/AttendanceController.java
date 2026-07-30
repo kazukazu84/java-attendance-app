@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.attendance.dto.AttendanceDto;
 import com.example.attendance.service.AttendanceService;
-import com.example.main.service.LogService;
 import com.example.salary.service.SalaryCalculationService;
 
 @Controller
@@ -27,10 +26,6 @@ public class AttendanceController {
     
     @Autowired
     private SalaryCalculationService salaryCalculationService;
-    
-	// 👇 1. LogServiceを注入
-    @Autowired
-    private LogService logService;
 
     /**
      * 簡易勤怠画面の初期表示
