@@ -32,7 +32,7 @@ public class ShiftRequestService {
         List<ShiftRequestDetailsEntity> entityList
         = repository.findAll();
         
-        System.out.println(entityList.size());
+        System.out.println("=== entityList size = " + entityList.size());
 
         List<ShiftRequestDto> shiftList = new ArrayList<>();
         
@@ -64,25 +64,33 @@ public class ShiftRequestService {
         
     }
     
-    public boolean applyShiftRequest(ShiftRequestForm form) {
+    public boolean applyShiftRequest
+    (ShiftRequestForm form, String currentUserId) {
+    	
+    	if (form.getShiftList() == null) {
+    	    return false;
+    	}
     	
     	boolean saved = false;
-
-        for (ShiftRequestDto dto : form.getShiftList()) {
-        	
+    
+    	for (ShiftRequestDto dto : form.getShiftList()) {    	
+    	
         	if (!validator.isValid(dto)) {
         	    continue;
         	}	
-        	
         	
             ShiftRequestDetailsEntity entity =
                     new ShiftRequestDetailsEntity();
             
             
-            entity.setUserId(1);
+            // ユーザーIDをDBへ保存する
+            entity.setUserId(currentUserId);
 
-            entity.setEventId(1);
-
+            entity.setEventId(form.getEventId());
+            
+            System.out.println(
+                    "保存eventId=" + form.getEventId());
+            
             entity.setWorkDate(
                     Date.valueOf(dto.getWorkDate()));
 

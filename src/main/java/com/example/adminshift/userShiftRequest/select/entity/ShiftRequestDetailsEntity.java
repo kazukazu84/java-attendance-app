@@ -20,7 +20,7 @@ public class ShiftRequestDetailsEntity {
     private Integer requestDetailId;
 
     /** ユーザーID */
-    private Integer userId;
+    private String userId;
 
     /** イベントID */
     private Integer eventId;
@@ -45,11 +45,11 @@ public class ShiftRequestDetailsEntity {
 		this.requestDetailId = requestDetailId;
 	}
 
-	public Integer getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Integer userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 

@@ -13,6 +13,10 @@ public class ShiftRequestForm {
     
     private List<ShiftRequestDto> shiftList;
     
+    private Integer eventId;
+    
+    private Integer selectedYear;
+    
     private String workDate;
     
     private String available;
@@ -22,7 +26,7 @@ public class ShiftRequestForm {
     private String endTime;
 
 
-
+    
 	public String getWorkDate() {
 		return workDate;
 	}
@@ -46,6 +50,14 @@ public class ShiftRequestForm {
     
     public void setShiftList(List<ShiftRequestDto> shiftList) {
     	this.shiftList = shiftList;
+    }
+    
+    public Integer getEventId() {
+    	return eventId;
+    }
+    
+    public void setEventId(Integer eventId) {
+    	this.eventId = eventId;
     }
     
     
@@ -75,5 +87,13 @@ public class ShiftRequestForm {
 
 	public void setEndTime(String endTime) {
 		this.endTime = endTime;
+	}
+	
+	public Integer getSelectedYear() {
+	    return selectedYear;
+	}
+
+	public void setSelectedYear(Integer selectedYear) {
+	    this.selectedYear = selectedYear;
 	}
 }

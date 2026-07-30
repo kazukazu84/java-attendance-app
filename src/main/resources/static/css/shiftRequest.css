@@ -1,56 +1,176 @@
 @charset "UTF-8";
 
+/* ================================
+   ビジネス × ブルー（企業向け）
+   給与一覧と完全統一デザイン
+================================ */
+
+:root {
+    --bg-color: #f5f7fa;
+    --card-bg: #ffffff;
+    --text-primary: #1a2b4c;
+    --text-secondary: #4a5b75;
+    --border-color: #d3d9e3;
+    --accent-color: #2b6cb0;
+    --accent-light: #4a90e2;
+    --accent-hover: #1e4f80;
+    --shadow-light: rgba(0, 0, 0, 0.08);
+    --shadow-strong: rgba(0, 0, 0, 0.15);
+}
+
+/* 全体レイアウト */
 body {
-    text-align: center;
-    font-family: sans-serif;
+    background: var(--bg-color);
+    font-family: "Helvetica Neue", Arial, Meiryo, sans-serif;
+    margin: 0;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+    color: var(--text-primary);
 }
 
-table {
-    margin: 20px auto;
-    border-collapse: collapse;
-}
-
-th,
-td {
-    border: 1px solid black;
-    padding: 10px 20px;
-}
-
-th {
-    background-color: #f0f0f0;
-}
-
-.success-message {
-    color: green;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.period-box {
-    width: 300px;
-    margin: 20px auto;
-    border: 1px solid black;
-}
-
-.period-title {
-    border-bottom: 1px solid black;
-    padding: 10px;
-    font-weight: bold;
-}
-
-.period-value {
-    padding: 10px;
-    font-size: 24px;
-	font-weight: bold;
-}
-
-.button-area {
-    margin-top: 30px;
+.container {
+    width: 100%;
+    max-width: 700px;
+    animation: fadeIn 0.6s ease-out;
 }
 
 .button-area button {
-    width: 120px;
-    height: 40px;
-    margin: 0 20px;
-    font-size: 16px;
+	text-align: center;
+	margin-top: 24px;
+	padding: 8px 16px;
+	border-radius: 6px;
+	margin: 0 8px;
+	cursor: pointer;
+}
+
+/* フェードイン */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* タイトル */
+.page-title {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    color: var(--accent-color);
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* サブタイトル */
+.page-subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+}
+
+/* カード（給与一覧と完全統一） */
+.card {
+    background: var(--card-bg);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow-light);
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px var(--shadow-strong);
+}
+
+.year-area {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* ↓「shiftRequest.html」ファイルの「対象期間」レイアウト */
+
+.period-box {
+	text-align: center;
+	margin-bottom: 24px;
+}
+
+.period-title {
+	color: var(-- text-secondary);
+	font-weight: 700;
+	margin-bottom: 8px;
+}
+
+.period-value {
+	color: var(--accent-color);
+	font-size: 1.2rem;
+	font-weight: 700;
+}
+
+
+/* テーブル */
+.shift-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.shift-table th {
+    text-align: center;
+    padding: 12px;
+    width: 40%;
+    color: var(--text-secondary);
+    font-weight: 700;
+    background: #e6edf5;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.shift-table td {
+	text-align: center;
+    padding: 12px;
+    color: var(--text-primary);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-color);
+	white-space: nowrap;
+}
+
+/* 控除（マイナス） */
+.minus {
+    color: #c53030;
+    font-weight: 700;
+}
+
+/* 差引支給額（強調） */
+.highlight th,
+.highlight td {
+    background: #ebf8ff;
+    color: var(--accent-color);
+    font-weight: 700;
+    border-radius: 6px;
+}
+
+/* 戻るリンク（給与一覧と完全統一） */
+.back-link {
+    display: block;
+    margin-top: 24px;
+    text-align: center;
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 700;
+    transition: 0.25s ease;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+    color: var(--accent-hover);
+}
+
+
+.back-area {
+	text-align: center;
+	margin-top: 30px;
+}
+
+.back-area button {
+	padding: 8px 16px;
+	border-radius: 6px;
 }

@@ -8,6 +8,7 @@ public class JavaAttendanceAppApplication {
 
     public static void main(String[] args) {
 
+    	//アプリケーション実行
         SpringApplication.run(
                 JavaAttendanceAppApplication.class,
                 args);

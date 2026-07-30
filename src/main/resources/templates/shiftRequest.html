@@ -20,6 +20,14 @@
 
 <body>
 
+<div class = "container">
+	
+	<h2 class = "page-title">
+		シフト申請画面
+	</h2>
+	
+	<div class = "card">
+	
 	<p th:if="${message}"
 	   th:text="${message}"
 	   class="success-message">
@@ -42,8 +50,13 @@
 	<form th:object = "${form}" 
 		  th:action = "@{/shiftRequest/apply}"
 		  method = "post">
-
-    <table>
+		  
+	
+	<input type = "hidden"
+		th:field = "*{eventId}"/>	  	  
+		
+		
+    <table class = "shift-table">
 
         <tr>
             <th>日付</th>
@@ -51,8 +64,19 @@
             <th>出勤</th>
             <th>退勤</th>
         </tr>
-
+	
+	<tbody>
+		
+		<tr th:if="${#lists.isEmpty(form.shiftList)}">
+				
+			<td colspan="4">
+				現在受付中のシフト情報はありません。
+			</td>
+			
+		</tr>
+		
 		<tr th:each="shift, stat : ${form.shiftList}">
+			
 			
 			<td>
 
@@ -83,6 +107,8 @@
 			</td>
 
 		</tr>
+		
+	</tbody>
 
     </table>
 
@@ -90,14 +116,22 @@
 
 	
 	
-<div class = "button-area">
+<div class = "button-area button">
 	
-    <button type="button">
-        キャンセル
+	
+<!--【画面遷移】「キャンセル」ボタン → 「シフト申請選択画面」-->
+	<button type = "button", 
+		th:onclick = 
+			"|location.href = 
+			'@{/shiftRequestSelect
+				(selectedYear=${form.selectedYear})}'|">
+		キャンセル
     </button>
 	
 	
-    <button type = "submit">
+<!--【データ送信】ボタン押下 → 管理者側へシフト情報が送信される -->
+    <button type = "submit"
+	th:disabled = "${#lists.isEmpty(form.shiftList)}">
 		申請
     </button>
 	
@@ -105,6 +139,11 @@
 </div>
 	
 </form>
+
+
+</div>	<!-- ここまでが「card」の適用範囲 -->
+
+</div>	<!-- ここまでが「container」の適用範囲 -->
 
 </body>
 
