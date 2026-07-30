@@ -16,7 +16,7 @@ import com.example.adminshift.dto.ShiftRequestUserSummaryDto;
 import com.example.adminshift.service.AdminShiftRequestService;
 
 
-//
+
 /**
  * 管理者側のシフト申請一覧画面を管理するControllerクラス
  *
