@@ -9,16 +9,13 @@ import java.lang.annotation.Target;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-/**
- * シフト受付イベント日付の相関バリデーション用アノテーション
- */
-@Documented
-@Constraint(validatedBy = ShiftApplicationEventDateValidator.class)
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+@Constraint(validatedBy = ShiftApplicationEventDateValidator.class)
+@Documented
 public @interface ValidShiftApplicationEventDate {
 
-    String message() default "日付の入力内容に不備があります。";
+    String message() default "受付開始日は受付終了日より前の日付を指定してください。";
 
     Class<?>[] groups() default {};
 
