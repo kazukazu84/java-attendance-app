@@ -87,6 +87,8 @@ public class MainController {
         return "main";
     }
 
+  
+
     /**
      * 【共通処理】権限とリクエストURLに応じたリダイレクト判定
      */

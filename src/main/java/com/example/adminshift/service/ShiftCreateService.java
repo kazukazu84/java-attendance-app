@@ -1,4 +1,3 @@
-
 package com.example.adminshift.service;
 
 import java.time.LocalDate;
@@ -34,15 +33,19 @@ public class ShiftCreateService {
     private final ShiftRepository shiftRepository;
     private final UsersRepository usersRepository;
 
+
     /**
-     * すべてのイベントリストを取得します（プルダウン表示用）
+     * シフト作成画面のプルダウン表示用イベントを取得します。
      *
-     * @return イベントのリスト（targetStartDate昇順、eventId昇順）
+     * 対象期間終了日が今日以降のイベントのみ取得します。
+     *
+     * @return 表示対象イベント一覧
      */
     public List<ShiftApplicationEvent> getEventList() {
         return shiftApplicationEventRepository
-                .findAllByOrderByTargetStartDateAscEventIdAsc();
+                .findTargetEventsForAdminList(LocalDate.now());
     }
+
 
     /**
      * eventIdが最も大きい（最新作成）イベントを取得します
@@ -54,6 +57,29 @@ public class ShiftCreateService {
                 .findTopByOrderByEventIdDesc()
                 .orElse(null);
     }
+
+
+    /**
+     * 画面初期表示時に使用するイベントを取得します。
+     *
+     * 対象期間終了日が今日以降のイベントの中から、
+     * 対象期間開始日が最も早いイベントを取得します。
+     *
+     * @return 初期表示対象イベント
+     */
+    public ShiftApplicationEvent getOldestEvent() {
+
+        List<ShiftApplicationEvent> eventList =
+                shiftApplicationEventRepository
+                        .findTargetEventsForAdminList(LocalDate.now());
+
+        if (eventList == null || eventList.isEmpty()) {
+            return null;
+        }
+
+        return eventList.get(0);
+    }
+
 
     /**
      * 指定されたIDのイベント情報を取得します
@@ -72,6 +98,7 @@ public class ShiftCreateService {
                 .orElse(null);
     }
 
+
     /**
      * 指定されたイベントIDに紐づくシフト表データを取得します
      *
@@ -86,6 +113,7 @@ public class ShiftCreateService {
 
         return shiftRepository.findByEventId(eventId);
     }
+
 
     /**
      * イベントの対象期間
@@ -119,6 +147,7 @@ public class ShiftCreateService {
         return dateList;
     }
 
+
     /**
      * Usersテーブルから全ユーザー一覧を取得します
      *
@@ -127,6 +156,7 @@ public class ShiftCreateService {
     public List<Users> getAllUsers() {
         return usersRepository.findAll();
     }
+
 
     /**
      * ポップアップ表示用に単一のシフト詳細情報を取得します
@@ -145,6 +175,7 @@ public class ShiftCreateService {
                 .orElse(null);
     }
 
+
     /**
      * シフト情報を保存・更新します
      *
@@ -155,6 +186,7 @@ public class ShiftCreateService {
     public Shift saveShift(Shift shift) {
         return shiftRepository.save(shift);
     }
+
 
     /**
      * ユーザーごとの月間勤務集計を取得します。
@@ -284,6 +316,7 @@ public class ShiftCreateService {
                 .toList();
     }
 
+
     /**
      * ユーザーごとの月間勤務集計Mapを作成します。
      *
@@ -350,6 +383,7 @@ public class ShiftCreateService {
 
         return monthlySummaryMap;
     }
+
 
     /**
      * 1シフトの勤務時間を計算します。
@@ -446,4 +480,3 @@ public class ShiftCreateService {
         return Math.max(minutes, 0);
     }
 }
-
