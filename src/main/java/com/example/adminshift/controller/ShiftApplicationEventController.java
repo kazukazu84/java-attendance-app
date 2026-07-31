@@ -1,9 +1,12 @@
 package com.example.adminshift.controller;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -47,7 +50,24 @@ public class ShiftApplicationEventController {
 
     @GetMapping
     public String index(@RequestParam(name = "page", defaultValue = "0") int page, Model model) {
+        // DBテーブルが存在するか確認
+        if (!service.isTableExist()) {
+            model.addAttribute("errorMessage", "データベーステーブルが存在しません。");
+            model.addAttribute("eventPage", new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 10), 0));
+            model.addAttribute("eventList", Collections.emptyList());
+            model.addAttribute("gapList", Collections.emptyList());
+            return VIEW_NAME;
+        }
+
         Page<ShiftApplicationEvent> eventPage = service.getEventList(page);
+
+        // データ存在チェックおよびページ範囲チェック
+        if (eventPage.getTotalElements() == 0) {
+            model.addAttribute("errorMessage", "データが存在しません。");
+        } else if (page < 0 || page >= eventPage.getTotalPages()) {
+            model.addAttribute("errorMessage", "このページは存在しません。");
+        }
+
         model.addAttribute("eventPage", eventPage);
         model.addAttribute("eventList", eventPage.getContent());
         model.addAttribute("gapList", service.getCurrentGaps());
@@ -65,8 +85,14 @@ public class ShiftApplicationEventController {
             @RequestParam(name = "page", defaultValue = "0") int page,
             Model model) {
 
-        // Formに付与された @ValidShiftApplicationEventDate により、
-        // 不正な日付（受付開始日 > 受付終了日）の場合 bindingResult.hasErrors() が true になります
+        if (!service.isTableExist()) {
+            model.addAttribute("errorMessage", "データベーステーブルが存在しません。");
+            model.addAttribute("eventPage", new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 10), 0));
+            model.addAttribute("eventList", Collections.emptyList());
+            model.addAttribute("gapList", Collections.emptyList());
+            return VIEW_NAME;
+        }
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("errorMessage", "入力内容に不備があります。");
 
@@ -117,6 +143,14 @@ public class ShiftApplicationEventController {
             @RequestParam(name = "page", defaultValue = "0") int page,
             Model model) {
 
+        if (!service.isTableExist()) {
+            model.addAttribute("errorMessage", "データベーステーブルが存在しません。");
+            model.addAttribute("eventPage", new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 10), 0));
+            model.addAttribute("eventList", Collections.emptyList());
+            model.addAttribute("gapList", Collections.emptyList());
+            return VIEW_NAME;
+        }
+
         ShiftApplicationEvent event = service.getEvent(eventId);
 
         UpdateShiftApplicationEventForm form = new UpdateShiftApplicationEventForm();
@@ -154,6 +188,14 @@ public class ShiftApplicationEventController {
             @RequestParam(name = "confirmConfirmed", defaultValue = "false") boolean confirmConfirmed,
             @RequestParam(name = "page", defaultValue = "0") int page,
             Model model) {
+
+        if (!service.isTableExist()) {
+            model.addAttribute("errorMessage", "データベーステーブルが存在しません。");
+            model.addAttribute("eventPage", new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 10), 0));
+            model.addAttribute("eventList", Collections.emptyList());
+            model.addAttribute("gapList", Collections.emptyList());
+            return VIEW_NAME;
+        }
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("errorMessage", "入力内容に不備があります。");
