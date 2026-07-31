@@ -40,6 +40,6 @@ public class ShiftRequestSelectController {
 
         model.addAttribute("form", form);
 
-        return "shiftRequestSelect";
+        return "/user/shiftRequestSelect";
     }
 }
