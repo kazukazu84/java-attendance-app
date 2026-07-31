@@ -1,0 +1,221 @@
+/* ================================
+   DM画面CSS（Business × Blue）
+   チャットアプリとして最適化したUI
+================================ */
+
+:root {
+    --bg-color: #f5f7fa;
+    --card-bg: #ffffff;
+    --text-primary: #1a2b4c;
+    --text-secondary: #4a5b75;
+    --border-color: #d3d9e3;
+    --accent-color: #2b6cb0;
+    --accent-light: #4a90e2;
+    --accent-hover: #1e4f80;
+    --shadow-light: rgba(0, 0, 0, 0.08);
+    --shadow-strong: rgba(0, 0, 0, 0.15);
+}
+
+/* ▼ ページ全体フェードイン */
+body {
+    background: var(--bg-color);
+    font-family: "Helvetica Neue", Arial, Meiryo, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: var(--text-primary);
+    animation: pageFadeIn 0.6s ease-out;
+}
+
+@keyframes pageFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ▼ ナビバー */
+.navbar {
+    background: #ffffff;
+    border-bottom: 2px solid var(--border-color);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 6px var(--shadow-light);
+}
+
+/* ▼ DM全体レイアウト（高さ固定・チャット向け） */
+.dm-container {
+    max-width: 1100px;
+    height: calc(100vh - 70px);
+    margin: 0 auto;
+    padding: 20px 10px;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
+}
+
+/* ▼ 左側ユーザー一覧（固定スクロール） */
+.dm-user-sidebar {
+    padding: 20px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.sidebar-header h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.3rem;
+    color: var(--accent-color);
+    font-weight: 700;
+}
+
+.user-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.user-item {
+    margin-bottom: 12px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.user-item:hover {
+    background: #eef3f9;
+}
+
+.user-item.active {
+    background: #e6edf5;
+    border-left: 4px solid var(--accent-color);
+}
+
+.user-link {
+    display: block;
+    padding: 10px 12px;
+    text-decoration: none;
+    color: var(--text-primary);
+}
+
+.user-name {
+    font-weight: 700;
+}
+
+.user-id {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+/* ▼ 右側チャット領域（高さ固定） */
+.dm-chat-main {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-radius: 12px;
+    background: var(--card-bg);
+    box-shadow: 0 4px 12px var(--shadow-light);
+    border: 1px solid var(--border-color);
+}
+
+/* ▼ メッセージ履歴（常にスクロール可能） */
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+/* ▼ メッセージバブル共通 */
+.message-bubble-wrapper {
+    margin-bottom: 12px;
+    display: flex;
+}
+
+.message-bubble {
+    max-width: 70%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px var(--shadow-light);
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+}
+
+/* ▼ 自分のメッセージ（右寄せ） */
+.message-bubble-wrapper.mine {
+    justify-content: flex-end;
+}
+
+.message-bubble-wrapper.mine .message-bubble {
+    background: #e6edf5;
+    border-color: var(--accent-light);
+}
+
+/* ▼ 相手のメッセージ（左寄せ） */
+.message-bubble-wrapper.other {
+    justify-content: flex-start;
+}
+
+/* ▼ メッセージ内容 */
+.message-text {
+    margin: 0 0 6px 0;
+    line-height: 1.5;
+}
+
+.message-time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-align: right;
+    display: block;
+}
+
+/* ▼ メッセージがない場合 */
+.empty-state {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 40px 0;
+}
+
+/* ▼ DM送信フォーム（画面下に固定） */
+.chat-input-form {
+    display: flex;
+    gap: 10px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--border-color);
+    background: #ffffff;
+}
+
+/* ▼ 入力欄 */
+.chat-input-form input[type="text"] {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.chat-input-form input[type="text"]:focus {
+    border-color: var(--accent-light);
+    box-shadow: 0 0 0 3px rgba(74,144,226,0.15);
+    outline: none;
+}
+
+/* ▼ 送信ボタン */
+.btn-primary {
+    background: var(--accent-color);
+    color: #ffffff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+}
+
+/* ▼ 宛先未選択時 */
+.empty-chat-selection {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 40px;
+}

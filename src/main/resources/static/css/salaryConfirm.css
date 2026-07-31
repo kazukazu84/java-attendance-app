@@ -17,6 +17,12 @@ body {
     color: #f4eaff;
     background: #0a0612; /* 深い紫黒 */
     overflow-x: hidden;
+	animation: pageFadeIn 3.0s ease-out;
+}
+
+@keyframes pageFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 /* ★ 多層ホログラム背景（エヴァ風） */
