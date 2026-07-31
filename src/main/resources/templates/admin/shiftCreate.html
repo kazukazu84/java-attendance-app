@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
 
@@ -26,7 +25,7 @@
                 <div class="back-btn-container">
                     <a th:href="@{/admin/shiftCreate/back}"
                        class="btn-secondary"
-                       th:classappend="${showModal} ? 'disabled' : ''">
+                       th:classappend="${showModal == true} ? 'disabled' : ''">
                         ← 戻る
                     </a>
                 </div>
@@ -40,21 +39,31 @@
 
                         <label for="eventSelect">イベント選択：</label>
 
-                        <select id="eventSelect"
-                                th:field="*{selectedEventId}"
-                                th:disabled="${showModal}">
+                        <!-- プルダウンと赤文字メッセージをまとめる枠 -->
+                        <div class="select-container">
 
-                            <option th:each="event : ${eventList}"
-                                    th:value="${event.eventId}"
-                                    th:text="${event.displayName}">
-                                2026/07/20～2026/08/02
-                            </option>
+                            <select id="eventSelect"
+                                    th:field="*{selectedEventId}"
+                                    th:disabled="${showModal == true or #lists.isEmpty(eventList)}">
 
-                        </select>
+                                <option th:each="event : ${eventList}"
+                                        th:value="${event.eventId}"
+                                        th:text="${event.displayName}">
+                                    2026/07/20～2026/08/02
+                                </option>
+
+                            </select>
+
+                            <!-- イベントが存在しない場合の赤文字表示 -->
+                            <div th:if="${#lists.isEmpty(eventList)}" class="no-event-message">
+                                該当するデータまたはテーブルがありません
+                            </div>
+
+                        </div>
 
                         <button type="submit"
                                 class="btn-primary"
-                                th:disabled="${showModal}">
+                                th:disabled="${showModal == true or #lists.isEmpty(eventList)}">
                             変更
                         </button>
 
@@ -82,25 +91,25 @@
         <!-- スプレッドシート風シフト一覧テーブル -->
         <main class="calendar-container">
 
-			<!-- ====================================================== -->
-			<!-- シフトデータが存在しない場合 -->
-			<!-- ====================================================== -->
+            <!-- ====================================================== -->
+            <!-- シフトデータが存在しない場合 -->
+            <!-- ====================================================== -->
 
-			<div th:if="${shiftList == null or shiftList.isEmpty()}"
-			     class="no-data">
+            <div th:if="${shiftList == null or shiftList.isEmpty()}"
+                 class="no-data">
 
-			    該当するデータがありません。
+                該当するデータがありません。
 
-			</div>
+            </div>
 
 
-			<!-- ====================================================== -->
-			<!-- シフトデータが存在する場合 -->
-			<!-- ====================================================== -->
+            <!-- ====================================================== -->
+            <!-- シフトデータが存在する場合 -->
+            <!-- ====================================================== -->
 
-			<div th:if="${shiftList != null and !shiftList.isEmpty()}"
-			     class="table-outer-container">
-				 
+            <div th:if="${shiftList != null and !shiftList.isEmpty()}"
+                 class="table-outer-container">
+                 
                 <!-- 上部横スクロールバー専用コンテナ -->
                 <div id="topScrollbarWrapper"
                      class="top-scrollbar-wrapper">
@@ -129,14 +138,14 @@
                                 </th>
 
                                 <!-- 横軸：ユーザーID + ユーザー名 -->
-								<th th:each="user : ${userList}"
-								    class="sticky-header"
-								    th:classappend="${userSubmissionMap[user.userId] == false
-								                    ? ' unsubmitted-user-header'
-								                    : ''}"
-								    th:text="${user.userId + ' ' + user.userName}">
-								    1001 山田太郎
-								</th>
+                                <th th:each="user : ${userList}"
+                                    class="sticky-header"
+                                    th:classappend="${userSubmissionMap != null and userSubmissionMap[user.userId] == false
+                                                    ? ' unsubmitted-user-header'
+                                                    : ''}"
+                                    th:text="${user.userId + ' ' + user.userName}">
+                                    1001 山田太郎
+                                </th>
                             </tr>
 
                         </thead>
@@ -159,9 +168,7 @@
                                 <!-- ユーザーごとのシフトセル -->
                                 <td th:each="user : ${userList}">
 
-                                    <!--
-                                        該当する日付・ユーザーのShiftを取得
-                                    -->
+                                    <!-- 該当する日付・ユーザーのShiftを取得 -->
                                     <th:block
                                         th:with="targetShift=${#lists.isEmpty(shiftList) ? null : shiftList.^[shiftDate != null and shiftDate.equals(#vars.d) and userId == #vars.user.userId]}">
 
@@ -189,7 +196,7 @@
                                                         : (targetShift.nightShift
                                                             ? 'is-night-btn'
                                                             : '')}"
-                                                    th:disabled="${showModal}">
+                                                    th:disabled="${showModal == true}">
 
                                                 <!-- 出勤 -->
                                                 <div th:if="${targetShift.isAvailable == 1}"
@@ -250,7 +257,7 @@
 
                                             <button type="submit"
                                                     class="cell-btn is-unsubmitted-btn"
-                                                    th:disabled="${showModal}">
+                                                    th:disabled="${showModal == true}">
 
                                                 <div class="unsubmitted-container">
                                                     未
@@ -283,7 +290,7 @@
                                     class="monthly-summary-cell">
 
                                     <!-- 月別集計が存在する場合 -->
-                                    <div th:if="${monthlySummaryMap[user.userId] != null
+                                    <div th:if="${monthlySummaryMap != null and monthlySummaryMap[user.userId] != null
                                                  and !monthlySummaryMap[user.userId].isEmpty()}">
 
                                         <div th:each="summary : ${monthlySummaryMap[user.userId]}"
@@ -313,7 +320,7 @@
 
 
                                     <!-- 集計対象がない場合 -->
-                                    <div th:if="${monthlySummaryMap[user.userId] == null
+                                    <div th:if="${monthlySummaryMap == null or monthlySummaryMap[user.userId] == null
                                                  or monthlySummaryMap[user.userId].isEmpty()}"
                                          class="monthly-summary-empty">
                                         -
@@ -342,7 +349,7 @@
 
     <div id="modalOverlay"
          class="modal-overlay"
-         th:if="${showModal}">
+         th:if="${showModal == true}">
 
         <div class="modal-content">
 
@@ -460,17 +467,7 @@
                            th:field="*{endTime}"
                            class="form-control" />
 
-                    <!--
-                        ShiftTimeValidatorで
-                        endTimeに設定されたエラーを表示する
-
-                        例：
-                        15:00 ～ 15:00
-
-                        ↓
-
-                        開始時刻と終了時刻は異なる時刻を入力してください。
-                    -->
+                    <!-- 退勤時刻のエラー表示 -->
                     <div class="text-danger"
                          th:if="${#fields.hasErrors('endTime')}"
                          th:errors="*{endTime}">
@@ -523,4 +520,3 @@
 
 </body>
 </html>
-
