@@ -15,22 +15,22 @@
         <!-- メニューボタンエリア（縦に4つ配置） -->
         <div class="menu-button-group">
             <!-- ① 申請一覧 -->
-            <a th:href="@{/shift-request-list}" class="menu-btn">
+            <a th:href="@{/admin/shift-request-list}" class="menu-btn">
                 申請一覧
             </a>
 
             <!-- ② シフト作成 -->
-            <a th:href="@{/shiftCreate}" class="menu-btn">
+            <a th:href="@{/admin/shiftCreate}" class="menu-btn">
                 シフト作成
             </a>
 
             <!-- ③ シフト受付 -->
-            <a th:href="@{/shift-application-event}" class="menu-btn">
+            <a th:href="@{/admin/shift-application-event}" class="menu-btn">
                 シフト受付
             </a>
 
             <!-- ④ 戻る (既存の管理者メイン画面URLへ遷移) -->
-            <a th:href="@{/main}" class="menu-btn btn-secondary">
+            <a th:href="@{/admin/main}" class="menu-btn btn-secondary">
                 戻る
             </a>
         </div>

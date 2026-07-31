@@ -13,7 +13,7 @@ import com.example.adminshift.service.ShiftManagementService;
  * 既存処理・DBへは一切干渉せず、画面表示のみを行います。
  */
 @Controller
-@RequestMapping("/shift-management")
+@RequestMapping("/admin/shift-management")
 public class ShiftManagementController {
 
     private final ShiftManagementService shiftManagementService;
