@@ -69,4 +69,22 @@ public class ShiftApplicationEvent {
             return "status-closed";
         }
     }
+
+    // ============================================================================
+    // Service層との互換性用メソッド (getStartDate / getEndDate)
+    // ============================================================================
+
+    /**
+     * 互換用ゲッター（targetStartDateを返却）
+     */
+    public LocalDate getStartDate() {
+        return this.targetStartDate;
+    }
+
+    /**
+     * 互換用ゲッター（targetEndDateを返却）
+     */
+    public LocalDate getEndDate() {
+        return this.targetEndDate;
+    }
 }

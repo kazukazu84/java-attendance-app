@@ -16,6 +16,9 @@ import com.example.adminshift.entity.ShiftApplicationEvent;
 @Repository
 public interface ShiftApplicationEventRepository
         extends JpaRepository<ShiftApplicationEvent, Integer> {
+	
+	ShiftApplicationEvent findFirstByOrderByEventIdAsc();
+	
 
     /**
      * イベントIDの降順ですべてのイベントを取得

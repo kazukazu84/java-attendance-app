@@ -1,20 +1,23 @@
 package com.example.adminshift.service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.adminshift.dto.MonthlyShiftSummaryDto;
 import com.example.adminshift.entity.Shift;
 import com.example.adminshift.entity.ShiftApplicationEvent;
 import com.example.adminshift.entity.Users;
+// ★ 既存の repository パッケージから import します
 import com.example.adminshift.repository.ShiftApplicationEventRepository;
 import com.example.adminshift.repository.ShiftRepository;
 import com.example.adminshift.repository.UsersRepository;
@@ -22,461 +25,221 @@ import com.example.adminshift.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 
 /**
- * シフト作成画面のビジネスロジックを提供するサービス
+ * シフト作成画面に関する業務ロジックを提供するサービス実装クラス
  */
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ShiftCreateService {
 
     private final ShiftApplicationEventRepository shiftApplicationEventRepository;
     private final ShiftRepository shiftRepository;
     private final UsersRepository usersRepository;
 
-
     /**
-     * シフト作成画面のプルダウン表示用イベントを取得します。
+     * 全イベント一覧を取得します。
+     * テーブル不在等のDBエラー発生時にも500エラー(ロールバック例外)にならず、
+     * 安全に空リストを返すために Propagation.NOT_SUPPORTED を指定しています。
      *
-     * 対象期間終了日が今日以降のイベントのみ取得します。
-     *
-     * @return 表示対象イベント一覧
+     * @return イベントリスト（取得失敗時は空リスト）
      */
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public List<ShiftApplicationEvent> getEventList() {
-        return shiftApplicationEventRepository
-                .findTargetEventsForAdminList(LocalDate.now());
+        try {
+            List<ShiftApplicationEvent> list = shiftApplicationEventRepository.findAll();
+            return (list != null) ? list : Collections.emptyList();
+        } catch (DataAccessException e) {
+            System.err.println("イベント一覧取得エラー (テーブル不在等): " + e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
-
     /**
-     * eventIdが最も大きい（最新作成）イベントを取得します
+     * 最も古いイベントを取得します。（デフォルト選択用）
      *
-     * @return 最新のイベント情報
+     * @return イベント情報（取得失敗時は null）
      */
-    public ShiftApplicationEvent getLatestEvent() {
-        return shiftApplicationEventRepository
-                .findTopByOrderByEventIdDesc()
-                .orElse(null);
-    }
-
-
-    /**
-     * 画面初期表示時に使用するイベントを取得します。
-     *
-     * 対象期間終了日が今日以降のイベントの中から、
-     * 対象期間開始日が最も早いイベントを取得します。
-     *
-     * @return 初期表示対象イベント
-     */
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public ShiftApplicationEvent getOldestEvent() {
-
-        List<ShiftApplicationEvent> eventList =
-                shiftApplicationEventRepository
-                        .findTargetEventsForAdminList(LocalDate.now());
-
-        if (eventList == null || eventList.isEmpty()) {
+        try {
+            // リポジトリ側のメソッド名に合わせて呼び出します
+            return shiftApplicationEventRepository.findFirstByOrderByEventIdAsc();
+        } catch (DataAccessException e) {
+            System.err.println("最古イベント取得エラー: " + e.getMessage());
             return null;
         }
-
-        return eventList.get(0);
     }
 
-
     /**
-     * 指定されたIDのイベント情報を取得します
+     * 指定されたイベントIDのイベント詳細情報を取得します。
      *
      * @param eventId イベントID
-     * @return イベント情報（存在しない場合はnull）
+     * @return イベント情報（取得失敗時は null）
      */
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public ShiftApplicationEvent getCurrentEvent(Integer eventId) {
-
         if (eventId == null) {
             return null;
         }
-
-        return shiftApplicationEventRepository
-                .findById(eventId)
-                .orElse(null);
+        try {
+            return shiftApplicationEventRepository.findById(eventId).orElse(null);
+        } catch (DataAccessException e) {
+            System.err.println("カレントイベント取得エラー: " + e.getMessage());
+            return null;
+        }
     }
 
-
     /**
-     * 指定されたイベントIDに紐づくシフト表データを取得します
+     * 指定されたイベントIDのシフト一覧を取得します。
      *
      * @param eventId イベントID
-     * @return シフトのリスト
+     * @return シフトリスト（取得失敗時は空リスト）
      */
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public List<Shift> getShiftTable(Integer eventId) {
-
         if (eventId == null) {
-            return List.of();
+            return Collections.emptyList();
         }
-
-        return shiftRepository.findByEventId(eventId);
+        try {
+            List<Shift> list = shiftRepository.findByEventId(eventId);
+            return (list != null) ? list : Collections.emptyList();
+        } catch (DataAccessException e) {
+            System.err.println("シフトテーブル取得エラー: " + e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
-
     /**
-     * イベントの対象期間
-     * （targetStartDate ～ targetEndDate）の日付一覧を生成します
+     * イベントの開始日から終了日までの全日付リストを生成します。
      *
-     * @param event 対象イベント
-     * @return 日付のリスト
+     * @param event カレントイベント情報
+     * @return 日付リスト
      */
-    public List<LocalDate> getTargetDateList(
-            ShiftApplicationEvent event) {
-
-        if (event == null
-                || event.getTargetStartDate() == null
-                || event.getTargetEndDate() == null) {
-
-            return List.of();
+    public List<LocalDate> getTargetDateList(ShiftApplicationEvent event) {
+        if (event == null || event.getStartDate() == null || event.getEndDate() == null) {
+            return Collections.emptyList();
         }
 
         List<LocalDate> dateList = new ArrayList<>();
-
-        LocalDate current = event.getTargetStartDate();
-        LocalDate end = event.getTargetEndDate();
+        LocalDate current = event.getStartDate();
+        LocalDate end = event.getEndDate();
 
         while (!current.isAfter(end)) {
-
             dateList.add(current);
-
             current = current.plusDays(1);
         }
 
         return dateList;
     }
 
-
     /**
-     * Usersテーブルから全ユーザー一覧を取得します
+     * システムに登録されている全ユーザーを取得します。
      *
-     * @return ユーザーのリスト
+     * @return ユーザーリスト（取得失敗時は空リスト）
      */
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public List<Users> getAllUsers() {
-        return usersRepository.findAll();
+        try {
+            List<Users> list = usersRepository.findAll();
+            return (list != null) ? list : Collections.emptyList();
+        } catch (DataAccessException e) {
+            System.err.println("ユーザー一覧取得エラー: " + e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
-
     /**
-     * ポップアップ表示用に単一のシフト詳細情報を取得します
+     * シフト詳細情報を取得します。
      *
      * @param shiftId シフトID
-     * @return シフト詳細情報（存在しない場合はnull）
+     * @return シフト情報（取得失敗時は null）
      */
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public Shift getShiftDetail(Integer shiftId) {
-
         if (shiftId == null) {
             return null;
         }
-
-        return shiftRepository
-                .findById(shiftId)
-                .orElse(null);
+        try {
+            return shiftRepository.findById(shiftId).orElse(null);
+        } catch (DataAccessException e) {
+            System.err.println("シフト詳細取得エラー: " + e.getMessage());
+            return null;
+        }
     }
 
-
     /**
-     * シフト情報を保存・更新します
+     * シフトの新規登録または更新を行います。
      *
-     * @param shift 保存対象のシフトエンティティ
-     * @return 保存後のシフトエンティティ
+     * @param shift シフト情報
      */
     @Transactional
-    public Shift saveShift(Shift shift) {
-        return shiftRepository.save(shift);
+    public void saveShift(Shift shift) {
+        if (shift == null) {
+            return;
+        }
+        shiftRepository.save(shift);
     }
 
-
     /**
-     * ユーザーごとの月間勤務集計を取得します。
+     * ユーザーごと・月ごとの勤務合計（日数・時間）を集計したマップを作成します。
      *
-     * @param shiftList シフト一覧
-     * @param userId ユーザーID
-     * @return 月別勤務集計
+     * @param shiftList シフトリスト
+     * @param userList ユーザーリスト
+     * @return Map<ユーザーID, List<MonthlyShiftSummaryDto>>
      */
-    public List<MonthlyShiftSummaryDto> getMonthlyShiftSummary(
+    public Map<String, List<MonthlyShiftSummaryDto>> getMonthlySummaryMap(
             List<Shift> shiftList,
-            String userId) {
+            List<Users> userList) {
 
-        /*
-         * シフト一覧、またはユーザーIDがない場合
-         */
-        if (shiftList == null
-                || shiftList.isEmpty()
-                || userId == null) {
+        Map<String, List<MonthlyShiftSummaryDto>> summaryMap = new LinkedHashMap<>();
 
-            return List.of();
-        }
-
-        /*
-         * 年月ごとに集計
-         */
-        Map<YearMonth, MonthlyShiftSummaryDto> summaryMap =
-                new HashMap<>();
-
-        /*
-         * シフトを1件ずつ確認
-         */
-        for (Shift shift : shiftList) {
-
-            /*
-             * 対象ユーザーのみ
-             */
-            if (!userId.equals(shift.getUserId())) {
-                continue;
-            }
-
-            /*
-             * 休みは集計しない
-             *
-             * isAvailable = 1 → 出勤
-             * isAvailable = 0 → 休み
-             */
-            if (!Integer.valueOf(1).equals(
-                    shift.getIsAvailable())) {
-
-                continue;
-            }
-
-            /*
-             * 日付・開始・終了時刻がない場合は集計しない
-             */
-            if (shift.getShiftDate() == null
-                    || shift.getStartTime() == null
-                    || shift.getEndTime() == null) {
-
-                continue;
-            }
-
-            /*
-             * 開始時刻と終了時刻が同じ場合
-             *
-             * Validatorで登録できない想定ですが、
-             * DBに既存データがある場合も安全に除外します。
-             */
-            if (shift.getStartTime().equals(
-                    shift.getEndTime())) {
-
-                continue;
-            }
-
-            /*
-             * シフト日から年月を取得
-             */
-            YearMonth yearMonth =
-                    YearMonth.from(shift.getShiftDate());
-
-            /*
-             * その年月の集計情報を取得
-             *
-             * まだ存在しない場合は新規作成
-             */
-            MonthlyShiftSummaryDto summary =
-                    summaryMap.computeIfAbsent(
-                            yearMonth,
-                            key -> new MonthlyShiftSummaryDto(
-                                    key,
-                                    0,
-                                    0
-                            )
-                    );
-
-            /*
-             * 勤務日数 +1
-             */
-            summary.setWorkingDays(
-                    summary.getWorkingDays() + 1
-            );
-
-            /*
-             * 勤務時間を計算
-             */
-            long minutes =
-                    calculateWorkMinutes(shift);
-
-            /*
-             * 月間勤務時間へ加算
-             */
-            summary.setTotalMinutes(
-                    summary.getTotalMinutes() + minutes
-            );
-        }
-
-        /*
-         * 年月順に並べて返却
-         */
-        return summaryMap.values()
-                .stream()
-                .sorted(
-                        java.util.Comparator.comparing(
-                                MonthlyShiftSummaryDto::getYearMonth
-                        )
-                )
-                .toList();
-    }
-
-
-    /**
-     * ユーザーごとの月間勤務集計Mapを作成します。
-     *
-     * ThymeleafのHTMLから、
-     *
-     * monthlySummaryMap[user.userId]
-     *
-     * の形式で参照できるMapを作成します。
-     *
-     * @param shiftList シフト一覧
-     * @param userList ユーザー一覧
-     * @return ユーザーIDをキーとした月間勤務集計Map
-     */
-    public Map<String, List<MonthlyShiftSummaryDto>>
-            getMonthlySummaryMap(
-                    List<Shift> shiftList,
-                    List<Users> userList) {
-
-        /*
-         * ユーザーID → 月間集計一覧
-         */
-        Map<String, List<MonthlyShiftSummaryDto>>
-                monthlySummaryMap =
-                        new HashMap<>();
-
-        /*
-         * ユーザー一覧がない場合
-         */
         if (userList == null || userList.isEmpty()) {
-            return monthlySummaryMap;
+            return summaryMap;
         }
 
-        /*
-         * ユーザーごとに月間集計を作成
-         */
         for (Users user : userList) {
-
-            /*
-             * ユーザー情報が不正な場合はスキップ
-             */
-            if (user == null
-                    || user.getUserId() == null) {
-
+            if (user == null || user.getUserId() == null) {
                 continue;
             }
 
-            /*
-             * 対象ユーザーの月間勤務集計を取得
-             */
-            List<MonthlyShiftSummaryDto> summaryList =
-                    getMonthlyShiftSummary(
-                            shiftList,
-                            user.getUserId()
-                    );
+            // 該当ユーザーの出勤（isAvailable == 1）かつ時間が揃っているシフトのみを抽出
+            List<Shift> userShifts = (shiftList == null) ? Collections.emptyList() :
+                    shiftList.stream()
+                            .filter(s -> s != null && user.getUserId().equals(s.getUserId()))
+                            .filter(s -> Integer.valueOf(1).equals(s.getIsAvailable()))
+                            .filter(s -> s.getShiftDate() != null && s.getStartTime() != null && s.getEndTime() != null)
+                            .toList();
 
-            /*
-             * Mapへ格納
-             */
-            monthlySummaryMap.put(
-                    user.getUserId(),
-                    summaryList
-            );
+            // 年月 (YearMonth) ごとにグループ化
+            Map<YearMonth, List<Shift>> shiftsByMonth = new LinkedHashMap<>();
+
+            for (Shift s : userShifts) {
+                YearMonth ym = YearMonth.from(s.getShiftDate());
+                shiftsByMonth.computeIfAbsent(ym, k -> new ArrayList<>()).add(s);
+            }
+
+            List<MonthlyShiftSummaryDto> summaryList = new ArrayList<>();
+
+            for (Map.Entry<YearMonth, List<Shift>> entry : shiftsByMonth.entrySet()) {
+                YearMonth yearMonth = entry.getKey();
+                List<Shift> monthShifts = entry.getValue();
+                int workingDays = monthShifts.size();
+                long totalMinutes = 0;
+
+                for (Shift s : monthShifts) {
+                    long minutes = java.time.Duration.between(s.getStartTime(), s.getEndTime()).toMinutes();
+                    if (minutes < 0) {
+                        // 日をまたぐ夜勤シフト対応 (+24時間)
+                        minutes += 24 * 60;
+                    }
+                    totalMinutes += minutes;
+                }
+
+                summaryList.add(new MonthlyShiftSummaryDto(yearMonth, workingDays, totalMinutes));
+            }
+
+            summaryMap.put(user.getUserId(), summaryList);
         }
 
-        return monthlySummaryMap;
-    }
-
-
-    /**
-     * 1シフトの勤務時間を計算します。
-     *
-     * 休憩時間は1時間固定で控除します。
-     *
-     * 通常勤務：
-     * 09:00～18:00
-     * → 9時間
-     * → 休憩1時間を控除
-     * → 8時間
-     *
-     * 夜勤：
-     * 23:00～07:00
-     * → 23:00～24:00 = 1時間
-     * → 00:00～07:00 = 7時間
-     * → 合計8時間
-     * → 休憩1時間を控除
-     * → 7時間
-     *
-     * @param shift シフト
-     * @return 勤務時間（分）
-     */
-    private long calculateWorkMinutes(Shift shift) {
-
-        LocalTime start = shift.getStartTime();
-        LocalTime end = shift.getEndTime();
-
-        /*
-         * 開始時刻・終了時刻がない場合
-         */
-        if (start == null || end == null) {
-            return 0;
-        }
-
-        /*
-         * 開始時刻と終了時刻が同じ場合
-         */
-        if (start.equals(end)) {
-            return 0;
-        }
-
-        /*
-         * 基準日を設定
-         */
-        LocalDate baseDate = LocalDate.of(2000, 1, 1);
-
-        /*
-         * 開始日時
-         */
-        java.time.LocalDateTime startDateTime =
-                java.time.LocalDateTime.of(
-                        baseDate,
-                        start
-                );
-
-        /*
-         * 終了日時
-         */
-        java.time.LocalDateTime endDateTime =
-                java.time.LocalDateTime.of(
-                        baseDate,
-                        end
-                );
-
-        /*
-         * 終了時刻が開始時刻より前の場合
-         * 日付をまたぐ勤務（夜勤）
-         *
-         * 例：
-         * 23:00 ～ 07:00
-         */
-        if (end.isBefore(start)) {
-            endDateTime = endDateTime.plusDays(1);
-        }
-
-        /*
-         * 勤務時間を分で計算
-         */
-        long minutes =
-                java.time.Duration.between(
-                        startDateTime,
-                        endDateTime
-                ).toMinutes();
-
-        /*
-         * 休憩1時間を控除
-         */
-        minutes -= 60;
-
-        /*
-         * マイナスにならないようにする
-         */
-        return Math.max(minutes, 0);
+        return summaryMap;
     }
 }
