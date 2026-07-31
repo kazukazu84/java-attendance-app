@@ -44,7 +44,7 @@ public class ShiftRequestController {
         model.addAttribute("form", form);
 
      // 画面表示
-        return "shiftRequest";
+        return "/shift-request";
 
     }
     
