@@ -17,7 +17,6 @@ import com.example.adminshift.dto.MonthlyShiftSummaryDto;
 import com.example.adminshift.entity.Shift;
 import com.example.adminshift.entity.ShiftApplicationEvent;
 import com.example.adminshift.entity.Users;
-// ★ 既存の repository パッケージから import します
 import com.example.adminshift.repository.ShiftApplicationEventRepository;
 import com.example.adminshift.repository.ShiftRepository;
 import com.example.adminshift.repository.UsersRepository;
@@ -37,8 +36,6 @@ public class ShiftCreateService {
 
     /**
      * 全イベント一覧を取得します。
-     * テーブル不在等のDBエラー発生時にも500エラー(ロールバック例外)にならず、
-     * 安全に空リストを返すために Propagation.NOT_SUPPORTED を指定しています。
      *
      * @return イベントリスト（取得失敗時は空リスト）
      */
@@ -54,17 +51,48 @@ public class ShiftCreateService {
     }
 
     /**
-     * 最も古いイベントを取得します。（デフォルト選択用）
+     * 初期表示用のイベントを取得します。
+     * 明日以降に開始・または本日進行中の有効なイベント（8月イベント等）を自動優先選択します。
      *
-     * @return イベント情報（取得失敗時は null）
+     * @return 初期選択用イベント情報
      */
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public ShiftApplicationEvent getOldestEvent() {
         try {
-            // リポジトリ側のメソッド名に合わせて呼び出します
-            return shiftApplicationEventRepository.findFirstByOrderByEventIdAsc();
+            List<ShiftApplicationEvent> eventList = shiftApplicationEventRepository.findAll();
+            if (eventList == null || eventList.isEmpty()) {
+                return null;
+            }
+
+            LocalDate today = LocalDate.now();
+
+            // ① 明日以降に対象期間（targetStartDate）が始まる未来のイベントを最優先（例: 2026/08/01〜）
+            ShiftApplicationEvent futureEvent = eventList.stream()
+                    .filter(e -> e.getTargetStartDate() != null)
+                    .filter(e -> e.getTargetStartDate().isAfter(today))
+                    .findFirst()
+                    .orElse(null);
+
+            if (futureEvent != null) {
+                return futureEvent;
+            }
+
+            // ② 本日が受付期間内（applicationStartDate 〜 applicationEndDate）のイベントを検索
+            for (ShiftApplicationEvent event : eventList) {
+                if (event.getApplicationStartDate() != null && event.getApplicationEndDate() != null) {
+                    boolean isStarted = !today.isBefore(event.getApplicationStartDate());
+                    boolean isNotEnded = !today.isAfter(event.getApplicationEndDate());
+                    if (isStarted && isNotEnded) {
+                        return event;
+                    }
+                }
+            }
+
+            // ③ 該当がなければ最新（リストの最後）のイベントを返却
+            return eventList.get(eventList.size() - 1);
+
         } catch (DataAccessException e) {
-            System.err.println("最古イベント取得エラー: " + e.getMessage());
+            System.err.println("初期イベント取得エラー: " + e.getMessage());
             return null;
         }
     }
