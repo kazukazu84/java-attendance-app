@@ -23,7 +23,7 @@ public class ShiftRequestController {
     /**
      * シフト申請画面表示
      */
-    @GetMapping("/shiftRequestSelect")
+    @GetMapping("/shiftRequest")
     public String showShiftRequest(
     		@RequestParam Integer eventId,
     		@RequestParam(required = false) Integer selectedYear,
@@ -44,7 +44,7 @@ public class ShiftRequestController {
         model.addAttribute("form", form);
 
      // 画面表示
-        return "/user/shift-request";
+        return "/shift-request";
 
     }
     

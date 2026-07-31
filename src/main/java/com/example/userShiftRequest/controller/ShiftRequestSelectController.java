@@ -16,15 +16,17 @@ import com.example.userShiftRequest.service.ShiftRequestSelectService;
 
 @Controller
 public class ShiftRequestSelectController {
-
+	
     @Autowired
     private ShiftRequestSelectService shiftRequestSelectService;
 
     
-    @GetMapping("/shiftRequestSelect")
+    @GetMapping("/user/shiftRequestSelect")
     public String showShiftRequestSelect
     (@RequestParam(required = false)
     Integer selectedYear , Model model) {
+    	
+    	System.out.println("★★ shiftRequestSelect 起動 ★★");
     	
     	if (selectedYear == null) {
     			selectedYear = LocalDate.now().getYear();
@@ -40,6 +42,6 @@ public class ShiftRequestSelectController {
 
         model.addAttribute("form", form);
 
-        return "/user/shiftRequestSelect";
+        return "shiftRequestSelect";
     }
 }
