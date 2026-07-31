@@ -79,7 +79,7 @@
 <!-- イベント一覧 -->
 <!-- ========================= -->
 
-<table border="1">
+<table border="1" th:if="${eventPage != null and !eventPage.empty}">
 
     <thead>
     <tr>
@@ -127,50 +127,50 @@
 
         </th:block>
 
-		<!-- 編集モード -->
-		<th:block th:if="${editingEventId == event.eventId}">
-		    <td colspan="7">
-		        <form id="updateForm" th:action="@{/admin/shift-application-event/update(page=${eventPage.number})}"
-		              th:object="${updateShiftApplicationEventForm}"
-		              method="post">
+        <!-- 編集モード -->
+        <th:block th:if="${editingEventId == event.eventId}">
+            <td colspan="7">
+                <form id="updateForm" th:action="@{/admin/shift-application-event/update(page=${eventPage.number})}"
+                      th:object="${updateShiftApplicationEventForm}"
+                      method="post">
 
-		            <input type="hidden" name="confirmConfirmed" id="updateConfirmConfirmed" value="false">
-		            <input type="hidden" name="eventId" th:value="${updateShiftApplicationEventForm.eventId}">
+                    <input type="hidden" name="confirmConfirmed" id="updateConfirmConfirmed" value="false">
+                    <input type="hidden" name="eventId" th:value="${updateShiftApplicationEventForm.eventId}">
 
-		            <table>
-		                <tr>
-		                    <td>
-		                        <input type="date" name="targetStartDate" id="targetStartDate" 
-		                               th:value="${updateShiftApplicationEventForm.targetStartDate}">
-		                        <div th:if="${#fields.hasErrors('targetStartDate')}" th:errors="*{targetStartDate}" style="color: red; font-size: 0.8em;"></div>
-		                    </td>
-		                    <td>
-		                        <input type="date" name="targetEndDate" id="targetEndDate" 
-		                               th:value="${updateShiftApplicationEventForm.targetEndDate}">
-		                        <div th:if="${#fields.hasErrors('targetEndDate')}" th:errors="*{targetEndDate}" style="color: red; font-size: 0.8em;"></div>
-		                    </td>
-		                    <td>
-		                        <input type="date" name="applicationStartDate" id="applicationStartDate" 
-		                               th:value="${updateShiftApplicationEventForm.applicationStartDate}">
-		                        <div th:if="${#fields.hasErrors('applicationStartDate')}" th:errors="*{applicationStartDate}" style="color: red; font-size: 0.8em;"></div>
-		                    </td>
-		                    <td>
-		                        <input type="date" name="applicationEndDate" id="applicationEndDate" 
-		                               th:value="${updateShiftApplicationEventForm.applicationEndDate}">
-		                        <div th:if="${#fields.hasErrors('applicationEndDate')}" th:errors="*{applicationEndDate}" style="color: red; font-size: 0.8em;"></div>
-		                    </td>
-		                    <td>
-		                        <button type="submit">完了</button>
-		                    </td>
-		                    <td>
-		                        <button type="submit" th:formaction="@{/admin/shift-application-event/cancel(page=${eventPage.number})}">キャンセル</button>
-		                    </td>
-		                </tr>
-		            </table>
+                    <table>
+                        <tr>
+                            <td>
+                                <input type="date" name="targetStartDate" id="targetStartDate" 
+                                       th:value="${updateShiftApplicationEventForm.targetStartDate}">
+                                <div th:if="${#fields.hasErrors('targetStartDate')}" th:errors="*{targetStartDate}" style="color: red; font-size: 0.8em;"></div>
+                            </td>
+                            <td>
+                                <input type="date" name="targetEndDate" id="targetEndDate" 
+                                       th:value="${updateShiftApplicationEventForm.targetEndDate}">
+                                <div th:if="${#fields.hasErrors('targetEndDate')}" th:errors="*{targetEndDate}" style="color: red; font-size: 0.8em;"></div>
+                            </td>
+                            <td>
+                                <input type="date" name="applicationStartDate" id="applicationStartDate" 
+                                       th:value="${updateShiftApplicationEventForm.applicationStartDate}">
+                                <div th:if="${#fields.hasErrors('applicationStartDate')}" th:errors="*{applicationStartDate}" style="color: red; font-size: 0.8em;"></div>
+                            </td>
+                            <td>
+                                <input type="date" name="applicationEndDate" id="applicationEndDate" 
+                                       th:value="${updateShiftApplicationEventForm.applicationEndDate}">
+                                <div th:if="${#fields.hasErrors('applicationEndDate')}" th:errors="*{applicationEndDate}" style="color: red; font-size: 0.8em;"></div>
+                            </td>
+                            <td>
+                                <button type="submit">完了</button>
+                            </td>
+                            <td>
+                                <button type="submit" th:formaction="@{/admin/shift-application-event/cancel(page=${eventPage.number})}">キャンセル</button>
+                            </td>
+                        </tr>
+                    </table>
 
-		        </form>
-		    </td>
-		</th:block>
+                </form>
+            </td>
+        </th:block>
 
     </tr>
 
