@@ -106,7 +106,7 @@ h2::after {
 #eventForm {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start; /* エラー表示時に戻るボタンの位置がずれないように上揃えに変更 */
     margin-bottom: 24px;
     gap: 16px;
     flex-wrap: wrap;
@@ -114,7 +114,7 @@ h2::after {
 
 .event-select-wrapper {
     display: flex;
-    align-items: center;
+    align-items: flex-start; /* エラー表示時にラベルの位置がずれないように上揃えに変更 */
     gap: 12px;
 }
 
@@ -123,6 +123,13 @@ h2::after {
     color: var(--text-secondary);
     font-size: 0.95rem;
     white-space: nowrap;
+    line-height: 42px; /* セレクトボックスと縦中央を揃える */
+}
+
+/* プルダウンとエラーメッセージを縦並びにするコンテナ */
+.select-container {
+    display: flex;
+    flex-direction: column;
 }
 
 #eventSelect {
@@ -147,6 +154,15 @@ h2::after {
 #eventSelect:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* イベントがない場合の赤文字メッセージ */
+.no-event-message {
+    color: #dc2626;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 6px;
+    white-space: nowrap;
 }
 
 /* ==========================================================================
@@ -397,6 +413,10 @@ td.overnight-cell {
         width: 100%;
     }
 
+    .select-container {
+        width: 100%;
+    }
+
     #eventSelect {
         width: 100%;
         max-width: 100%;
@@ -407,18 +427,13 @@ td.overnight-cell {
         padding: 24px 16px !important;
     }
 	
-	/* =========================================================
-	   該当データなし
-	   ========================================================= */
-
-	.no-data-message {
-	    margin: 30px 0;
-	    padding: 30px;
-	    text-align: center;
-	    background-color: #fafafa;
-	    border: 1px solid #ddd;
-	    border-radius: 6px;
-	    color: #666;
-	    font-size: 16px;
-	}
+    /* ========================================================================== */
+    /* 該当データなし */
+    /* ========================================================================== */
+    .no-data-message {
+        margin: 10px 0;
+        color: #dc2626;
+        font-size: 16px;
+        font-weight: 700;
+    }
 }
