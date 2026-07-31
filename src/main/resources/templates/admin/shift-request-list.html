@@ -1,101 +1,288 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <title>シフト申請一覧</title>
-    <link rel="stylesheet" th:href="@{/css/shift-request-list.css}">
+
+    <link rel="stylesheet"
+          th:href="@{/css/shift-request-list.css}">
 </head>
+
 <body>
 
     <h2>シフト申請一覧</h2>
 
     <div class="container">
-        <div class="main-content">
-            <!-- イベント選択プルダウン & 上部戻るボタン -->
-            <form id="eventForm" th:action="@{/admin/shift-request-list}" method="get">
-                <!-- 上部戻るボタン -->
-                <a th:href="@{/admin/shift-management}" class="back-btn back-btn-top">← 戻る</a>
 
+        <div class="main-content">
+
+            <!-- ====================================================== -->
+            <!-- イベント選択プルダウン & 上部戻るボタン -->
+            <!-- ====================================================== -->
+
+            <form id="eventForm"
+                  th:action="@{/admin/shift-request-list}"
+                  method="get">
+
+                <!-- 上部戻るボタン -->
+                <a th:href="@{/admin/shift-management}"
+                   class="back-btn back-btn-top">
+                    ← 戻る
+                </a>
+
+
+                <!-- 対象イベント選択 -->
                 <div class="event-select-wrapper">
-                    <label for="eventSelect">対象イベント：</label>
-                    <select id="eventSelect" name="eventId" onchange="document.getElementById('eventForm').submit();">
+
+                    <label for="eventSelect">
+                        対象イベント：
+                    </label>
+
+                    <select id="eventSelect"
+                            name="eventId"
+                            onchange="document.getElementById('eventForm').submit();">
+
                         <option th:each="event : ${events}"
                                 th:value="${event.eventId}"
                                 th:text="${event.displayName}"
                                 th:selected="${event.eventId == selectedEventId}">
                         </option>
+
                     </select>
+
                 </div>
+
             </form>
+
 
             <br>
 
-            <!-- 申請一覧テーブル -->
-            <table border="1" style="border-collapse: collapse; width: 100%;">
+
+            <!-- ====================================================== -->
+            <!-- 申請一覧 -->
+            <!-- ====================================================== -->
+
+            <!--
+                申請データが存在する場合のみ
+                一覧テーブルを表示
+            -->
+            <table th:if="${userSummaries != null
+                          and !userSummaries.isEmpty()}"
+                   border="1"
+                   style="border-collapse: collapse; width: 100%;">
+
                 <thead>
+
                     <tr>
-                        <th>ユーザーID</th>
-                        <th>ユーザー名</th>
-                        <th>提出日時</th>
-                        <th>状態</th>
-                        <th>詳細</th>
+
+                        <th>
+                            ユーザーID
+                        </th>
+
+                        <th>
+                            ユーザー名
+                        </th>
+
+                        <th>
+                            提出日時
+                        </th>
+
+                        <th>
+                            状態
+                        </th>
+
+                        <th>
+                            詳細
+                        </th>
+
                     </tr>
+
                 </thead>
+
+
                 <tbody>
+
+                    <!-- ================================================== -->
+                    <!-- ユーザーごとの申請情報 -->
+                    <!-- ================================================== -->
+
                     <tr th:each="user : ${userSummaries}">
-                        <td th:text="${user.userId}">U001</td>
-                        <td th:text="${user.userName}">山田太郎</td>
-                        <td th:text="${user.formattedSubmittedAt}">2026/07/20 10:00</td>
-                        
-                        <!-- ★状態列：th:classappendを追加 -->
-                        <td th:text="${user.status}"
-                            th:classappend="${user.submitted} ? 'status-submitted' : 'status-unsubmitted'">
-                            提出
+
+                        <!-- ユーザーID -->
+                        <td th:text="${user.userId}">
+                            U001
                         </td>
 
+
+                        <!-- ユーザー名 -->
+                        <td th:text="${user.userName}">
+                            山田太郎
+                        </td>
+
+
+                        <!-- 提出日時 -->
+                        <td th:text="${user.formattedSubmittedAt}">
+                            2026/07/20 10:00
+                        </td>
+
+
+                        <!-- ================================================== -->
+                        <!-- 状態 -->
+                        <!-- ================================================== -->
+
+                        <td th:text="${user.status}"
+                            th:classappend="${user.submitted}
+                                ? 'status-submitted'
+                                : 'status-unsubmitted'">
+
+                            提出
+
+                        </td>
+
+
+                        <!-- ================================================== -->
+                        <!-- 詳細ボタン -->
+                        <!-- ================================================== -->
+
                         <td>
+
                             <button type="button"
                                     th:disabled="${!user.submitted}"
                                     th:data-userid="${user.userId}"
                                     th:data-username="${user.userName}"
                                     onclick="openSidebar(this)">
+
                                 詳細
+
                             </button>
+
                         </td>
+
                     </tr>
-                    <tr th:if="${#lists.isEmpty(userSummaries)}">
-                        <td colspan="5" style="text-align: center;">対象データがありません。</td>
-                    </tr>
+
                 </tbody>
+
             </table>
+
+
+            <!-- ====================================================== -->
+            <!-- データが存在しない場合 -->
+            <!-- ====================================================== -->
+
+            <div th:if="${userSummaries == null
+                         or userSummaries.isEmpty()}"
+                 class="no-data-message">
+
+                該当するデータがありません。
+
+            </div>
+
 
             <br>
+
+
+            <!-- ====================================================== -->
             <!-- 下部戻るボタン -->
-            <a th:href="@{/admin/shift-management}" class="back-btn">戻る</a>
+            <!-- ====================================================== -->
+
+            <a th:href="@{/admin/shift-management}"
+               class="back-btn">
+
+                戻る
+
+            </a>
+
         </div>
 
+
+        <!-- ====================================================== -->
         <!-- サイドバーエリア -->
-        <div id="sidebar" class="sidebar">
-            <button type="button" onclick="closeSidebar()" style="float: right;">×</button>
-            <h3>シフト申請詳細</h3>
-            <p><strong>ユーザー名：</strong><span id="sidebarUserName">-</span></p>
+        <!-- ====================================================== -->
 
-            <table border="1" style="border-collapse: collapse; width: 100%;">
+        <div id="sidebar"
+             class="sidebar">
+
+            <!-- サイドバーを閉じる -->
+            <button type="button"
+                    onclick="closeSidebar()"
+                    style="float: right;">
+
+                ×
+
+            </button>
+
+
+            <h3>
+                シフト申請詳細
+            </h3>
+
+
+            <!-- ユーザー名 -->
+            <p>
+
+                <strong>
+                    ユーザー名：
+                </strong>
+
+                <span id="sidebarUserName">
+                    -
+                </span>
+
+            </p>
+
+
+            <!-- ====================================================== -->
+            <!-- シフト申請詳細テーブル -->
+            <!-- ====================================================== -->
+
+            <table border="1"
+                   style="border-collapse: collapse; width: 100%;">
+
                 <thead>
+
                     <tr>
-                        <th>日付</th>
-                        <th>可否</th>
-                        <th>開始時刻</th>
-                        <th>終了時刻</th>
+
+                        <th>
+                            日付
+                        </th>
+
+                        <th>
+                            可否
+                        </th>
+
+                        <th>
+                            開始時刻
+                        </th>
+
+                        <th>
+                            終了時刻
+                        </th>
+
                     </tr>
+
                 </thead>
+
+
                 <tbody id="sidebarDetailBody">
+
                     <!-- JavaScriptで動的生成 -->
+
                 </tbody>
+
             </table>
+
         </div>
+
     </div>
 
+
+    <!-- ====================================================== -->
+    <!-- JavaScript -->
+    <!-- ====================================================== -->
+
     <script th:src="@{/js/shift-request-list.js}"></script>
+
 </body>
+
 </html>

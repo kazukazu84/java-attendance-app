@@ -82,16 +82,25 @@
         <!-- スプレッドシート風シフト一覧テーブル -->
         <main class="calendar-container">
 
-            <!-- 該当データなしの表示 -->
-            <div th:if="${#lists.isEmpty(dateList)}"
-                 class="no-data">
-                該当するシフト情報が存在しません。
-            </div>
+			<!-- ====================================================== -->
+			<!-- シフトデータが存在しない場合 -->
+			<!-- ====================================================== -->
+
+			<div th:if="${shiftList == null or shiftList.isEmpty()}"
+			     class="no-data">
+
+			    該当するデータがありません。
+
+			</div>
 
 
-            <div th:unless="${#lists.isEmpty(dateList)}"
-                 class="table-outer-container">
+			<!-- ====================================================== -->
+			<!-- シフトデータが存在する場合 -->
+			<!-- ====================================================== -->
 
+			<div th:if="${shiftList != null and !shiftList.isEmpty()}"
+			     class="table-outer-container">
+				 
                 <!-- 上部横スクロールバー専用コンテナ -->
                 <div id="topScrollbarWrapper"
                      class="top-scrollbar-wrapper">

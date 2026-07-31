@@ -1,4 +1,3 @@
-
 package com.example.adminshift.controller;
 
 import java.time.LocalDate;
@@ -62,17 +61,19 @@ public class ShiftCreateController {
 
 
         /*
-         * 未選択の場合は最新イベントを初期選択
+         * 未選択の場合は
+         * 登録されているイベントの中で
+         * 一番古いイベントを初期選択
          */
         if (searchForm.getSelectedEventId() == null) {
 
-            ShiftApplicationEvent latestEvent =
-                    shiftCreateService.getLatestEvent();
+            ShiftApplicationEvent oldestEvent =
+                    shiftCreateService.getOldestEvent();
 
-            if (latestEvent != null) {
+            if (oldestEvent != null) {
 
                 searchForm.setSelectedEventId(
-                        latestEvent.getEventId()
+                        oldestEvent.getEventId()
                 );
             }
         }
