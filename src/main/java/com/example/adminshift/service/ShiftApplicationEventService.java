@@ -61,8 +61,6 @@ public class ShiftApplicationEventService {
 
     /**
      * DBテーブル（shift_application_event）が存在するかどうか判定
-     * トランザクション対象外（NOT_SUPPORTED）にすることで、テーブルが存在しなくても
-     * トランザクションが rollback-only にマークされるのを防ぎます。
      */
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public boolean isTableExist() {
@@ -71,10 +69,41 @@ public class ShiftApplicationEventService {
             if (rs.next()) {
                 return true;
             }
-            // 大文字小文字の差異を考慮して再チェック
             ResultSet rsUpper = conn.getMetaData().getTables(null, null, "SHIFT_APPLICATION_EVENT", null);
             return rsUpper.next();
         } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * DBテーブル（shift_application_setting）が存在するかどうか判定
+     */
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public boolean isSettingTableExist() {
+        try (Connection conn = dataSource.getConnection()) {
+            ResultSet rs = conn.getMetaData().getTables(null, null, "shift_application_setting", null);
+            if (rs.next()) {
+                return true;
+            }
+            ResultSet rsUpper = conn.getMetaData().getTables(null, null, "SHIFT_APPLICATION_SETTING", null);
+            return rsUpper.next();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * シフト申請設定テーブルおよび初期データ（ID: 1）が存在するかチェック
+     */
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public boolean hasValidSetting() {
+        if (!isSettingTableExist()) {
+            return false;
+        }
+        try {
+            return settingRepository.existsById(1);
+        } catch (DataAccessException e) {
             return false;
         }
     }

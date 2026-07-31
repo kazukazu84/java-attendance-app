@@ -50,13 +50,18 @@ public class ShiftApplicationEventController {
 
     @GetMapping
     public String index(@RequestParam(name = "page", defaultValue = "0") int page, Model model) {
-        // DBテーブルが存在するか確認
+        // shift_application_event テーブルが存在するか確認
         if (!service.isTableExist()) {
-            model.addAttribute("errorMessage", "データベーステーブルが存在しません。");
+            model.addAttribute("errorMessage", "データベーステーブル(shift_application_event)が存在しません。");
             model.addAttribute("eventPage", new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 10), 0));
             model.addAttribute("eventList", Collections.emptyList());
             model.addAttribute("gapList", Collections.emptyList());
             return VIEW_NAME;
+        }
+
+        // shift_application_setting テーブルおよび設定データの存在確認
+        if (!service.hasValidSetting()) {
+            model.addAttribute("errorMessage", "シフト申請設定テーブルまたは設定データが存在しません。");
         }
 
         Page<ShiftApplicationEvent> eventPage = service.getEventList(page);
@@ -90,6 +95,16 @@ public class ShiftApplicationEventController {
             model.addAttribute("eventPage", new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 10), 0));
             model.addAttribute("eventList", Collections.emptyList());
             model.addAttribute("gapList", Collections.emptyList());
+            return VIEW_NAME;
+        }
+
+        // 設定テーブル/データの存在確認
+        if (!service.hasValidSetting()) {
+            model.addAttribute("errorMessage", "シフト申請設定テーブルまたは設定データが存在しないため作成できません。");
+            Page<ShiftApplicationEvent> eventPage = service.getEventList(page);
+            model.addAttribute("eventPage", eventPage);
+            model.addAttribute("eventList", eventPage.getContent());
+            model.addAttribute("gapList", service.getCurrentGaps());
             return VIEW_NAME;
         }
 
