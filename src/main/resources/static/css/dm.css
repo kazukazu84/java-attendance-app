@@ -40,6 +40,28 @@ body {
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 2px 6px var(--shadow-light);
+    animation: fadeSlide 0.5s ease-out;
+}
+
+@keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ▼ ナビバー内リンク */
+.nav-menu .nav-item {
+    margin-left: 20px;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+.nav-menu .nav-item:hover {
+    color: var(--accent-color);
+}
+.nav-menu .active {
+    color: var(--accent-color);
+    font-weight: 700;
 }
 
 /* ▼ DM全体レイアウト（高さ固定・チャット向け） */
