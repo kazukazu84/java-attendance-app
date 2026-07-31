@@ -106,15 +106,16 @@ h2::after {
 #eventForm {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 24px;
     gap: 16px;
     flex-wrap: wrap;
+    flex-shrink: 0; /* 固定エリアが縮まないように保護 */
 }
 
 .event-select-wrapper {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 12px;
 }
 
@@ -123,6 +124,12 @@ h2::after {
     color: var(--text-secondary);
     font-size: 0.95rem;
     white-space: nowrap;
+    line-height: 42px;
+}
+
+.select-container {
+    display: flex;
+    flex-direction: column;
 }
 
 #eventSelect {
@@ -149,22 +156,62 @@ h2::after {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
+.no-event-message {
+    color: #dc2626;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 6px;
+    white-space: nowrap;
+}
+
+.no-data-message {
+    margin: 10px 0;
+    color: #dc2626;
+    font-size: 16px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
 /* ==========================================================================
-   5. テーブル
+   5. テーブル（パターン1: スクロール制御設定）
    ========================================================================== */
 .main-content {
     width: 100%;
-    overflow-x: auto;
 }
 
-table {
+/* テーブル全体の高さを制限し、縦スクロールバー化 */
+.main-content > table {
     width: 100% !important;
-    border-collapse: separate !important;
-    border-spacing: 0;
+    max-height: 420px; /* ★スクロールを表示する高さ（必要に応じて調整可） */
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
     border: 1px solid var(--border-color) !important;
     border-radius: var(--radius-md);
-    overflow: hidden;
     margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+}
+
+/* テーブルのヘッダー部（上部に固定） */
+.main-content > table thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    flex-shrink: 0;
+    background-color: var(--table-header-bg);
+}
+
+.main-content > table thead tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+/* テーブルのデータ行部 */
+.main-content > table tbody {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
 }
 
 th {
@@ -204,6 +251,13 @@ tbody tr:last-child td {
 tbody tr:hover td {
     background-color: var(--table-row-hover);
 }
+
+/* テーブル各列の幅の設定（レイアウト崩れ防止） */
+.main-content > table th:nth-child(1), .main-content > table td:nth-child(1) { width: 20%; }
+.main-content > table th:nth-child(2), .main-content > table td:nth-child(2) { width: 25%; }
+.main-content > table th:nth-child(3), .main-content > table td:nth-child(3) { width: 25%; }
+.main-content > table th:nth-child(4), .main-content > table td:nth-child(4) { width: 15%; }
+.main-content > table th:nth-child(5), .main-content > table td:nth-child(5) { width: 15%; }
 
 /* ==========================================================================
    状態表示用クラス (Status Styles)
@@ -347,18 +401,26 @@ button[type="button"]:disabled {
     transform: none !important;
 }
 
+/* サイドバー内部の通常のテーブル設定 */
 .sidebar table {
+    width: 100% !important;
+    display: table !important;
+    max-height: none !important;
+    overflow: visible !important;
     margin-top: 10px;
     font-size: 0.85rem;
+    border-collapse: separate !important;
 }
 
 .sidebar th, .sidebar td {
     padding: 10px 8px;
+    width: auto !important;
 }
 
 /* ==========================================================================
    サイドバー詳細テーブル用：ハイライトスタイル
    ========================================================================== */
+
 /* 勤務不可（×） */
 td.sidebar-unavailable {
     background-color: #fef2f2 !important;
@@ -397,6 +459,10 @@ td.overnight-cell {
         width: 100%;
     }
 
+    .select-container {
+        width: 100%;
+    }
+
     #eventSelect {
         width: 100%;
         max-width: 100%;
@@ -406,19 +472,4 @@ td.overnight-cell {
         width: 100% !important;
         padding: 24px 16px !important;
     }
-	
-	/* =========================================================
-	   該当データなし
-	   ========================================================= */
-
-	.no-data-message {
-	    margin: 30px 0;
-	    padding: 30px;
-	    text-align: center;
-	    background-color: #fafafa;
-	    border: 1px solid #ddd;
-	    border-radius: 6px;
-	    color: #666;
-	    font-size: 16px;
-	}
 }

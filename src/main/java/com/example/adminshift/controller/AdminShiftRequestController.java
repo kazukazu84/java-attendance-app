@@ -62,7 +62,6 @@ public class AdminShiftRequestController {
             @RequestParam(name = "eventId", required = false) Integer selectedEventId,
             Model model) {
 
-
         // シフト受付イベント一覧を取得
         List<ShiftApplicationEventSelectDto> events =
                 adminShiftRequestService.getTargetEvents();
@@ -71,40 +70,42 @@ public class AdminShiftRequestController {
         /*
          * URLパラメータでeventIdが指定されていない場合
          *
-         * 例：
-         * /admin/shift-request-list
-         *
-         * 初期表示するイベントをService側で決定する
+         * 初期表示するイベントをService側で決定
          */
         if (selectedEventId == null && !events.isEmpty()) {
             selectedEventId =
-                    adminShiftRequestService.determineDefaultEventId(events);
+                    adminShiftRequestService
+                            .determineDefaultEventId(events);
         }
 
 
         // 選択されたイベントに対するユーザー別申請一覧を取得
         List<ShiftRequestUserSummaryDto> userSummaries =
-                adminShiftRequestService.getUserSummaryList(selectedEventId);
+                adminShiftRequestService
+                        .getUserSummaryList(selectedEventId);
 
 
         /*
-         * Thymeleafへ渡すデータをModelへ設定
+         * 申請データが存在するか判定
          *
-         * events:
-         *   イベント選択プルダウン用
-         *
-         * selectedEventId:
-         *   現在選択されているイベントID
-         *
-         * userSummaries:
-         *   ユーザーごとの申請一覧
+         * イベント未選択の場合も
+         * 「該当データがありません」とする
+         */
+        boolean hasApplicationData =
+                selectedEventId != null
+                && userSummaries != null
+                && !userSummaries.isEmpty();
+
+
+        /*
+         * Thymeleafへ渡すデータ
          */
         model.addAttribute("events", events);
         model.addAttribute("selectedEventId", selectedEventId);
         model.addAttribute("userSummaries", userSummaries);
+        model.addAttribute("hasApplicationData", hasApplicationData);
 
 
-        // 表示するHTMLテンプレート名
         return "admin/shift-request-list";
     }
 
@@ -141,4 +142,5 @@ public class AdminShiftRequestController {
          */
         return ResponseEntity.ok(details);
     }
+    
 }
