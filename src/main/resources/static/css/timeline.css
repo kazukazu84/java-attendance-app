@@ -1,0 +1,303 @@
+/* ================================
+   Timeline専用CSS（Business × Blue）
+   落ち着いた企業向けアニメーション統合版
+================================ */
+
+:root {
+    --bg-color: #f5f7fa;
+    --card-bg: #ffffff;
+    --text-primary: #1a2b4c;
+    --text-secondary: #4a5b75;
+    --border-color: #d3d9e3;
+    --accent-color: #2b6cb0;
+    --accent-light: #4a90e2;
+    --accent-hover: #1e4f80;
+    --shadow-light: rgba(0, 0, 0, 0.08);
+    --shadow-strong: rgba(0, 0, 0, 0.15);
+}
+
+/* ▼ ページ全体フェードイン（Business Blueに合わせた柔らかい動き） */
+body {
+    background: var(--bg-color);
+    font-family: "Helvetica Neue", Arial, Meiryo, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: var(--text-primary);
+    animation: pageFadeIn 0.6s ease-out;
+}
+
+@keyframes pageFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ▼ ナビバー */
+.navbar {
+    background: #ffffff;
+    border-bottom: 2px solid var(--border-color);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 6px var(--shadow-light);
+    animation: fadeSlide 0.5s ease-out;
+}
+
+@keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ▼ ナビバー内リンク */
+.nav-menu .nav-item {
+    margin-left: 20px;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+.nav-menu .nav-item:hover {
+    color: var(--accent-color);
+}
+.nav-menu .active {
+    color: var(--accent-color);
+    font-weight: 700;
+}
+
+/* ▼ ユーザーバッジ */
+.user-badge-container {
+    display: flex;
+    gap: 10px;
+}
+.user-id-badge {
+    background: var(--accent-light);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 700;
+}
+.role-badge {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 700;
+}
+.role-badge.admin {
+    background: #ff4d4d;
+    color: #fff;
+}
+.role-badge.user {
+    background: #d3d9e3;
+    color: var(--text-primary);
+}
+
+/* ▼ メインコンテナ */
+.main-container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 0 10px;
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ▼ カード共通（Business Blueの質感を踏襲） */
+.card {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow-light);
+    border: 1px solid var(--border-color);
+    margin-bottom: 20px;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    animation: cardFade 0.5s ease-out;
+}
+
+@keyframes cardFade {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.card:hover {
+    box-shadow: 0 6px 18px var(--shadow-strong);
+}
+
+/* ▼ 投稿フォーム */
+.form-card h3 {
+    margin-top: 0;
+    color: var(--accent-color);
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+.form-group textarea {
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 1rem;
+    resize: vertical;
+}
+.form-group textarea:focus {
+    border-color: var(--accent-light);
+    box-shadow: 0 0 0 3px rgba(74,144,226,0.15);
+    outline: none;
+}
+
+/* ▼ 投稿カード */
+.post-card {
+    border-left: 4px solid var(--accent-color);
+}
+/* ▼ 投稿ヘッダー */
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.post-user-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+.post-user-id {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+.post-time {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+/* ▼ 投稿本文 */
+.post-content {
+    margin: 12px 0;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+/* ▼ 投稿ボタン（主要アクション） */
+.post-btn {
+    background: var(--accent-color);        /* 企業向けブルー */
+    color: #ffffff;                         /* 白文字で視認性UP */
+    border: none;
+    padding: 10px 22px;                     /* 少し広めで押しやすい */
+    border-radius: 6px;                     /* Business Blueの標準角丸 */
+    font-weight: 700;                       /* 主要アクションなので太字 */
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease,
+                box-shadow 0.2s ease,
+                transform 0.1s ease;
+}
+
+/* ▼ ホバー時（落ち着いた企業向けの強調） */
+.post-btn:hover {
+    background: var(--accent-hover);        /* 濃いブルーで強調 */
+    box-shadow: 0 4px 12px var(--shadow-light);
+}
+
+/* ▼ クリック時（軽い押し込み感） */
+.post-btn:active {
+    transform: scale(0.97);
+}
+
+/* ▼ アクションボタン */
+.post-actions {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+.btn-icon {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    transition: color 0.2s ease, transform 0.1s ease;
+}
+.btn-icon:hover {
+    color: var(--accent-color);
+    transform: scale(1.1);
+}
+.active-like {
+    color: #e63946;
+}
+.active-retweet {
+    color: var(--accent-color);
+}
+
+/* ▼ 引用RTプレビュー（最新3件） */
+.quote-preview {
+    margin-top: 15px;
+    padding: 12px;
+    border-left: 3px solid var(--accent-light);
+    background: #f8fafc;
+    border-radius: 8px;
+}
+.quote-preview-item {
+    margin-bottom: 12px;
+}
+.quote-user {
+    font-weight: 700;
+    color: var(--accent-color);
+}
+.quote-comment {
+    margin: 4px 0;
+}
+.quote-time {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+.quote-reply-btn {
+    display: inline-block;
+    margin-top: 4px;
+    color: var(--accent-color);
+    font-weight: 600;
+    text-decoration: none;
+}
+.quote-reply-btn:hover {
+    text-decoration: underline;
+}
+
+/* ▼ 「すべての引用を見る」 */
+.quote-more {
+    margin-top: 10px;
+    color: var(--accent-color);
+    cursor: pointer;
+    font-weight: 700;
+}
+
+/* ▼ 引用RT一覧 */
+.quote-list {
+    margin-top: 15px;
+    padding: 12px;
+    background: #eef3f9;
+    border-radius: 8px;
+}
+.quote-list-item {
+    margin-bottom: 15px;
+}
+.quote-source-label {
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+.quote-thread-child {
+    margin-left: 20px;
+    padding-left: 10px;
+    border-left: 2px solid var(--accent-light);
+}
+
+/* ▼ 戻すボタン */
+.quote-back {
+    margin-top: 10px;
+    cursor: pointer;
+    color: var(--accent-color);
+    font-weight: 700;
+}
+
+/* ▼ 空状態 */
+.empty-state {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 40px;
+}
