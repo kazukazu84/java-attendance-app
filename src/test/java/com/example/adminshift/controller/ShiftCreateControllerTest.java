@@ -63,12 +63,9 @@ class ShiftCreateControllerTest {
         event.setTargetEndDate(
                 LocalDate.of(2026, 8, 3));
 
+
 //        when(service.getEventList())
 //                .thenReturn(List.of(event));
-
-
-//        when(service.getLatestEvent())
-//                .thenReturn(event);
 
 
         event.setApplicationStartDate(
@@ -79,7 +76,6 @@ class ShiftCreateControllerTest {
 
         return event;
     }
-
 
 
     /**
@@ -663,7 +659,16 @@ class ShiftCreateControllerTest {
     @DisplayName("シフト更新_保存内容確認")
     @WithMockUser(roles = "ADMIN")
     void updateSaveContentCheck() throws Exception {
-    @WithMockUser
+
+    	
+    }
+
+    @Test
+    @DisplayName("夜勤シフト保存時はServiceへ渡す")
+    @WithMockUser(roles = "ADMIN")
+
+
+
     void 夜勤シフト保存時はServiceへ渡す()
             throws Exception {
 
@@ -672,6 +677,7 @@ class ShiftCreateControllerTest {
 //                .thenReturn(
 //                    new Shift()
 //                );
+
 
 
 

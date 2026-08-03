@@ -962,6 +962,246 @@ class ShiftCreateServiceTest {
                 () -> service.saveShift(shift));
 
     }
+    
+    @Test
+    @DisplayName("カレントイベント取得時DBエラー")
+    void getCurrentEventException() {
+
+        when(shiftApplicationEventRepository.findById(1))
+                .thenThrow(
+                        new DataAccessException("error"){}
+                );
+
+
+        ShiftApplicationEvent result =
+                service.getCurrentEvent(1);
+
+
+        assertNull(result);
+
+    }
+
+
+
+    @Test
+    @DisplayName("シフト一覧取得時DBエラー")
+    void getShiftTableException() {
+
+
+        when(shiftRepository.findByEventId(1))
+                .thenThrow(
+                        new DataAccessException("error"){}
+                );
+
+
+        List<Shift> result =
+                service.getShiftTable(1);
+
+
+        assertTrue(
+                result.isEmpty());
+
+    }
+
+
+
+    @Test
+    @DisplayName("ユーザー一覧取得時DBエラー")
+    void getAllUsersException() {
+
+
+        when(usersRepository.findAll())
+                .thenThrow(
+                        new DataAccessException("error"){}
+                );
+
+
+        List<Users> result =
+                service.getAllUsers();
+
+
+        assertTrue(
+                result.isEmpty());
+
+    }
+
+
+
+    @Test
+    @DisplayName("シフト詳細取得時DBエラー")
+    void getShiftDetailException() {
+
+
+        when(shiftRepository.findById(1))
+                .thenThrow(
+                        new DataAccessException("error"){}
+                );
+
+
+        Shift result =
+                service.getShiftDetail(1);
+
+
+        assertNull(result);
+
+    }
+
+
+
+    @Test
+    @DisplayName("イベント期間が1週間の場合の日付生成")
+    void getTargetDateListWeek() {
+
+
+        ShiftApplicationEvent event =
+                createEvent();
+
+
+        event.setTargetStartDate(
+                LocalDate.of(2026,8,1));
+
+
+        event.setTargetEndDate(
+                LocalDate.of(2026,8,7));
+
+
+        List<LocalDate> result =
+                service.getTargetDateList(event);
+
+
+        assertEquals(
+                7,
+                result.size());
+
+    }
+
+
+
+    @Test
+    @DisplayName("ユーザーIDがnullの場合集計対象外")
+    void monthlySummaryNullUserId() {
+
+
+        Users user =
+                new Users();
+
+        user.setUserId(null);
+
+
+        Map<String,List<MonthlyShiftSummaryDto>> result =
+                service.getMonthlySummaryMap(
+                        List.of(createShift()),
+                        List.of(user));
+
+
+        assertTrue(
+                result.isEmpty());
+
+    }
+
+
+
+    @Test
+    @DisplayName("shiftDateがnullの場合集計対象外")
+    void monthlySummaryNullShiftDate() {
+
+
+        Shift shift =
+                createShift();
+
+
+        shift.setShiftDate(null);
+
+
+        Map<String,List<MonthlyShiftSummaryDto>> result =
+                service.getMonthlySummaryMap(
+                        List.of(shift),
+                        List.of(createUser()));
+
+
+        assertTrue(
+                result.get("user001").isEmpty());
+
+    }
+
+
+
+    @Test
+    @DisplayName("終了時刻nullの場合集計対象外")
+    void monthlySummaryNullEndTime() {
+
+
+        Shift shift =
+                createShift();
+
+
+        shift.setEndTime(null);
+
+
+        Map<String,List<MonthlyShiftSummaryDto>> result =
+                service.getMonthlySummaryMap(
+                        List.of(shift),
+                        List.of(createUser()));
+
+
+        assertTrue(
+                result.get("user001").isEmpty());
+
+    }
+
+
+
+    @Test
+    @DisplayName("同一開始終了時刻は0分")
+    void monthlySummarySameTime() {
+
+
+        Shift shift =
+                createShift();
+
+
+        shift.setStartTime(
+                LocalTime.of(9,0));
+
+
+        shift.setEndTime(
+                LocalTime.of(9,0));
+
+
+        Map<String,List<MonthlyShiftSummaryDto>> result =
+                service.getMonthlySummaryMap(
+                        List.of(shift),
+                        List.of(createUser()));
+
+
+        assertEquals(
+                0,
+                result.get("user001")
+                .get(0)
+                .getTotalMinutes());
+
+    }
+
+
+
+    @Test
+    @DisplayName("シフト保存時Repository呼び出し確認")
+    void saveShiftVerify() {
+
+
+        Shift shift =
+                createShift();
+
+
+        service.saveShift(shift);
+
+
+        verify(
+                shiftRepository,
+                times(1))
+                .save(shift);
+
+    }
 
     /**
      * シフト保存
