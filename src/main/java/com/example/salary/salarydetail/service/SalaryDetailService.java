@@ -25,26 +25,28 @@ public class SalaryDetailService {
      * - 給与テーブルの値をそのまま返す
      * - 計算は SalaryCalculationService が担当
      */
-    public SalaryDetailDto getSalaryDetail(String userId, int targetYear, int targetMonth) {
+    public List<SalaryDetailDto> getSalaryDetailList(String userId, int targetYear, int targetMonth) {
 
-        SalaryEntity salary = salaryDetailRepository
-                .findByUserInfoUserIdAndTargetYearAndTargetMonth(userId, targetYear, targetMonth)
-                .orElse(null);
+        List<SalaryEntity> salaryList = salaryDetailRepository
+                .findByUserInfoUserIdAndTargetYearAndTargetMonth(userId, targetYear, targetMonth);
 
-        if (salary == null) {
-            return null;
+        // 0件なら空リストを返す
+        if (salaryList.isEmpty()) {
+            return List.of();
         }
 
-        // ★ DB に保存されている値をそのまま返す（計算しない）
-        return new SalaryDetailDto(
-                salary.getTargetYear(),
-                salary.getTargetMonth(),
-                salary.getWorkingHours(),
-                salary.getAppliedHourlyWage(),
-                salary.getGrossSalary(),
-                salary.getInsuranceFee(),
-                salary.getNetSalary()
-        );
+        // ★ 複数件を DTO にまとめて変換
+        return salaryList.stream()
+                .map(salary -> new SalaryDetailDto(
+                        salary.getTargetYear(),
+                        salary.getTargetMonth(),
+                        salary.getWorkingHours(),
+                        salary.getAppliedHourlyWage(),
+                        salary.getGrossSalary(),
+                        salary.getInsuranceFee(),
+                        salary.getNetSalary()
+                ))
+                .toList();
     }
 
     /**

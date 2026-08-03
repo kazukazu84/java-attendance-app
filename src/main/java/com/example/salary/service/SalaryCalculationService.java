@@ -57,21 +57,17 @@ public class SalaryCalculationService {
 
         for (Attendance att : attendances) {
 
-            // ★ clockIn / clockOut が null → スキップ
             if (att.getClockIn() == null || att.getClockOut() == null) {
                 continue;
             }
 
-            // ★ Duration 計算（ミリ秒対策：LocalTime は安全に扱える）
             long minutes = Duration.between(att.getClockIn(), att.getClockOut()).toMinutes();
 
-            // ★ 休憩は「分」扱い → 時間に変換
             Double restMinutes = att.getRestTime();
             if (restMinutes == null) restMinutes = 0.0;
 
             minutes -= restMinutes;
 
-            // ★ マイナスや NaN を防ぐ
             if (minutes < 0) minutes = 0;
 
             totalWorkingHours += (minutes / 60.0);
@@ -87,18 +83,23 @@ public class SalaryCalculationService {
         // ⑥ 差引支給額
         int netSalary = grossSalary - insuranceFee;
 
-        // ⑦ 既存 salary を検索
-        SalaryEntity salary =
+        // ⑦ 既存 salary を検索（複数件対応）
+        List<SalaryEntity> salaryList =
                 salaryDetailRepository.findByUserInfoUserIdAndTargetYearAndTargetMonth(
                         userId, targetYear, targetMonth
-                ).orElse(null);
+                );
 
-        if (salary == null) {
+        SalaryEntity salary;
+
+        if (salaryList.isEmpty()) {
             // ★ 新規作成
             salary = new SalaryEntity();
             salary.setUserInfo(user);
             salary.setTargetYear(targetYear);
             salary.setTargetMonth(targetMonth);
+        } else {
+            // ★ 複数件あっても「最新の1件だけ更新」する
+            salary = salaryList.get(salaryList.size() - 1);
         }
 
         // ★ 新規でも更新でも共通の値をセット
@@ -111,4 +112,5 @@ public class SalaryCalculationService {
 
         salaryDetailRepository.save(salary);
     }
+
 }

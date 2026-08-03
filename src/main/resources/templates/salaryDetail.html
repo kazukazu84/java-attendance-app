@@ -16,7 +16,7 @@
         <span th:text="${targetMonth}"></span>月 の給与
     </h2>
 
-    <!-- 給与情報カード（元の構成を維持） -->
+    <!-- ★ 代表データ（従来の構成を維持） -->
     <div class="card">
         <table class="salary-table">
             <tbody>
@@ -44,7 +44,34 @@
         </table>
     </div>
 
-    <!-- ★ 当月の勤怠一覧（DTO 対応版） -->
+    <!-- ★ 複数件の給与一覧（新規追加） -->
+    <div class="card">
+        <h2 class="section-title">当月の給与データ一覧</h2>
+
+        <table class="salary-table">
+            <thead>
+                <tr>
+                    <th>勤務時間</th>
+                    <th>時給</th>
+                    <th>総支給</th>
+                    <th>保険料</th>
+                    <th>手取り</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr th:each="d : ${detailList}">
+                    <td th:text="${d.workingHours}"></td>
+                    <td th:text="${d.appliedHourlyWage}"></td>
+                    <td th:text="${d.grossSalary}"></td>
+                    <td th:text="${d.insuranceFee}"></td>
+                    <td th:text="${d.netSalary}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ★ 当月の勤怠一覧（従来の構成） -->
     <div class="card">
         <h2 class="section-title">当月の勤怠一覧</h2>
 
@@ -71,7 +98,7 @@
         </table>
     </div>
 
-    <!-- ★ 戻るリンク（構文エラー修正済み） -->
+    <!-- ★ 戻るリンク -->
     <a th:href="${basePath + '/salary/confirm'}" class="back-link">← 給与一覧へ戻る</a>
 
 </div>
