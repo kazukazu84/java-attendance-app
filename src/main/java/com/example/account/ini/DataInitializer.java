@@ -79,7 +79,9 @@ public class DataInitializer implements CommandLineRunner {
             initUserForm.setEmploymentInsurance(false);
             initUserForm.setIsActive(1);
 
-            accountService.registerAccount(initUserForm);
+            accountService.registerAccount(initUserForm
+            		//, "alpha"
+            		);
         }
 
         // 3. ログメッセージマスタデータの作成（データが空の場合のみ実行） 👈 追加！

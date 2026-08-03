@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>引用リツイート - 社内SNS</title>
+    <link rel="stylesheet" th:href="@{/css/quoteRetweet.css}">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="nav-brand">
+        <a th:href="@{${basePath + '/timeline'}}">社内SNS</a>
+    </div>
+    <nav class="nav-menu">
+        <a th:href="@{${basePath + '/timeline'}}" class="nav-item">タイムライン</a>
+        <a th:href="@{${basePath + '/post'}}" class="nav-item">投稿</a>
+        <a th:href="@{${basePath + '/dm'}}" class="nav-item">DM</a>
+        <a th:href="@{${basePath} + '/main'}" class="nav-item">メイン画面へ</a>
+    </nav>
+</header>
+
+<main class="main-container single-column">
+
+    <div class="card form-card">
+        <h2>引用リツイート</h2>
+
+        <!-- ▼ 元投稿 -->
+        <div class="target-post-preview">
+            <div class="post-header">
+                <span class="post-user-id" th:text="'@' + ${targetPost.userId}">@targetUser</span>
+                <span class="post-time"
+                      th:text="${#temporals.format(targetPost.createdAt, 'yyyy/MM/dd HH:mm')}">
+                </span>
+            </div>
+            <div class="post-content" th:text="${targetPost.content}">
+            </div>
+        </div>
+
+        <!-- ▼ 親引用RT -->
+        <div th:if="${parentQuote != null}" class="quote-thread-item">
+
+            <h3 class="quote-section-title">引用元の引用リツイート</h3>
+
+            <div class="quote-user" th:text="${parentQuote.userName}"></div>
+            <div class="quote-comment" th:text="${parentQuote.comment}"></div>
+            <div class="quote-time"
+                 th:text="${#temporals.format(parentQuote.createdAt, 'yyyy/MM/dd HH:mm')}"></div>
+        </div>
+
+        <!-- ▼ 親引用RTへのコメント一覧（数珠構造） -->
+        <div th:if="${parentQuote != null}">
+            <div th:if="${childrenMap[parentQuote.quoteId] != null}" class="quote-thread">
+
+                <h3 class="quote-section-title">この引用へのコメント</h3>
+
+                <div th:each="child : ${childrenMap[parentQuote.quoteId]}" class="quote-thread-child">
+                    <div class="quote-user" th:text="${child.userName}"></div>
+                    <div class="quote-comment" th:text="${child.comment}"></div>
+                    <div class="quote-time"
+                         th:text="${#temporals.format(child.createdAt, 'yyyy/MM/dd HH:mm')}"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ▼ コメント入力フォーム -->
+        <form th:action="@{${basePath + '/quote-retweet'}}"
+              th:object="${quoteRetweetForm}" method="post">
+
+            <input type="hidden" th:field="*{postId}" />
+            <input type="hidden" th:field="*{parentQuoteId}" />
+
+            <div class="form-group">
+                <label for="comment">コメントを追加</label>
+                <textarea id="comment" th:field="*{comment}" rows="4"
+                          placeholder="コメントを入力..." required autofocus></textarea>
+            </div>
+
+            <div class="form-actions space-between">
+                <a th:href="@{${basePath + '/timeline'}}" class="btn btn-secondary">キャンセル</a>
+                <button type="submit" class="btn btn-primary">引用リツイート送信</button>
+            </div>
+        </form>
+
+    </div>
+
+</main>
+
+</body>
+</html>

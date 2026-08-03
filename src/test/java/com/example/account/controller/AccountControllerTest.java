@@ -194,6 +194,13 @@ public class AccountControllerTest {
  
     	when(accountService.findUserById("target_user")).thenReturn(Optional.of(dummyUser));
 
+    	// 💡 追加: フォーム変換と賃金一覧取得のモック設定
+        UserRegisterForm dummyForm = new UserRegisterForm();
+        dummyForm.setUserId("target_user");
+        dummyForm.setUserName("ターゲット太郎");
+        when(accountService.getEditForm(dummyUser)).thenReturn(dummyForm);
+        when(accountService.getAllWages()).thenReturn(java.util.Collections.singletonList(dummyWage));
+        
         mockMvc.perform(get("/admin/edit/target_user"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/admin/register"))

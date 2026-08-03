@@ -85,7 +85,7 @@ public class AttendanceService {
 		Attendance attendance = new Attendance();
 		attendance.setUserId(userId);
 		attendance.setWorkDate(LocalDate.now());
-		attendance.setClockIn(LocalTime.now());
+		attendance.setClockIn(LocalTime.now().withNano(0));
 		attendanceRepository.save(attendance);
 
 		//		// --- 2. 【追加】出勤ログを log テーブルに自動登録（messageId = 0 : 出勤） ---
@@ -128,7 +128,7 @@ public class AttendanceService {
 	            .orElseThrow(() -> new RuntimeException("本日の出勤データが見つかりません。"));
 
 	    // ③ 退勤時刻をセット
-	    attendance.setClockOut(LocalTime.now());
+	    attendance.setClockOut(LocalTime.now().withNano(0));
 	    attendanceRepository.save(attendance);
 
 	    // ④ ログ保存

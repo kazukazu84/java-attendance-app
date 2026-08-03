@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>運行状況</title>
+
+    <!-- 専用CSS -->
+    <link rel="stylesheet" th:href="@{/css/rail_status.css}">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>路線運行状況</h1>
+
+    <!-- ▼ プロフィール情報 -->
+    <div class="profile-info">
+        <p><strong>ユーザーID：</strong> <span th:text="${profile.userId}"></span></p>
+        <p><strong>選択路線：</strong>
+            <span th:text="${lineMaster.companyName + ' - ' + lineMaster.lineName}"></span>
+        </p>
+    </div>
+
+    <hr/>
+
+    <!-- ▼ 運行状況 -->
+    <div th:if="${status != null}">
+        <p><strong>会社名：</strong> <span th:text="${status.company}"></span></p>
+        <p><strong>路線名：</strong> <span th:text="${status.lineName}"></span></p>
+
+        <p><strong>運行状況：</strong> <span th:text="${status.statusText}"></span></p>
+        <p><strong>詳細：</strong> <span th:text="${status.detailText}"></span></p>
+        <p><strong>更新情報：</strong> <span th:text="${status.updatedText}"></span></p>
+
+        <p><strong>取得日時：</strong>
+            <span th:text="${#temporals.format(status.lastUpdated, 'yyyy-MM-dd HH:mm:ss')}"></span>
+        </p>
+    </div>
+
+    <hr/>
+
+    <!-- ▼ 参照元（動的） -->
+    <div>
+        <p><strong>参照元：</strong>
+            <a th:href="${lineMaster.diainfoUrl}" target="_blank">
+                Yahoo!路線情報（[[${lineMaster.lineName}]]）
+            </a>
+        </p>
+    </div>
+
+    <hr/>
+
+    <!-- ▼ 遅延証明書案内カード -->
+    <div class="certificate-card" th:if="${status != null}">
+        <h2>遅延証明書案内</h2>
+
+        <button type="button" id="btn-check-certificate">▼ 今日の証明書を確認する</button>
+
+        <div id="certificate-check" style="display:none;">
+            <p id="certificate-result">確認中...</p>
+        </div>
+
+        <button type="button" id="btn-company-links">▼ 他社の遅延証明書はこちら</button>
+
+        <div id="company-links" style="display:none;">
+            <ul>
+                <li><a href="https://subway.osakametro.co.jp/delay_list.php" target="_blank">大阪メトロ</a></li>
+                <li><a href="https://www.kita-kyu.co.jp/info_train/certificate" target="_blank">北大阪急行</a></li>
+                <li><a href="https://www.kintetsu.co.jp/gyoumu/delay/" target="_blank">近鉄</a></li>
+                <li><a href="https://www.hankyu.co.jp/delay/" target="_blank">阪急</a></li>
+                <li><a href="https://www.hanshin.co.jp/system/delay/" target="_blank">阪神</a></li>
+                <li><a href="https://www.traffic.nankai.co.jp/delay" target="_blank">南海</a></li>
+                <li><a href="https://www.keihan.co.jp/traffic/delay/" target="_blank">京阪</a></li>
+                <li><a href="https://delay.trafficinfo.westjr.co.jp/pc" target="_blank">JR西日本</a></li>
+            </ul>
+        </div>
+    </div>
+
+	<div class="actions">
+	    <a th:href="@{${basePath + '/rail/profile'}}" class="btn">プロフィールを見る</a>
+	    <a th:href="@{${basePath + '/rail/profile/setup'}}" class="btn">路線を変更する</a>
+		<a th:href="@{${basePath} + '/main'}" class="btn">メイン画面へ</a>
+	</div>
+
+</div>
+
+<!-- 専用JS -->
+<script th:src="@{/js/rail-status.js}"></script>
+
+</body>
+</html>

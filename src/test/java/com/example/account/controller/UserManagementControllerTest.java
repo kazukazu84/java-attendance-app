@@ -45,7 +45,7 @@ public class UserManagementControllerTest {
                 .andExpect(view().name("account/admin/UserManagement"))
                 .andExpect(model().attributeExists("users"));
 
-        verify(userInfoRepository, times(1)).findAll();
+        verify(accountService, times(1)).searchUsers("", "");
     }
 
     @Test

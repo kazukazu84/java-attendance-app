@@ -1,8 +1,12 @@
 package com.example.salary.salarydetail.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.attendance.entity.Attendance;
+import com.example.attendance.repository.AttendanceRepository;
 import com.example.salary.salarydetail.dto.SalaryDetailDto;
 import com.example.salary.salarydetail.entity.SalaryEntity;
 import com.example.salary.salarydetail.repository.SalaryDetailRepository;
@@ -13,21 +17,25 @@ public class SalaryDetailService {
     @Autowired
     private SalaryDetailRepository salaryDetailRepository;
 
+    @Autowired
+    private AttendanceRepository attendanceRepository;
+
     /**
-     * 給与詳細取得（最新仕様に完全準拠）
+     * 給与詳細取得（最新仕様）
+     * - 給与テーブルの値をそのまま返す
+     * - 計算は SalaryCalculationService が担当
      */
     public SalaryDetailDto getSalaryDetail(String userId, int targetYear, int targetMonth) {
 
-        // ★ Optional から取り出す（最新仕様）
         SalaryEntity salary = salaryDetailRepository
                 .findByUserInfoUserIdAndTargetYearAndTargetMonth(userId, targetYear, targetMonth)
                 .orElse(null);
 
         if (salary == null) {
-            return null; // データなし
+            return null;
         }
 
-        // ★ SalaryEntity に保存済みの値をそのまま使用（再計算しない）
+        // ★ DB に保存されている値をそのまま返す（計算しない）
         return new SalaryDetailDto(
                 salary.getTargetYear(),
                 salary.getTargetMonth(),
@@ -37,5 +45,12 @@ public class SalaryDetailService {
                 salary.getInsuranceFee(),
                 salary.getNetSalary()
         );
+    }
+
+    /**
+     * 勤怠一覧取得（Controller が DTO 化する）
+     */
+    public List<Attendance> getAttendanceList(String userId, int targetYear, int targetMonth) {
+        return attendanceRepository.findByUserIdAndYearMonth(userId, targetYear, targetMonth);
     }
 }

@@ -1,0 +1,334 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   全体設定 / 基本スタイリング
+   ========================================================================== */
+body {
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+    background-color: #f4f7f6;
+    color: #333333;
+    margin: 0;
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+/* ページタイトル */
+h1 {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin-bottom: 24px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid #3498db;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   新規イベント作成フォーム
+   ========================================================================== */
+form[action*="/create"] {
+    background-color: #ffffff;
+    padding: 20px 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+form[action*="/create"] label {
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: #555555;
+    margin-right: 4px;
+}
+
+/* ==========================================================================
+   フォーム要素（select, input, button）
+   ========================================================================== */
+select, 
+input[type="date"] {
+    padding: 8px 12px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    color: #333333;
+    background-color: #ffffff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+select:focus, 
+input[type="date"]:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+/* ページネーション内のボタンを除外して共通disabledを適用 */
+select:disabled, 
+input:disabled, 
+button:not(.pagination-item):disabled {
+    background-color: #e9ecef !important;
+    border-color: #ced4da !important;
+    color: #6c757d !important;
+    cursor: not-allowed !important;
+    opacity: 0.7;
+}
+
+/* ボタン共通設定（ページネーションアイテムは除外） */
+button:not(.pagination-item) {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+button:not(.pagination-item):active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+/* ボタン色指定 */
+form[action*="/create"] button[type="submit"] {
+    background-color: #3498db;
+    color: #ffffff;
+    margin-left: auto;
+}
+
+form[action*="/create"] button[type="submit"]:hover:not(:disabled) {
+    background-color: #2980b9;
+}
+
+/* 戻るボタン */
+button[onclick*="shift-management"] {
+    background-color: #95a5a6;
+    color: #ffffff;
+    margin-top: 10px;
+}
+
+button[onclick*="shift-management"]:hover:not(:disabled) {
+    background-color: #7f8c8d;
+}
+
+/* ==========================================================================
+   テーブル（イベント一覧）
+   ========================================================================== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    border: none; /* HTML側の border="1" を上書きリセット */
+}
+
+th, td {
+    padding: 12px 16px;
+    text-align: center;
+    border-bottom: 1px solid #eeeeee;
+}
+
+th {
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* インラインフォーム（テーブル内ボタン） */
+td form {
+    display: inline-block;
+    margin: 0;
+}
+
+/* 編集ボタン */
+form[action*="/edit"] button {
+    background-color: #2ecc71;
+    color: #ffffff;
+}
+
+form[action*="/edit"] button:hover:not(:disabled) {
+    background-color: #27ae60;
+}
+
+/* 削除ボタン */
+form[action*="/delete"] button {
+    background-color: #e74c3c;
+    color: #ffffff;
+}
+
+form[action*="/delete"] button:hover:not(:disabled) {
+    background-color: #c0392b;
+}
+
+/* ==========================================================================
+   テーブル内：編集モード時
+   ========================================================================== */
+td[colspan="6"] {
+    background-color: #eef7fc;
+    padding: 12px;
+}
+
+td[colspan="6"] table {
+    box-shadow: none;
+    background-color: transparent;
+}
+
+td[colspan="6"] td {
+    border: none;
+    padding: 4px;
+}
+
+/* 完了（更新）ボタン */
+form[action*="/update"] button {
+    background-color: #f39c12;
+    color: #ffffff;
+}
+
+form[action*="/update"] button:hover:not(:disabled) {
+    background-color: #d68910;
+}
+
+/* エラー表示エリア */
+.error-container {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 12px 20px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.error-container ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+/* ステータスバッジの共通基本スタイル */
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 0.85em;
+    font-weight: bold;
+    border-radius: 12px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* ① 受付前（青系統） */
+.status-before {
+    background-color: #e3f2fd;
+    color: #0d47a1;
+    border: 1px solid #90caf9;
+}
+
+/* ② 受付中（緑系統） */
+.status-open {
+    background-color: #e8f8e9;
+    color: #1b5e20;
+    border: 1px solid #a5d6a7;
+}
+
+/* ③ 受付終了（グレー系統） */
+.status-closed {
+    background-color: #eceff1;
+    color: #37474f;
+    border: 1px solid #cfd8dc;
+}
+
+/* ==========================================================================
+   ページネーション設定 (要件①～⑪対応)
+   ========================================================================== */
+
+/* 親コンテナ設定（要件⑤: flexレイアウト・折り返し） */
+.pagination {
+    display: flex;
+    flex-wrap: wrap; /* 桁数やページ数が増えた場合も綺麗に折り返す */
+    align-items: center;
+    justify-content: center; /* 画面中央寄せ */
+    gap: 6px; /* アイテム同士の適度な間隔 */
+    margin: 20px 0;
+}
+
+/* ボタン・リンク共通スタイリング（要件①, ④） */
+.pagination .pagination-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* 要件⑪: 100ページ以上でも文字がはみ出さない可変最小幅設定 */
+    min-width: 36px;
+    height: 36px;
+    padding: 0 8px;
+    box-sizing: border-box;
+    
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    color: #2b4c7e; /* 業務システム向けの落ち着いた青 */
+    text-decoration: none;
+    
+    background-color: #ffffff; /* 要件⑨: 通常ページは白 */
+    border: 1px solid #d0d7de;
+    border-radius: 6px; /* 適度な角丸 */
+    
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    user-select: none;
+    
+    /* ホバー・フォーカス時の自然な遷移 */
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* ホバー時のデザイン（要件①, ⑨） */
+.pagination a.pagination-item:hover {
+    background-color: #edf5ff; /* 淡い青 */
+    border-color: #1a56db;
+    color: #1a56db;
+}
+
+/* クリック中の挙動 */
+.pagination a.pagination-item:active {
+    background-color: #dbeafe;
+}
+
+/* 現在のページ（要件②, ⑨） */
+.pagination .pagination-item.active,
+.pagination .pagination-item.active:disabled {
+    background-color: #1a56db !important; /* 濃い青 */
+    border-color: #1a56db !important;
+    color: #ffffff !important; /* 白文字 */
+    font-weight: 600;
+    cursor: default !important;
+    opacity: 1 !important;
+    box-shadow: 0 2px 4px rgba(26, 86, 219, 0.25);
+}
+
+/* 無効化状態（要件③: 前へ/次へが押せない場合） */
+.pagination .pagination-item:disabled:not(.active) {
+    background-color: #f8f9fa !important;
+    border-color: #e9ecef !important;
+    color: #a0aec0 !important; /* グレーアウト */
+    cursor: not-allowed !important;
+    box-shadow: none;
+    opacity: 0.7 !important;
+}
+
+/* アクセシビリティ・キーボードフォーカス（要件⑧） */
+.pagination .pagination-item:focus-visible {
+    outline: none;
+    border-color: #1a56db;
+    box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.35); /* フォーカスリングを表示 */
+}

@@ -22,7 +22,28 @@ public class AttendanceDto {
     @JsonProperty("canClockOut")
     private boolean canClockOut;
 
-    // ★ 給与計算に必須（退勤した日の年月を渡す）
     @JsonProperty("workDate")
     private LocalDate workDate;
+
+    // ★ 給与詳細画面用：勤務時間（Controller で計算して詰める）
+    @JsonProperty("workingHours")
+    private Double workingHours;
+
+    // ★ 給与詳細画面用：出勤・退勤時刻
+    @JsonProperty("clockIn")
+    private String clockIn;
+
+    @JsonProperty("clockOut")
+    private String clockOut;
+
+    @JsonProperty("restTime")
+    private Double restTime;
+
+    // ★ 旧仕様の 4 引数コンストラクター（既存コード用）
+    public AttendanceDto(String statusMessage, boolean canClockIn, boolean canClockOut, LocalDate workDate) {
+        this.statusMessage = statusMessage;
+        this.canClockIn = canClockIn;
+        this.canClockOut = canClockOut;
+        this.workDate = workDate;
+    }
 }

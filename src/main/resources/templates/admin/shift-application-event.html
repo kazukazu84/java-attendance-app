@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>シフト受付期間設定</title>
+    <link rel="stylesheet" th:href="@{/css/shift-application-event.css}">
+</head>
+
+<body>
+
+<h1>シフト受付期間設定</h1>
+
+<!-- グローバルエラーメッセージ表示エリア -->
+<div th:if="${errorMessage != null}" class="error-msg" style="color: red; font-weight: bold; margin-bottom: 15px;">
+    <p th:text="${errorMessage}"></p>
+</div>
+
+<!-- 要件②：Gap（未作成期間）警告表示エリア -->
+<div th:if="${gapList != null and !gapList.empty}" class="warning-msg" style="background-color: #fff3cd; color: #856404; padding: 10px; border: 1px solid #ffeeba; margin-bottom: 15px;">
+    <strong>【警告】</strong>
+    <ul>
+        <li th:each="gap : ${gapList}" th:text="${gap.message}"></li>
+    </ul>
+</div>
+
+<!-- ========================= -->
+<!-- 新規イベント作成 -->
+<!-- ========================= -->
+
+<form id="createForm" th:action="@{/admin/shift-application-event/create(page=${eventPage.number})}"
+      th:object="${createShiftApplicationEventForm}"
+      method="post">
+
+    <input type="hidden" name="confirmConfirmed" id="createConfirmConfirmed" value="false">
+
+    <label>対象期間</label>
+    <select th:field="*{targetWeeks}"
+            th:disabled="${editingEventId != null}">
+        <option value="1">1週間</option>
+        <option value="2">2週間</option>
+        <option value="3">3週間</option>
+        <option value="4">4週間</option>
+    </select>
+    <div th:if="${#fields.hasErrors('targetWeeks')}" th:errors="*{targetWeeks}" style="color: red; font-size: 0.8em;"></div>
+
+    <label>受付開始</label>
+    <select th:field="*{applicationStartDays}"
+            th:disabled="${editingEventId != null}">
+        <option th:each="i : ${#numbers.sequence(30,1)}"
+                th:value="${i}"
+                th:text="${i + '日前'}">
+        </option>
+    </select>
+    <!-- ★追加: 相関チェックおよび単体チェックのエラーメッセージ表示エリア -->
+    <div th:if="${#fields.hasErrors('applicationStartDays')}" th:errors="*{applicationStartDays}" style="color: red; font-size: 0.8em;"></div>
+
+    <label>受付締切</label>
+    <select th:field="*{applicationEndDays}"
+            th:disabled="${editingEventId != null}">
+        <option th:each="i : ${#numbers.sequence(14,1)}"
+                th:value="${i}"
+                th:text="${i + '日前'}">
+        </option>
+    </select>
+    <!-- ★追加: 単体チェックのエラーメッセージ表示エリア -->
+    <div th:if="${#fields.hasErrors('applicationEndDays')}" th:errors="*{applicationEndDays}" style="color: red; font-size: 0.8em;"></div>
+
+    <button type="submit"
+            th:disabled="${editingEventId != null}">
+        新規作成
+    </button>
+
+</form>
+
+<br>
+
+<!-- ========================= -->
+<!-- イベント一覧 -->
+<!-- ========================= -->
+
+<table border="1" th:if="${eventPage != null and !eventPage.empty}">
+
+    <thead>
+    <tr>
+        <th>状態</th>
+        <th>対象期間開始</th>
+        <th>対象期間終了</th>
+        <th>受付開始</th>
+        <th>受付終了</th>
+        <th>編集</th>
+        <th>削除</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    <tr th:each="event : ${eventList}">
+
+        <!-- 通常表示 -->
+        <th:block th:if="${editingEventId != event.eventId}">
+
+            <td>
+                <span class="status-badge" 
+                      th:classappend="${event.statusCssClass}" 
+                      th:text="${event.statusName}">
+                </span>
+            </td>
+            <td th:text="${event.targetStartDate}"></td>
+            <td th:text="${event.targetEndDate}"></td>
+            <td th:text="${event.applicationStartDate}"></td>
+            <td th:text="${event.applicationEndDate}"></td>
+
+            <td>
+                <form th:action="@{/admin/shift-application-event/edit(page=${eventPage.number})}" method="post">
+                    <input type="hidden" name="eventId" th:value="${event.eventId}">
+                    <button type="submit" th:disabled="${editingEventId != null}">編集</button>
+                </form>
+            </td>
+
+            <td>
+                <form th:action="@{/admin/shift-application-event/delete(page=${eventPage.number})}" method="post">
+                    <input type="hidden" name="eventId" th:value="${event.eventId}">
+                    <button type="submit" th:disabled="${editingEventId != null}">削除</button>
+                </form>
+            </td>
+
+        </th:block>
+
+        <!-- 編集モード -->
+        <th:block th:if="${editingEventId == event.eventId}">
+            <td colspan="7">
+                <form id="updateForm" th:action="@{/admin/shift-application-event/update(page=${eventPage.number})}"
+                      th:object="${updateShiftApplicationEventForm}"
+                      method="post">
+
+                    <input type="hidden" name="confirmConfirmed" id="updateConfirmConfirmed" value="false">
+                    <input type="hidden" name="eventId" th:value="${updateShiftApplicationEventForm.eventId}">
+
+                    <table>
+                        <tr>
+                            <td>
+                                <input type="date" name="targetStartDate" id="targetStartDate" 
+                                       th:value="${updateShiftApplicationEventForm.targetStartDate}">
+                                <div th:if="${#fields.hasErrors('targetStartDate')}" th:errors="*{targetStartDate}" style="color: red; font-size: 0.8em;"></div>
+                            </td>
+                            <td>
+                                <input type="date" name="targetEndDate" id="targetEndDate" 
+                                       th:value="${updateShiftApplicationEventForm.targetEndDate}">
+                                <div th:if="${#fields.hasErrors('targetEndDate')}" th:errors="*{targetEndDate}" style="color: red; font-size: 0.8em;"></div>
+                            </td>
+                            <td>
+                                <input type="date" name="applicationStartDate" id="applicationStartDate" 
+                                       th:value="${updateShiftApplicationEventForm.applicationStartDate}">
+                                <div th:if="${#fields.hasErrors('applicationStartDate')}" th:errors="*{applicationStartDate}" style="color: red; font-size: 0.8em;"></div>
+                            </td>
+                            <td>
+                                <input type="date" name="applicationEndDate" id="applicationEndDate" 
+                                       th:value="${updateShiftApplicationEventForm.applicationEndDate}">
+                                <div th:if="${#fields.hasErrors('applicationEndDate')}" th:errors="*{applicationEndDate}" style="color: red; font-size: 0.8em;"></div>
+                            </td>
+                            <td>
+                                <button type="submit">完了</button>
+                            </td>
+                            <td>
+                                <button type="submit" th:formaction="@{/admin/shift-application-event/cancel(page=${eventPage.number})}">キャンセル</button>
+                            </td>
+                        </tr>
+                    </table>
+
+                </form>
+            </td>
+        </th:block>
+
+    </tr>
+
+    </tbody>
+
+</table>
+
+<br>
+
+<!-- ========================= -->
+<!-- ページネーション（11件以上の場合のみ表示） -->
+<!-- ========================= -->
+<nav th:if="${eventPage.totalPages > 1}" class="pagination" aria-label="ページネーション">
+
+    <!-- 「＜」 前のページボタン -->
+    <a th:if="${!eventPage.first}" 
+       th:href="@{/admin/shift-application-event(page=${eventPage.number - 1})}" 
+       class="pagination-item" 
+       aria-label="前へ">＜</a>
+    <button th:if="${eventPage.first}" 
+            class="pagination-item" 
+            disabled 
+            aria-label="前へ">＜</button>
+
+    <!-- ページ番号ボタン（1～totalPages） -->
+    <th:block th:each="i : ${#numbers.sequence(0, eventPage.totalPages - 1)}">
+        <!-- 現在のページ (disabled) -->
+        <button th:if="${i == eventPage.number}" 
+                class="pagination-item active" 
+                disabled 
+                aria-current="page" 
+                th:text="${i + 1}"></button>
+        <!-- 他のページ (リンク) -->
+        <a th:if="${i != eventPage.number}"
+           th:href="@{/admin/shift-application-event(page=${i})}"
+           class="pagination-item"
+           th:text="${i + 1}">
+        </a>
+    </th:block>
+
+    <!-- 「＞」 次のページボタン -->
+    <a th:if="${!eventPage.last}" 
+       th:href="@{/admin/shift-application-event(page=${eventPage.number + 1})}" 
+       class="pagination-item" 
+       aria-label="次へ">＞</a>
+    <button th:if="${eventPage.last}" 
+            class="pagination-item" 
+            disabled 
+            aria-label="次へ">＞</button>
+
+</nav>
+
+<br>
+
+<button type="button"
+        th:onclick="|location.href='@{/admin/shift-management}'|"
+        th:disabled="${editingEventId != null}">
+    戻る
+</button>
+
+<!-- JS制御（サーバー側での判定結果に基づきダイアログを表示） -->
+<script th:inline="javascript">
+/*<![CDATA[*/
+window.addEventListener('DOMContentLoaded', function() {
+    var pendingFormType = /*[[${pendingFormType}]]*/ null;
+    var pendingGapMessage = /*[[${pendingGapMessage}]]*/ null;
+
+    if (pendingFormType && pendingGapMessage) {
+        if (confirm(pendingGapMessage)) {
+            if (pendingFormType === 'create') {
+                document.getElementById('createConfirmConfirmed').value = 'true';
+                document.getElementById('createForm').submit();
+            } else if (pendingFormType === 'update') {
+                document.getElementById('updateConfirmConfirmed').value = 'true';
+                document.getElementById('updateForm').submit();
+            }
+        }
+    }
+});
+/*]]>*/
+</script>
+
+</body>
+
+</html>

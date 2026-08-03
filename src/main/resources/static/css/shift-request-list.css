@@ -1,0 +1,475 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   1. 変数定義 (Design System)
+   ========================================================================== */
+:root {
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --bg-color: #f8fafc;
+    --card-bg: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    
+    --table-header-bg: #eff6ff;
+    --table-row-hover: #f1f5f9;
+    
+    --disabled-bg: #cbd5e1;
+    --disabled-text: #94a3b8;
+
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-sidebar: -4px 0 15px rgba(0, 0, 0, 0.1);
+    --radius-md: 8px;
+    --radius-lg: 12px;
+
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================================
+   2. 全体レイアウト & アニメーション
+   ========================================================================== */
+body {
+    margin: 0;
+    padding: 40px 20px;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    animation: fadeIn var(--transition-normal);
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    background-color: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 40px;
+    position: relative;
+    transition: box-shadow var(--transition-fast);
+}
+
+.container:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+/* ==========================================================================
+   3. タイトル
+   ========================================================================== */
+h2 {
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-top: 0;
+    margin-bottom: 24px;
+    position: relative;
+    padding-bottom: 12px;
+}
+
+h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background-color: var(--primary-color);
+    border-radius: 2px;
+}
+
+/* ==========================================================================
+   4. イベント選択エリア & 上部戻るボタン領域 (横並びレイアウト)
+   ========================================================================== */
+#eventForm {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    gap: 16px;
+    flex-wrap: wrap;
+    flex-shrink: 0; /* 固定エリアが縮まないように保護 */
+}
+
+.event-select-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.event-select-wrapper label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    white-space: nowrap;
+    line-height: 42px;
+}
+
+.select-container {
+    display: flex;
+    flex-direction: column;
+}
+
+#eventSelect {
+    width: 300px;
+    padding: 10px 16px;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    background-color: #ffffff;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-md);
+    outline: none;
+    cursor: pointer;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2064748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+#eventSelect:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.no-event-message {
+    color: #dc2626;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 6px;
+    white-space: nowrap;
+}
+
+.no-data-message {
+    margin: 10px 0;
+    color: #dc2626;
+    font-size: 16px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* ==========================================================================
+   5. テーブル（パターン1: スクロール制御設定）
+   ========================================================================== */
+.main-content {
+    width: 100%;
+}
+
+/* テーブル全体の高さを制限し、縦スクロールバー化 */
+.main-content > table {
+    width: 100% !important;
+    max-height: 420px; /* ★スクロールを表示する高さ（必要に応じて調整可） */
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-md);
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+}
+
+/* テーブルのヘッダー部（上部に固定） */
+.main-content > table thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    flex-shrink: 0;
+    background-color: var(--table-header-bg);
+}
+
+.main-content > table thead tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+/* テーブルのデータ行部 */
+.main-content > table tbody {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+th {
+    background-color: var(--table-header-bg) !important;
+    color: var(--text-primary);
+    font-weight: 700;
+    text-align: center !important;
+    padding: 14px 16px;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--border-color) !important;
+    border-right: 1px solid var(--border-color) !important;
+}
+
+th:last-child {
+    border-right: none !important;
+}
+
+td {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    padding: 12px 16px;
+    font-size: 0.93rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color) !important;
+    border-right: 1px solid var(--border-color) !important;
+    transition: background-color var(--transition-fast);
+}
+
+td:last-child {
+    border-right: none !important;
+}
+
+tbody tr:last-child td {
+    border-bottom: none !important;
+}
+
+tbody tr:hover td {
+    background-color: var(--table-row-hover);
+}
+
+/* テーブル各列の幅の設定（レイアウト崩れ防止） */
+.main-content > table th:nth-child(1), .main-content > table td:nth-child(1) { width: 20%; }
+.main-content > table th:nth-child(2), .main-content > table td:nth-child(2) { width: 25%; }
+.main-content > table th:nth-child(3), .main-content > table td:nth-child(3) { width: 25%; }
+.main-content > table th:nth-child(4), .main-content > table td:nth-child(4) { width: 15%; }
+.main-content > table th:nth-child(5), .main-content > table td:nth-child(5) { width: 15%; }
+
+/* ==========================================================================
+   状態表示用クラス (Status Styles)
+   ========================================================================== */
+
+/* 提出済み（submitted = true） */
+td.status-submitted {
+    background-color: #eff6ff !important;
+    color: var(--primary-color) !important;
+    font-weight: 700 !important;
+}
+
+/* 未提出（submitted = false） */
+td.status-unsubmitted {
+    background-color: #fef2f2 !important;
+    color: #dc2626 !important;
+    font-weight: 700 !important;
+}
+
+/* ==========================================================================
+   6. ボタン (詳細ボタン・戻るボタン)
+   ========================================================================== */
+button[type="button"] {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    padding: 6px 18px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+}
+
+button[type="button"]:not(:disabled):hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+button[type="button"]:disabled {
+    background-color: var(--disabled-bg) !important;
+    color: var(--disabled-text) !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+    opacity: 0.8;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 20px;
+    font-size: 0.93rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background-color: #ffffff;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.back-btn:hover {
+    color: var(--text-primary);
+    border-color: #cbd5e1;
+    background-color: var(--bg-color);
+    transform: translateY(-1px);
+}
+
+.back-btn-top {
+    margin-top: 0;
+}
+
+/* ==========================================================================
+   7. サイドバー
+   ========================================================================== */
+.sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    width: 380px !important;
+    height: 100vh !important;
+    background-color: #ffffff !important;
+    box-shadow: var(--shadow-sidebar) !important;
+    border-left: 1px solid var(--border-color) !important;
+    padding: 32px 24px !important;
+    z-index: 1000;
+    overflow-y: auto;
+    transform: translateX(100%);
+    transition: transform var(--transition-normal), visibility var(--transition-normal);
+    visibility: hidden;
+}
+
+.sidebar.active {
+    transform: translateX(0) !important;
+    visibility: visible !important;
+    display: block !important;
+}
+
+.sidebar h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--table-header-bg);
+    padding-bottom: 10px;
+}
+
+.sidebar p {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+.sidebar p strong {
+    color: var(--text-primary);
+}
+
+.sidebar button[onclick="closeSidebar()"] {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent !important;
+    color: var(--text-secondary) !important;
+    border: none !important;
+    font-size: 1.5rem !important;
+    font-weight: 400 !important;
+    padding: 4px 8px !important;
+    line-height: 1;
+    box-shadow: none !important;
+    border-radius: var(--radius-md) !important;
+}
+
+.sidebar button[onclick="closeSidebar()"]:hover {
+    color: var(--text-primary) !important;
+    background-color: var(--bg-color) !important;
+    transform: none !important;
+}
+
+/* サイドバー内部の通常のテーブル設定 */
+.sidebar table {
+    width: 100% !important;
+    display: table !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    border-collapse: separate !important;
+}
+
+.sidebar th, .sidebar td {
+    padding: 10px 8px;
+    width: auto !important;
+}
+
+/* ==========================================================================
+   サイドバー詳細テーブル用：ハイライトスタイル
+   ========================================================================== */
+
+/* 勤務不可（×） */
+td.sidebar-unavailable {
+    background-color: #fef2f2 !important;
+    color: #dc2626 !important;
+    font-weight: 700 !important;
+}
+
+/* 日またぎ（終了時刻 < 開始時刻） */
+td.overnight-cell {
+    background-color: #00ffff !important;
+    color: #4169e1 !important;
+    font-weight: 700 !important;
+}
+
+/* ==========================================================================
+   8. レスポンシブ対応
+   ========================================================================== */
+@media (max-width: 768px) {
+    body {
+        padding: 20px 12px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 100%;
+        padding: 24px 16px;
+        border-radius: var(--radius-md);
+    }
+
+    #eventForm {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .event-select-wrapper {
+        width: 100%;
+    }
+
+    .select-container {
+        width: 100%;
+    }
+
+    #eventSelect {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .sidebar {
+        width: 100% !important;
+        padding: 24px 16px !important;
+    }
+}

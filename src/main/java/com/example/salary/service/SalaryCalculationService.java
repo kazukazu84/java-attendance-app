@@ -57,10 +57,22 @@ public class SalaryCalculationService {
 
         for (Attendance att : attendances) {
 
-            if (att.getClockIn() == null || att.getClockOut() == null) continue;
+            // ★ clockIn / clockOut が null → スキップ
+            if (att.getClockIn() == null || att.getClockOut() == null) {
+                continue;
+            }
 
+            // ★ Duration 計算（ミリ秒対策：LocalTime は安全に扱える）
             long minutes = Duration.between(att.getClockIn(), att.getClockOut()).toMinutes();
-            minutes -= att.getRestTime();
+
+            // ★ 休憩は「分」扱い → 時間に変換
+            Double restMinutes = att.getRestTime();
+            if (restMinutes == null) restMinutes = 0.0;
+
+            minutes -= restMinutes;
+
+            // ★ マイナスや NaN を防ぐ
+            if (minutes < 0) minutes = 0;
 
             totalWorkingHours += (minutes / 60.0);
         }
