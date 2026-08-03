@@ -41,7 +41,6 @@ public class ShiftRequestSelectService {
     	ShiftRequestSelectDto dto1 =
     			new ShiftRequestSelectDto();
     	
-    	
     	/*----------------------------------------------
     	 * 【管理者チーム連携待ち】
     	 * ・イベント一覧は現在ダミーデータ
