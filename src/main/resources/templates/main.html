@@ -293,35 +293,34 @@
 
 					            </div>
 
-								<table border="1"
-								       style="width:100%;
-								              border-collapse:collapse;
-								              text-align:center;">
+                  <table style="width:100%; border-collapse:collapse; text-align:center;">
 
 					                <tr>
-					                    <th>日付・曜日</th>
-					                    <th>シフト情報</th>
+					                      <th style="border:1px solid #ccc;">日付・曜日</th>
+					                    <th style="border:1px solid #ccc;">シフト情報</th>
 					                </tr>
 
 					                <tr th:each="shift : ${weeklyShiftList}">
 
-					                    <td th:text="${shift.workDate + '(' +
-					                        (shift.workDate.dayOfWeek.name() == 'MONDAY' ? '月' :
-					                        shift.workDate.dayOfWeek.name() == 'TUESDAY' ? '火' :
-					                        shift.workDate.dayOfWeek.name() == 'WEDNESDAY' ? '水' :
-					                        shift.workDate.dayOfWeek.name() == 'THURSDAY' ? '木' :
-					                        shift.workDate.dayOfWeek.name() == 'FRIDAY' ? '金' :
-					                        shift.workDate.dayOfWeek.name() == 'SATURDAY' ? '土' :
-					                        '日')
-					                        + ')'}">
+										<td style="border:1px solid #ccc;"
+										    th:text="${shift.workDate + '(' +
+										        (shift.workDate.dayOfWeek.name() == 'MONDAY' ? '月' :
+										        shift.workDate.dayOfWeek.name() == 'TUESDAY' ? '火' :
+										        shift.workDate.dayOfWeek.name() == 'WEDNESDAY' ? '水' :
+										        shift.workDate.dayOfWeek.name() == 'THURSDAY' ? '木' :
+										        shift.workDate.dayOfWeek.name() == 'FRIDAY' ? '金' :
+										        shift.workDate.dayOfWeek.name() == 'SATURDAY' ? '土' :
+										        '日')
+										        + ')'}">
+										</td>
 
-					                    </td>
+										<td style="border:1px solid #ccc;"
+										    th:text="${shift.startTime == null ?
+										            '休み'
+										            : shift.startTime + '～' + shift.endTime}">
+										</td>
 
-					                    <td th:text="${shift.startTime == null ?
-					                            '休み'
-					                            : shift.startTime + '～' + shift.endTime}">
-					                    </td>
-
+			
 					                </tr>
 
 					            </table>
