@@ -57,24 +57,27 @@ public class SalaryDetailController {
                 : "/user";
         model.addAttribute("basePath", basePath);
 
-        // ★ 給与情報（単一）
-        SalaryDetailDto detail = salaryDetailService.getSalaryDetail(
+        // ★ 給与情報（複数）
+        List<SalaryDetailDto> detailList = salaryDetailService.getSalaryDetailList(
                 userId, targetYear, targetMonth
         );
 
-        if (detail == null) {
+        if (detailList.isEmpty()) {
             redirectAttributes.addFlashAttribute("errorMessage", "該当データがありません");
             return "redirect:" + basePath + "/salary/confirm?userId=" + userId + "&targetYear=" + targetYear;
         }
+
+        // ★ 代表データ（従来の detail と同じ役割）
+        SalaryDetailDto detail = detailList.get(0);
 
         // ★ 当月の勤怠一覧（複数）
         List<Attendance> attendanceList =
                 salaryDetailService.getAttendanceList(userId, targetYear, targetMonth)
                         .stream()
-                        .sorted((a, b) -> b.getWorkDate().compareTo(a.getWorkDate())) // ★ 新しい日付 → 古い日付
+                        .sorted((a, b) -> b.getWorkDate().compareTo(a.getWorkDate()))
                         .collect(Collectors.toList());
 
-        // ★ 勤怠一覧を DTO に変換（Entity は触らない）
+        // ★ 勤怠一覧を DTO に変換
         List<AttendanceDto> attendanceDtoList = attendanceList.stream()
                 .map(att -> {
                     AttendanceDto dto = new AttendanceDto();
@@ -83,12 +86,10 @@ public class SalaryDetailController {
                     dto.setClockOut(att.getClockOut() != null ? att.getClockOut().toString() : null);
                     dto.setRestTime(att.getRestTime());
 
-                    // 勤務時間計算（Controller 側で完結）
                     if (att.getClockIn() != null && att.getClockOut() != null) {
                         double hours = Duration.between(att.getClockIn(), att.getClockOut())
                                 .toMinutes() / 60.0;
 
-                        // ★ rest_time（分）→ 時間に変換
                         double restHours = (att.getRestTime() == null ? 0 : att.getRestTime()) / 60.0;
 
                         dto.setWorkingHours(hours - restHours);
@@ -100,18 +101,16 @@ public class SalaryDetailController {
                 })
                 .collect(Collectors.toList());
 
-        // ★ 勤務時間合計を計算（給与計算用）
+        // ★ 勤務時間合計
         double totalWorkingHours = attendanceList.stream()
                 .mapToDouble(att -> {
-
                     if (att.getClockIn() == null || att.getClockOut() == null) {
-                        return 0.0; // ★ null の場合は 0 時間
+                        return 0.0;
                     }
 
                     double hours = Duration.between(att.getClockIn(), att.getClockOut())
                             .toMinutes() / 60.0;
 
-                    // ★ rest_time（分）→ 時間に変換
                     Double restMinutes = att.getRestTime();
                     if (restMinutes == null) restMinutes = 0.0;
 
@@ -124,14 +123,12 @@ public class SalaryDetailController {
                     }
 
                     return result;
-
                 })
                 .sum();
 
-
         detail.setWorkingHours(totalWorkingHours);
 
-        // ★ 画面状態セット
+        // ★ 画面状態セット（従来通り detail に対して）
         detail.setInitialDisplay(true);
         detail.setFromScreen("salaryConfirm");
 
@@ -153,8 +150,9 @@ public class SalaryDetailController {
             return "salaryDetail";
         }
 
-        // ★ 画面へ渡す（DTO 化した勤怠一覧）
-        model.addAttribute("detail", detail);
+        // ★ 画面へ渡す（複数件 + 代表データ）
+        model.addAttribute("detail", detail);          // 従来の単一データ
+        model.addAttribute("detailList", detailList);  // 新規追加：複数件
         model.addAttribute("attendanceList", attendanceDtoList);
         model.addAttribute("userId", userId);
         model.addAttribute("targetYear", targetYear);
