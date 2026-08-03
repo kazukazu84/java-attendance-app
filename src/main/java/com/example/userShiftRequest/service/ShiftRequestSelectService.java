@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.adminshift.entity.ShiftApplicationEvent;
 import com.example.adminshift.repository.ShiftApplicationEventRepository;
 import com.example.userShiftRequest.dto.ShiftRequestSelectDto;
 import com.example.userShiftRequest.form.ShiftRequestSelectForm;
@@ -30,16 +31,39 @@ public class ShiftRequestSelectService {
     	
     	form.setSelectedYear(selectedYear);
     	
-    	List<ShiftRequestSelectDto> shiftList =
-    			new ArrayList<>();
     	
+    	
+    	List<ShiftRequestSelectDto> shiftList =
+    	        new ArrayList<>();
+
+    	List<ShiftApplicationEvent> eventList =
+    	        repository.findAll();
+
+    	for (ShiftApplicationEvent event : eventList) {
+
+    	    ShiftRequestSelectDto dto =
+    	            new ShiftRequestSelectDto();
+
+    	    dto.setEventId(event.getEventId());
+
+    	    dto.setTargetPeriod(
+    	            event.getDisplayName());
+
+    	    dto.setStartDate(
+    	            event.getStatusName());
+
+    	    shiftList.add(dto);
+    	}
+
+    	form.setShiftList(shiftList);
     	
     	// TODO
     	// 管理者側機能連携後はイベントテーブルから取得する
     	// 現在は画面確認用のダミーデータ
     	
-    	ShiftRequestSelectDto dto1 =
+    	/*【後で消す】ShiftRequestSelectDto dto1 =
     			new ShiftRequestSelectDto();
+    	*/
     	
     	/*----------------------------------------------
     	 * 【管理者チーム連携待ち】
@@ -70,10 +94,9 @@ public class ShiftRequestSelectService {
     	dto2.setStartDate("開始済");
     	
     	shiftList.add(dto2);
-    	
+    	*/   	
     	form.setShiftList(shiftList);
     	
-    	*/
     	
     	return form;
     }
