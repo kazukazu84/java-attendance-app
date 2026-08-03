@@ -63,6 +63,16 @@ class ShiftCreateControllerTest {
         event.setTargetEndDate(
                 LocalDate.of(2026, 8, 3));
 
+<<<<<<< HEAD
+=======
+        when(service.getEventList())
+                .thenReturn(List.of(event));
+
+
+//        when(service.getLatestEvent())
+//                .thenReturn(event);
+
+>>>>>>> branch 'yamamoto' of https://github.com/kazukazu84/java-attendance-app.git
 
         event.setApplicationStartDate(
                 LocalDate.of(2026, 7, 1));
@@ -655,6 +665,7 @@ class ShiftCreateControllerTest {
     @DisplayName("シフト更新_保存内容確認")
     @WithMockUser(roles = "ADMIN")
     void updateSaveContentCheck() throws Exception {
+<<<<<<< HEAD
     	
     }
 
@@ -663,6 +674,19 @@ class ShiftCreateControllerTest {
     @WithMockUser(roles = "ADMIN")
     void 夜勤シフト保存時はServiceへ渡す()
             throws Exception {
+=======
+=======
+    @WithMockUser
+    void 夜勤シフト保存時はServiceへ渡す()
+            throws Exception {
+
+
+//        when(service.saveShift(any(Shift.class)))
+//                .thenReturn(
+//                    new Shift()
+//                );
+
+>>>>>>> branch 'yamamoto' of https://github.com/kazukazu84/java-attendance-app.git
 
 
 

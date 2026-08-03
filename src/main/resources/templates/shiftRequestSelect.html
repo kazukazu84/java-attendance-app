@@ -24,7 +24,7 @@
     <div class="year-area">
 		
 		<form method = "get"
-			th:action = "@{/shiftRequestSelect}">
+			th:action = "@{/user/shiftRequestSelect}">
 		
 			<label>年度</label>
 		
@@ -82,7 +82,7 @@
 
 				<td>
 				
-					<form th:action="@{/shiftRequestSelect}" method = "get">
+					<form th:action="@{/shiftRequest}" method = "get">
 				   		 	<input type="hidden"
 				        			name="eventId"
 				         			th:value="${shift.eventId}" />
