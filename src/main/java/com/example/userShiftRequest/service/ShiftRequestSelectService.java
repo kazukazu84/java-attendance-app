@@ -36,8 +36,15 @@ public class ShiftRequestSelectService {
     	List<ShiftRequestSelectDto> shiftList =
     	        new ArrayList<>();
 
+//    	List<ShiftApplicationEvent> eventList =
+//    	        repository.findAll();
+    	
+    	//年度を取るためにメソッドを変更(桝田)
+    	List<Integer> yearList = repository.findEventYears();
+    	form.setYearList(yearList);
+
     	List<ShiftApplicationEvent> eventList =
-    	        repository.findAll();
+    	        repository.findByTargetStartYear(selectedYear);
 
     	for (ShiftApplicationEvent event : eventList) {
 
