@@ -154,4 +154,26 @@ public interface ShiftApplicationEventRepository
     List<ShiftApplicationEvent> findTargetEventsForAdminList(
             @Param("today") LocalDate today
     );
+    
+    /**
+     * イベントが存在する年度一覧を取得
+     */
+    @Query("""
+        SELECT DISTINCT YEAR(e.targetStartDate)
+        FROM ShiftApplicationEvent e
+        ORDER BY YEAR(e.targetStartDate)
+    """)
+    List<Integer> findEventYears();
+    
+    /**
+     * 指定年度のイベント一覧を取得
+     */
+    @Query("""
+        SELECT e
+        FROM ShiftApplicationEvent e
+        WHERE YEAR(e.targetStartDate) = :year
+        ORDER BY e.targetStartDate ASC
+    """)
+    List<ShiftApplicationEvent> findByTargetStartYear(
+            @Param("year") Integer year);
 }
