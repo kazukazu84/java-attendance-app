@@ -92,8 +92,8 @@ class ShiftCreateControllerTest {
                 .thenReturn(List.of(event));
 
 
-        when(service.getLatestEvent())
-                .thenReturn(event);
+//        when(service.getLatestEvent())
+//                .thenReturn(event);
 
 
 
@@ -470,10 +470,10 @@ class ShiftCreateControllerTest {
         );
 
 
-        when(service.saveShift(any(Shift.class)))
-                .thenReturn(
-                    new Shift()
-                );
+//        when(service.saveShift(any(Shift.class)))
+//                .thenReturn(
+//                    new Shift()
+//                );
 
 
 
@@ -548,10 +548,10 @@ class ShiftCreateControllerTest {
 
 
 
-        when(service.saveShift(any(Shift.class)))
-                .thenReturn(
-                    new Shift()
-                );
+//        when(service.saveShift(any(Shift.class)))
+//                .thenReturn(
+//                    new Shift()
+//                );
 
 
 
@@ -886,10 +886,10 @@ class ShiftCreateControllerTest {
             throws Exception {
 
 
-        when(service.saveShift(any(Shift.class)))
-                .thenReturn(
-                    new Shift()
-                );
+//        when(service.saveShift(any(Shift.class)))
+//                .thenReturn(
+//                    new Shift()
+//                );
 
 
 

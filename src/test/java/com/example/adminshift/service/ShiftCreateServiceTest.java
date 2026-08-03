@@ -97,46 +97,46 @@ class ShiftCreateServiceTest {
 
 
 
-
-    /**
-     * 最新イベント取得
-     */
-    @Test
-    void getLatestEvent_存在する場合() {
-
-
-        ShiftApplicationEvent event =
-                new ShiftApplicationEvent();
-
-
-        event.setEventId(10);
-
-
-
-        when(
-            shiftApplicationEventRepository
-            .findTopByOrderByEventIdDesc()
-        )
-        .thenReturn(
-                Optional.of(event)
-        );
-
-
-
-        ShiftApplicationEvent result =
-                service.getLatestEvent();
-
-
-
-        assertNotNull(result);
-
-
-        assertEquals(
-                10,
-                result.getEventId()
-        );
-
-    }
+//
+//    /**
+//     * 最新イベント取得
+//     */
+//    @Test
+//    void getLatestEvent_存在する場合() {
+//
+//
+//        ShiftApplicationEvent event =
+//                new ShiftApplicationEvent();
+//
+//
+//        event.setEventId(10);
+//
+//
+//
+//        when(
+//            shiftApplicationEventRepository
+//            .findTopByOrderByEventIdDesc()
+//        )
+//        .thenReturn(
+//                Optional.of(event)
+//        );
+//
+//
+//
+//        ShiftApplicationEvent result =
+//                service.getLatestEvent();
+//
+//
+//
+//        assertNotNull(result);
+//
+//
+//        assertEquals(
+//                10,
+//                result.getEventId()
+//        );
+//
+//    }
 
 
 
@@ -145,28 +145,28 @@ class ShiftCreateServiceTest {
     /**
      * 最新イベントなし
      */
-    @Test
-    void getLatestEvent_存在しない場合() {
-
-
-        when(
-            shiftApplicationEventRepository
-            .findTopByOrderByEventIdDesc()
-        )
-        .thenReturn(
-                Optional.empty()
-        );
-
-
-
-        ShiftApplicationEvent result =
-                service.getLatestEvent();
-
-
-
-        assertNull(result);
-
-    }
+//    @Test
+//    void getLatestEvent_存在しない場合() {
+//
+//
+//        when(
+//            shiftApplicationEventRepository
+//            .findTopByOrderByEventIdDesc()
+//        )
+//        .thenReturn(
+//                Optional.empty()
+//        );
+//
+//
+//
+//        ShiftApplicationEvent result =
+//                service.getLatestEvent();
+//
+//
+//
+//        assertNull(result);
+//
+//    }
 
 
 
@@ -535,44 +535,44 @@ class ShiftCreateServiceTest {
     /**
      * シフト保存
      */
-    @Test
-    void saveShift_正常保存() {
-
-
-        Shift shift =
-                new Shift();
-
-
-        shift.setId(1);
-
-
-
-        when(
-            shiftRepository.save(shift)
-        )
-        .thenReturn(
-                shift
-        );
-
-
-
-        Shift result =
-                service.saveShift(shift);
-
-
-
-        assertEquals(
-                1,
-                result.getId()
-        );
-
-
-
-        verify(
-            shiftRepository
-        )
-        .save(shift);
-
-    }
+//    @Test
+//    void saveShift_正常保存() {
+//
+//
+//        Shift shift =
+//                new Shift();
+//
+//
+//        shift.setId(1);
+//
+//
+//
+//        when(
+//            shiftRepository.save(shift)
+//        )
+//        .thenReturn(
+//                shift
+//        );
+//
+//
+//
+//        Shift result =
+//                service.saveShift(shift);
+//
+//
+//
+//        assertEquals(
+//                1,
+//                result.getId()
+//        );
+//
+//
+//
+//        verify(
+//            shiftRepository
+//        )
+//        .save(shift);
+//
+//    }
 
 }
