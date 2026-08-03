@@ -240,7 +240,8 @@ public class MainController {
     return "main";
 
     }
-=======
+}
+/*=======
 package com.example.main.controller;
 
 import java.util.List;
@@ -275,7 +276,7 @@ public class MainController {
     /**
      * メイン画面の表示（一般ユーザー用・管理者用の両方のURLを受け付けます）
      */
-    @GetMapping({"/user/main", "/admin/main"})
+  /*  @GetMapping({"/user/main", "/admin/main"})
     public String mainView(@AuthenticationPrincipal UserDetails loginUser, 
                            HttpServletRequest request, 
                            Model model) {
@@ -326,7 +327,7 @@ public class MainController {
          * 週間表示
          * userShiftService.getWeeklyShift()
          */
-        
+    /*    
         return "main";
     }
 
@@ -335,7 +336,7 @@ public class MainController {
     /**
      * 【共通処理】権限とリクエストURLに応じたリダイレクト判定
      */
-    private String checkAndRedirect(UserDetails loginUser, HttpServletRequest request, String userPath, String adminPath) {
+   /* private String checkAndRedirect(UserDetails loginUser, HttpServletRequest request, String userPath, String adminPath) {
         boolean isAdmin = loginUser.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         
@@ -355,3 +356,4 @@ public class MainController {
     }
 
 }
+*/
