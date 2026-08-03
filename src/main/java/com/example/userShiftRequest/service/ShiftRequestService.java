@@ -1,126 +1,201 @@
 package com.example.userShiftRequest.service;
 
-import java.sql.Date;
-import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.adminshift.entity.ShiftRequestDetail;
+import com.example.adminshift.repository.ShiftRequestDetailRepository;
 import com.example.userShiftRequest.dto.ShiftRequestDto;
-import com.example.userShiftRequest.entity.ShiftRequestDetailsEntity;
 import com.example.userShiftRequest.form.ShiftRequestForm;
-import com.example.userShiftRequest.repository.ShiftRequestDetailsRepository;
 import com.example.userShiftRequest.validation.ShiftRequestValidator;
 
 @Service
 public class ShiftRequestService {
-	
-	@Autowired
-	private ShiftRequestDetailsRepository repository;
-	
-	
-	private final ShiftRequestValidator validator =
-	        new ShiftRequestValidator();
 
+    @Autowired
+    private ShiftRequestDetailRepository repository;
+
+
+    private final ShiftRequestValidator validator =
+            new ShiftRequestValidator();
+
+
+    /**
+     * シフト希望情報取得
+     */
     public ShiftRequestForm getShiftRequestInfo() {
 
         ShiftRequestForm form = new ShiftRequestForm();
-        
-        
-        List<ShiftRequestDetailsEntity> entityList
-        = repository.findAll();
-        
-        System.out.println("=== entityList size = " + entityList.size());
 
-        List<ShiftRequestDto> shiftList = new ArrayList<>();
-        
-        for (ShiftRequestDetailsEntity entity : entityList) {
 
-            ShiftRequestDto dto = new ShiftRequestDto();
+        List<ShiftRequestDetail> entityList =
+                repository.findAll();
 
+
+        System.out.println(
+                "=== entityList size = " + entityList.size());
+
+
+        List<ShiftRequestDto> shiftList =
+                new ArrayList<>();
+
+
+        for (ShiftRequestDetail entity : entityList) {
+
+            ShiftRequestDto dto =
+                    new ShiftRequestDto();
+
+
+            // 日付
             dto.setWorkDate(
                     entity.getWorkDate().toString());
 
+
+            // ○ / ×
             dto.setAvailable(
-                    entity.getIsAvailable() ? "○" : "×");
+                    entity.getIsAvailable()
+                            ? "○"
+                            : "×");
 
-            dto.setStartTime(
-                    entity.getRequestedStartTime().toString());
 
-            dto.setEndTime(
-                    entity.getRequestedEndTime().toString());
+            // 開始時間
+            if (entity.getRequestedStartTime() != null) {
+                dto.setStartTime(
+                        entity.getRequestedStartTime()
+                                .toString());
+            }
+
+
+            // 終了時間
+            if (entity.getRequestedEndTime() != null) {
+                dto.setEndTime(
+                        entity.getRequestedEndTime()
+                                .toString());
+            }
+
 
             shiftList.add(dto);
         }
-        
-        
+
+
         form.setTargetPeriod("12/22～12/29");
 
         form.setShiftList(shiftList);
 
+
         return form;
-        
     }
-    
-    public boolean applyShiftRequest
-    (ShiftRequestForm form, String currentUserId) {
-    	
-    	if (form.getShiftList() == null) {
-    	    return false;
-    	}
-    	
-    	boolean saved = false;
-    
-    	for (ShiftRequestDto dto : form.getShiftList()) {    	
-    	
-        	if (!validator.isValid(dto)) {
-        	    continue;
-        	}	
-        	
-            ShiftRequestDetailsEntity entity =
-                    new ShiftRequestDetailsEntity();
-            
-            
-            // ユーザーIDをDBへ保存する
+
+
+
+    /**
+     * シフト希望登録
+     */
+    public boolean applyShiftRequest(
+            ShiftRequestForm form,
+            String currentUserId) {
+
+
+        if (form.getShiftList() == null) {
+            return false;
+        }
+
+
+        boolean saved = false;
+
+
+
+        for (ShiftRequestDto dto :
+                form.getShiftList()) {
+
+
+            // 入力チェック
+            if (!validator.isValid(dto)) {
+                continue;
+            }
+
+
+
+            ShiftRequestDetail entity =
+                    new ShiftRequestDetail();
+
+
+
+            // ユーザーID
             entity.setUserId(currentUserId);
 
-            entity.setEventId(form.getEventId());
-            
-            System.out.println(
-                    "保存eventId=" + form.getEventId());
-            
-            entity.setWorkDate(
-                    Date.valueOf(dto.getWorkDate()));
 
+
+            // イベントID
+            entity.setEventId(
+                    form.getEventId());
+
+
+
+            System.out.println(
+                    "保存eventId="
+                    + form.getEventId());
+
+
+
+            // 日付
+            entity.setWorkDate(
+                    LocalDate.parse(
+                            dto.getWorkDate()));
+
+
+
+            // 出勤可否
             entity.setIsAvailable(
-                    "○".equals(dto.getAvailable()));
-            
-            
-            
-            
+                    "○".equals(
+                            dto.getAvailable()));
+
+
+
             if ("○".equals(dto.getAvailable())) {
 
-                entity.setRequestedStartTime(
-                        Time.valueOf(dto.getStartTime()));
 
+                // 開始時間
+                entity.setRequestedStartTime(
+                        LocalTime.parse(
+                                dto.getStartTime()));
+
+
+
+                // 終了時間
                 entity.setRequestedEndTime(
-                        Time.valueOf(dto.getEndTime()));
+                        LocalTime.parse(
+                                dto.getEndTime()));
+
 
             } else {
+
 
                 entity.setRequestedStartTime(null);
 
                 entity.setRequestedEndTime(null);
+
             }
+
+
+
             repository.save(entity);
-            
+
+
             saved = true;
 
-            System.out.println("申請処理完了");
-            
+
+            System.out.println(
+                    "申請処理完了");
+
         }
+
+
         return saved;
     }
 }
