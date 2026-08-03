@@ -120,11 +120,11 @@
 	
 	
 <!--【画面遷移】「キャンセル」ボタン → 「シフト申請選択画面」-->
-	<button type = "button", 
+	<button type = "button"
 		th:onclick = 
 			"|location.href = 
-			'@{/shiftRequestSelect
-				(selectedYear=${form.selectedYear})}'|">
+			'@{/user/shiftRequestSelect
+				(selectedYear = ${form.selectedYear})}'|">
 		キャンセル
     </button>
 	
