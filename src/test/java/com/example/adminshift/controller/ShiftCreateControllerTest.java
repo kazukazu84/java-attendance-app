@@ -1,5 +1,6 @@
 package com.example.adminshift.controller;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
@@ -7,1031 +8,692 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.example.adminshift.dto.MonthlyShiftSummaryDto;
 import com.example.adminshift.entity.Shift;
 import com.example.adminshift.entity.ShiftApplicationEvent;
-import com.example.adminshift.form.ShiftForm;
+import com.example.adminshift.entity.Users;
 import com.example.adminshift.repository.ShiftRepository;
 import com.example.adminshift.service.ShiftCreateService;
 
 
-/**
- * ShiftCreateController テストクラス
- *
- * Controller単体テストを行う。
- *
- * ShiftCreateServiceはMockitoでMock化し、
- *
- * ・正しいViewへ遷移するか
- * ・Modelへ必要な値を設定するか
- * ・Serviceが正しく呼ばれるか
- * ・リダイレクトされるか
- *
- * を確認する。
- */
 @WebMvcTest(ShiftCreateController.class)
 class ShiftCreateControllerTest {
 
 
-    /**
-     * MockMvc
-     *
-     * ControllerへHTTPリクエストを送信する
-     * テスト用クラス
-     */
     @Autowired
     private MockMvc mockMvc;
 
 
-
-    /**
-     * Service Mock
-     *
-     * 実際のDBアクセスは行わない
-     */
-    @MockitoBean
-    private ShiftCreateService service;
+    @MockBean
+    private ShiftCreateService shiftCreateService;
     
-    @MockitoBean
+    @MockBean
     private ShiftRepository shiftRepository;
 
 
 
     /**
-     * テスト①
-     *
-     * 初期表示確認
-     *
-     * GET
-     * /admin/shiftCreate
+     * イベント作成
      */
-    @Test
-    @WithMockUser
-    void 初期表示時にシフト作成画面を表示する()
-            throws Exception {
+    private ShiftApplicationEvent createEvent() {
 
-
-        /*
-         * イベント情報
-         */
         ShiftApplicationEvent event =
                 new ShiftApplicationEvent();
 
         event.setEventId(1);
 
+        event.setTargetStartDate(
+                LocalDate.of(2026, 8, 1));
 
-        when(service.getEventList())
-                .thenReturn(List.of(event));
+        event.setTargetEndDate(
+                LocalDate.of(2026, 8, 3));
 
+        event.setApplicationStartDate(
+                LocalDate.of(2026, 7, 1));
 
-        when(service.getLatestEvent())
-                .thenReturn(event);
+        event.setApplicationEndDate(
+                LocalDate.of(2026, 7, 20));
 
-
-
-        /*
-         * シフト表表示用データ
-         */
-        when(service.getCurrentEvent(1))
-                .thenReturn(event);
-
-
-        when(service.getShiftTable(1))
-                .thenReturn(List.of());
-
-
-        when(service.getTargetDateList(event))
-                .thenReturn(List.of(
-                        LocalDate.of(2026, 8, 1)
-                ));
-
-
-
-        when(service.getAllUsers())
-                .thenReturn(List.of());
-
-
-
-        mockMvc.perform(
-                get("/admin/shiftCreate")
-        )
-
-
-        .andExpect(status().isOk())
-
-
-        .andExpect(
-                view().name(
-                    "admin/shiftCreate"
-                )
-        )
-
-
-        .andExpect(
-                model().attributeExists(
-                    "eventList"
-                )
-        )
-
-
-        .andExpect(
-                model().attributeExists(
-                    "shiftForm"
-                )
-        );
+        return event;
     }
 
 
 
-
-
     /**
-     * テスト②
-     *
-     * イベント変更時
-     *
-     * POST
-     * /admin/shiftCreate/changeEvent
+     * ユーザー作成
      */
-    @Test
-    @WithMockUser
-    void イベント変更時は選択イベントのシフト表を表示する()
-            throws Exception {
+    private Users createUser() {
 
+        Users user =
+                new Users();
 
-        ShiftApplicationEvent event =
-                new ShiftApplicationEvent();
+        user.setUserId("user001");
 
-        event.setEventId(2);
-
-
-
-        when(service.getEventList())
-                .thenReturn(
-                    List.of(event)
-                );
-
-
-        when(service.getCurrentEvent(2))
-                .thenReturn(event);
-
-
-
-        when(service.getShiftTable(2))
-                .thenReturn(
-                    List.of()
-                );
-
-
-        when(service.getTargetDateList(event))
-                .thenReturn(
-                    List.of(
-                        LocalDate.of(2026,8,1)
-                    )
-                );
-
-
-        when(service.getAllUsers())
-                .thenReturn(
-                    List.of()
-                );
-
-
-
-        mockMvc.perform(
-                post("/admin/shiftCreate/changeEvent")
-
-                .with(csrf())
-
-                .param(
-                    "selectedEventId",
-                    "2"
-                )
-        )
-
-
-        .andExpect(status().isOk())
-
-
-        .andExpect(
-            view().name(
-                "admin/shiftCreate"
-            )
-        )
-
-
-        .andExpect(
-            model().attributeExists(
-                "shiftList"
-            )
-        );
+        return user;
     }
 
 
 
-
-
     /**
-     * テスト③
-     *
-     * 既存シフト編集ボタン押下
-     *
-     * GET
-     * /admin/shiftCreate/edit
+     * シフト作成
      */
-    @Test
-    @WithMockUser
-    void 編集押下時は編集フォームを設定する()
-            throws Exception {
-
+    private Shift createShift() {
 
         Shift shift =
                 new Shift();
-
 
         shift.setId(1);
         shift.setEventId(1);
         shift.setUserId("user001");
         shift.setShiftDate(
-                LocalDate.of(2026,8,1)
-        );
+                LocalDate.of(2026, 8, 1));
+
         shift.setIsAvailable(1);
 
+        return shift;
+    }
 
 
-        when(service.getShiftDetail(1))
+
+    /**
+     * 月別集計
+     */
+    private Map<String, List<MonthlyShiftSummaryDto>>
+    createSummaryMap() {
+
+        return new HashMap<>();
+    }
+
+
+
+
+    @Test
+    @DisplayName("初期表示")
+    @WithMockUser(roles = "ADMIN")
+    void index() throws Exception {
+
+
+        when(shiftCreateService.getEventList())
                 .thenReturn(
-                    shift
-                );
+                        List.of(createEvent()));
 
 
-        ShiftApplicationEvent event =
-                new ShiftApplicationEvent();
-
-        event.setEventId(1);
-
-
-
-        when(service.getEventList())
+        when(shiftCreateService.getOldestEvent())
                 .thenReturn(
-                    List.of(event)
-                );
+                        createEvent());
 
 
-        when(service.getCurrentEvent(1))
-                .thenReturn(event);
+        when(shiftCreateService.getCurrentEvent(1))
+                .thenReturn(
+                        createEvent());
 
 
-        when(service.getShiftTable(1))
-                .thenReturn(List.of());
+        when(shiftCreateService.getShiftTable(1))
+                .thenReturn(
+                        List.of(createShift()));
 
 
-        when(service.getTargetDateList(event))
-                .thenReturn(List.of());
+        when(shiftCreateService.getTargetDateList(any()))
+                .thenReturn(
+                        List.of(
+                                LocalDate.of(2026,8,1),
+                                LocalDate.of(2026,8,2),
+                                LocalDate.of(2026,8,3)
+                        ));
 
 
-        when(service.getAllUsers())
-                .thenReturn(List.of());
+        when(shiftCreateService.getAllUsers())
+                .thenReturn(
+                        List.of(createUser()));
+
+
+        when(shiftCreateService.getMonthlySummaryMap(any(), any()))
+                .thenReturn(
+                        createSummaryMap());
+
+
+
+        mockMvc.perform(
+                get("/admin/shiftCreate"))
+                .andExpect(status().isOk())
+                .andExpect(
+                        view()
+                        .name("admin/shiftCreate"))
+                .andExpect(
+                        model()
+                        .attributeExists("eventList"))
+                .andExpect(
+                        model()
+                        .attributeExists("shiftForm"));
+
+
+
+        verify(shiftCreateService)
+                .getEventList();
+
+    }
+
+
+
+
+    @Test
+    @DisplayName("イベント変更")
+    @WithMockUser(roles = "ADMIN")
+    void changeEvent() throws Exception {
+
+
+        when(shiftCreateService.getEventList())
+                .thenReturn(
+                        List.of(createEvent()));
+
+
+        when(shiftCreateService.getCurrentEvent(1))
+                .thenReturn(
+                        createEvent());
+
+
+        when(shiftCreateService.getShiftTable(1))
+                .thenReturn(
+                        new ArrayList<>());
+
+
+        when(shiftCreateService.getTargetDateList(any()))
+                .thenReturn(
+                        new ArrayList<>());
+
+
+        when(shiftCreateService.getAllUsers())
+                .thenReturn(
+                        new ArrayList<>());
+
+
+        when(shiftCreateService.getMonthlySummaryMap(any(), any()))
+                .thenReturn(
+                        new HashMap<>());
+
+
+
+        mockMvc.perform(
+                post("/admin/shiftCreate/changeEvent")
+                .with(csrf())
+                .param(
+                    "selectedEventId",
+                    "1"))
+                .andExpect(status().isOk())
+                .andExpect(
+                        view()
+                        .name("admin/shiftCreate"))
+                .andExpect(
+                        model()
+                        .attributeExists("eventList"));
+
+    }
+
+
+
+
+    @Test
+    @DisplayName("戻るボタン")
+    @WithMockUser(roles = "ADMIN")
+    void back() throws Exception {
+
+
+        mockMvc.perform(
+                get("/admin/shiftCreate/back"))
+                .andExpect(
+                        status()
+                        .is3xxRedirection())
+                .andExpect(
+                        redirectedUrl(
+                        "/admin/shift-management"));
+
+    }@Test
+    @DisplayName("既存シフト編集表示")
+    @WithMockUser(roles = "ADMIN")
+    void edit() throws Exception {
+
+
+        Shift shift = createShift();
+
+
+        when(shiftCreateService.getShiftDetail(1))
+                .thenReturn(shift);
+
+
+        when(shiftCreateService.getEventList())
+                .thenReturn(
+                        List.of(createEvent()));
+
+
+        when(shiftCreateService.getCurrentEvent(1))
+                .thenReturn(
+                        createEvent());
+
+
+        when(shiftCreateService.getShiftTable(1))
+                .thenReturn(
+                        List.of(shift));
+
+
+        when(shiftCreateService.getTargetDateList(any()))
+                .thenReturn(
+                        List.of(
+                                LocalDate.of(2026, 8, 1)
+                        ));
+
+
+        when(shiftCreateService.getAllUsers())
+                .thenReturn(
+                        List.of(createUser()));
+
+
+        when(shiftCreateService.getMonthlySummaryMap(any(), any()))
+                .thenReturn(
+                        createSummaryMap());
 
 
 
         mockMvc.perform(
                 get("/admin/shiftCreate/edit")
-
-                .param(
-                    "shiftId",
-                    "1"
-                )
-
-                .param(
-                    "eventId",
-                    "1"
-                )
-        )
-
-
-        .andExpect(status().isOk())
-
-
-        .andExpect(
-            view().name(
-                "admin/shiftCreate"
-            )
-        )
+                .param("shiftId", "1")
+                .param("eventId", "1"))
+                .andExpect(status().isOk())
+                .andExpect(
+                        view()
+                        .name("admin/shiftCreate"))
+                .andExpect(
+                        model()
+                        .attributeExists("shiftForm"))
+                .andExpect(
+                        model()
+                        .attribute(
+                                "showModal",
+                                true));
 
 
-        .andExpect(
-            model().attribute(
-                "showModal",
-                true
-            )
-        )
 
+        verify(shiftCreateService)
+                .getShiftDetail(1);
 
-        .andExpect(
-            model().attributeExists(
-                "shiftForm"
-            )
-        );
     }
-    /**
-     * テスト④
-     *
-     * 新規シフト作成セル押下
-     *
-     * GET
-     * /admin/shiftCreate/new
-     */
     @Test
-    @WithMockUser
-    void 新規作成押下時は新規シフトフォームを設定する()
-            throws Exception {
+    @DisplayName("新規シフト作成")
+    @WithMockUser(roles = "ADMIN")
+    void createNewShift() throws Exception {
 
 
-        ShiftApplicationEvent event =
-                new ShiftApplicationEvent();
-
-        event.setEventId(1);
-
-
-
-        when(service.getEventList())
+        when(shiftCreateService.getEventList())
                 .thenReturn(
-                    List.of(event)
-                );
+                        List.of(createEvent()));
 
 
-        when(service.getCurrentEvent(1))
-                .thenReturn(event);
-
-
-
-        when(service.getShiftTable(1))
+        when(shiftCreateService.getCurrentEvent(1))
                 .thenReturn(
-                    List.of()
-                );
+                        createEvent());
 
 
-        when(service.getTargetDateList(event))
+        when(shiftCreateService.getShiftTable(1))
                 .thenReturn(
-                    List.of(
-                        LocalDate.of(2026, 8, 1)
-                    )
-                );
+                        new ArrayList<>());
 
 
-        when(service.getAllUsers())
+        when(shiftCreateService.getTargetDateList(any()))
                 .thenReturn(
-                    List.of()
-                );
+                        List.of(
+                                LocalDate.of(2026, 8, 1)
+                        ));
+
+
+        when(shiftCreateService.getAllUsers())
+                .thenReturn(
+                        List.of(createUser()));
+
+
+        when(shiftCreateService.getMonthlySummaryMap(any(), any()))
+                .thenReturn(
+                        createSummaryMap());
 
 
 
         mockMvc.perform(
                 get("/admin/shiftCreate/new")
-
-                .param(
-                    "eventId",
-                    "1"
-                )
-
-                .param(
-                    "userId",
-                    "user001"
-                )
-
-                .param(
-                    "shiftDate",
-                    "2026-08-01"
-                )
-        )
-
-
-        .andExpect(status().isOk())
+                .param("eventId", "1")
+                .param("userId", "user001")
+                .param("shiftDate", "2026-08-01"))
+                .andExpect(status().isOk())
+                .andExpect(
+                        view()
+                        .name("admin/shiftCreate"))
+                .andExpect(
+                        model()
+                        .attributeExists("shiftForm"))
+                .andExpect(
+                        model()
+                        .attribute(
+                                "showModal",
+                                true));
 
 
-        .andExpect(
-            view().name(
-                "admin/shiftCreate"
-            )
-        )
-
-
-        .andExpect(
-            model().attribute(
-                "showModal",
-                true
-            )
-        )
-
-
-        .andExpect(
-            model().attributeExists(
-                "shiftForm"
-            )
-        );
     }
-
-
-
-
-
-    /**
-     * テスト⑤
-     *
-     * シフト保存成功
-     *
-     * POST
-     * /admin/shiftCreate/update
-     */
     @Test
-    @WithMockUser
-    void シフト保存成功時はリダイレクトする()
-            throws Exception {
+    @DisplayName("シフト更新_正常保存")
+    @WithMockUser(roles = "ADMIN")
+    void updateSuccess() throws Exception {
 
 
-
-        ShiftForm form =
-                new ShiftForm();
-
-
-        form.setEventId(1);
-        form.setUserId("user001");
-        form.setShiftDate(
-                LocalDate.of(2026,8,1)
-        );
-
-
-        when(service.saveShift(any(Shift.class)))
+        when(shiftCreateService.getEventList())
                 .thenReturn(
-                    new Shift()
-                );
+                        List.of(createEvent()));
+
+
+        when(shiftCreateService.getCurrentEvent(1))
+                .thenReturn(
+                        createEvent());
+
+
+        when(shiftCreateService.getShiftTable(1))
+                .thenReturn(
+                        new ArrayList<>());
+
+
+        when(shiftCreateService.getTargetDateList(any()))
+                .thenReturn(
+                        List.of(
+                                LocalDate.of(2026, 8, 1)
+                        ));
+
+
+        when(shiftCreateService.getAllUsers())
+                .thenReturn(
+                        List.of(createUser()));
+
+
+        when(shiftCreateService.getMonthlySummaryMap(any(), any()))
+                .thenReturn(
+                        createSummaryMap());
 
 
 
         mockMvc.perform(
-
                 post("/admin/shiftCreate/update")
-
                 .with(csrf())
+                .param("id", "1")
+                .param("eventId", "1")
+                .param("userId", "user001")
+                .param("shiftDate", "2026-08-01")
+                .param("startTime", "09:00")
+                .param("endTime", "18:00")
+                .param("memo", "通常勤務")
+                .param("rest", "false"))
+                .andExpect(
+                        status()
+                        .is3xxRedirection())
+                .andExpect(
+                        redirectedUrl(
+                        "/admin/shiftCreate?selectedEventId=1"));
 
 
-                .param(
-                    "eventId",
-                    "1"
-                )
 
-                .param(
-                    "userId",
-                    "user001"
-                )
-
-                .param(
-                    "shiftDate",
-                    "2026-08-01"
-                )
-
-                .param(
-                    "startTime",
-                    "09:00"
-                )
-
-                .param(
-                    "endTime",
-                    "18:00"
-                )
-
-        )
-
-
-        .andExpect(
-            status().is3xxRedirection()
-        )
-
-
-        .andExpect(
-            redirectedUrl(
-                "/admin/shiftCreate?selectedEventId=1"
-            )
-        );
-
-
-        verify(service)
+        verify(shiftCreateService)
                 .saveShift(any(Shift.class));
+
     }
-
-
-
-
-
-    /**
-     * テスト⑥
-     *
-     * 休み設定で保存
-     *
-     * rest=trueの場合
-     *
-     * isAvailable=0になることを確認
-     */
     @Test
-    @WithMockUser
-    void 休み設定時は休みとして保存する()
-            throws Exception {
+    @DisplayName("シフト更新_休み保存")
+    @WithMockUser(roles = "ADMIN")
+    void updateRest() throws Exception {
 
 
-
-        when(service.saveShift(any(Shift.class)))
+        when(shiftCreateService.getEventList())
                 .thenReturn(
-                    new Shift()
-                );
+                        List.of(createEvent()));
+
+
+        when(shiftCreateService.getCurrentEvent(1))
+                .thenReturn(
+                        createEvent());
+
+
+        when(shiftCreateService.getShiftTable(1))
+                .thenReturn(
+                        new ArrayList<>());
+
+
+        when(shiftCreateService.getTargetDateList(any()))
+                .thenReturn(
+                        List.of(
+                                LocalDate.of(2026, 8, 1)
+                        ));
+
+
+        when(shiftCreateService.getAllUsers())
+                .thenReturn(
+                        List.of(createUser()));
+
+
+        when(shiftCreateService.getMonthlySummaryMap(any(), any()))
+                .thenReturn(
+                        createSummaryMap());
 
 
 
         mockMvc.perform(
-
                 post("/admin/shiftCreate/update")
-
                 .with(csrf())
+                .param("eventId", "1")
+                .param("userId", "user001")
+                .param("shiftDate", "2026-08-01")
+                .param("memo", "")
+                .param("rest", "true"))
+                .andExpect(
+                        status()
+                        .is3xxRedirection());
 
 
-                .param(
-                    "eventId",
-                    "1"
-                )
 
-                .param(
-                    "userId",
-                    "user001"
-                )
-
-                .param(
-                    "shiftDate",
-                    "2026-08-01"
-                )
-
-
-                /*
-                 * 休みチェック
-                 */
-                .param(
-                    "rest",
-                    "true"
-                )
-
-        )
-
-
-        .andExpect(
-            status().is3xxRedirection()
-        );
-
-
-        verify(service)
+        verify(shiftCreateService)
                 .saveShift(
-                    argThat(
-                        shift ->
-                            Integer.valueOf(0)
-                            .equals(
+                        argThat(shift ->
                                 shift.getIsAvailable()
-                            )
-                    )
-                );
+                                .equals(0)));
     }
-
-
-
-
-
-    /**
-     * テスト⑦
-     *
-     * 戻るボタン押下
-     *
-     * GET
-     * /admin/shiftCreate/back
-     */
     @Test
-    @WithMockUser
-    void 戻るボタン押下時はシフト管理画面へ戻る()
-            throws Exception {
+    @DisplayName("シフト更新_バリデーションエラー")
+    @WithMockUser(roles = "ADMIN")
+    void updateValidationError() throws Exception {
+
+
+        when(shiftCreateService.getEventList())
+                .thenReturn(
+                        List.of(createEvent()));
+
+
+        when(shiftCreateService.getCurrentEvent(1))
+                .thenReturn(
+                        createEvent());
+
+
+        when(shiftCreateService.getShiftTable(1))
+                .thenReturn(
+                        new ArrayList<>());
+
+
+        when(shiftCreateService.getTargetDateList(any()))
+                .thenReturn(
+                        new ArrayList<>());
+
+
+        when(shiftCreateService.getAllUsers())
+                .thenReturn(
+                        new ArrayList<>());
+
+
+        when(shiftCreateService.getMonthlySummaryMap(any(), any()))
+                .thenReturn(
+                        new HashMap<>());
 
 
 
         mockMvc.perform(
-                get("/admin/shiftCreate/back")
-        )
-
-
-        .andExpect(
-            status().is3xxRedirection()
-        )
-
-
-        .andExpect(
-            redirectedUrl(
-                "/admin/shift-management"
-            )
-        );
-    }
-    /**
-     * テスト⑧
-     *
-     * シフト保存時
-     * バリデーションエラーの場合
-     *
-     * 同じ画面へ戻る
-     *
-     * POST
-     * /admin/shiftCreate/update
-     */
-    @Test
-    @WithMockUser
-    void シフト保存時にバリデーションエラーの場合は画面再表示する()
-            throws Exception {
-
-
-        ShiftApplicationEvent event =
-                new ShiftApplicationEvent();
-
-        event.setEventId(1);
-
-
-
-        /*
-         * エラー後の画面再表示用データ
-         */
-        when(service.getEventList())
-                .thenReturn(
-                    List.of(event)
-                );
-
-
-        when(service.getCurrentEvent(1))
-                .thenReturn(event);
-
-
-        when(service.getShiftTable(1))
-                .thenReturn(
-                    List.of()
-                );
-
-
-        when(service.getTargetDateList(event))
-                .thenReturn(
-                    List.of()
-                );
-
-
-        when(service.getAllUsers())
-                .thenReturn(
-                    List.of()
-                );
-
-
-
-        /*
-         * startTimeを未入力にすることで
-         * ValidShiftTimeエラーを発生させる
-         */
-        mockMvc.perform(
-
                 post("/admin/shiftCreate/update")
-
                 .with(csrf())
+                .param("eventId", "1")
+                .param("userId", "user001")
+                .param("shiftDate", "2026-08-01")
+                .param("startTime", "")
+                .param("endTime", "")
+                .param("memo", ""))
+                .andExpect(
+                        status()
+                        .isOk())
+                .andExpect(
+                        view()
+                        .name("admin/shiftCreate"));
 
 
-                .param(
-                    "eventId",
-                    "1"
-                )
 
-                .param(
-                    "userId",
-                    "user001"
-                )
-
-                .param(
-                    "shiftDate",
-                    "2026-08-01"
-                )
-
-                .param(
-                    "endTime",
-                    "18:00"
-                )
-
-        )
-
-
-        /*
-         * redirectではなく
-         * 同画面表示
-         */
-        .andExpect(
-            status().isOk()
-        )
-
-
-        .andExpect(
-            view().name(
-                "admin/shiftCreate"
-            )
-        )
-
-
-        /*
-         * モーダル表示状態保持確認
-         */
-        .andExpect(
-            model().attribute(
-                "showModal",
-                true
-            )
-        );
-
-
-        /*
-         * 保存処理は呼ばれない
-         */
-        verify(service, never())
+        verify(
+                shiftCreateService,
+                never())
                 .saveShift(any(Shift.class));
 
     }
-
-
-
-
-
-    /**
-     * テスト⑨
-     *
-     * 編集対象シフトが存在しない場合
-     *
-     * GET
-     * /admin/shiftCreate/edit
-     *
-     * shiftFormは空状態で表示される
-     */
     @Test
-    @WithMockUser
-    void 編集対象シフトが存在しない場合でも画面表示する()
-            throws Exception {
+    @DisplayName("シフト表表示_提出状況Map確認")
+    @WithMockUser(roles = "ADMIN")
+    void indexUserSubmissionMap() throws Exception {
 
 
-        /*
-         * 対象シフトなし
-         */
-        when(service.getShiftDetail(999))
-                .thenReturn(null);
+        Shift shift = createShift();
 
 
-
-        ShiftApplicationEvent event =
-                new ShiftApplicationEvent();
-
-        event.setEventId(1);
+        Users user = createUser();
 
 
 
-        when(service.getEventList())
+        when(shiftCreateService.getEventList())
                 .thenReturn(
-                    List.of(event)
-                );
+                        List.of(createEvent()));
 
 
-        when(service.getCurrentEvent(1))
-                .thenReturn(event);
-
-
-        when(service.getShiftTable(1))
+        when(shiftCreateService.getOldestEvent())
                 .thenReturn(
-                    List.of()
-                );
+                        createEvent());
 
 
-        when(service.getTargetDateList(event))
+        when(shiftCreateService.getCurrentEvent(1))
                 .thenReturn(
-                    List.of()
-                );
+                        createEvent());
 
 
-        when(service.getAllUsers())
+        when(shiftCreateService.getShiftTable(1))
                 .thenReturn(
-                    List.of()
-                );
+                        List.of(shift));
+
+
+        when(shiftCreateService.getTargetDateList(any()))
+                .thenReturn(
+                        List.of(
+                                LocalDate.of(2026,8,1)
+                        ));
+
+
+        when(shiftCreateService.getAllUsers())
+                .thenReturn(
+                        List.of(user));
+
+
+        when(shiftCreateService.getMonthlySummaryMap(any(), any()))
+                .thenReturn(
+                        createSummaryMap());
 
 
 
         mockMvc.perform(
-
-                get("/admin/shiftCreate/edit")
-
-                .param(
-                    "shiftId",
-                    "999"
-                )
-
-                .param(
-                    "eventId",
-                    "1"
-                )
-        )
+                get("/admin/shiftCreate"))
+                .andExpect(
+                        status().isOk())
+                .andExpect(
+                        model()
+                        .attributeExists(
+                        "userSubmissionMap"));
 
 
-        .andExpect(
-            status().isOk()
-        )
 
-
-        .andExpect(
-            view().name(
-                "admin/shiftCreate"
-            )
-        )
-
-
-        .andExpect(
-            model().attributeExists(
-                "shiftForm"
-            )
-        );
     }
-
-
-
-
-
-    /**
-     * テスト⑩
-     *
-     * 保存時に夜勤シフト
-     *
-     * startTime > endTime
-     *
-     * の場合でもControllerはServiceへ渡す
-     *
-     * ※夜勤重複判定はValidator担当
-     */
     @Test
-    @WithMockUser
-    void 夜勤シフト保存時はServiceへ渡す()
-            throws Exception {
-
-
-        when(service.saveShift(any(Shift.class)))
-                .thenReturn(
-                    new Shift()
-                );
-
+    @DisplayName("シフト更新_保存内容確認")
+    @WithMockUser(roles = "ADMIN")
+    void updateSaveContentCheck() throws Exception {
 
 
         mockMvc.perform(
-
                 post("/admin/shiftCreate/update")
-
                 .with(csrf())
-
-
-                .param(
-                    "eventId",
-                    "1"
+                .param("eventId", "1")
+                .param("userId", "user001")
+                .param("shiftDate", "2026-08-01")
+                .param("startTime", "09:00")
+                .param("endTime", "18:00")
+                .param("memo", "確認用")
                 )
-
-                .param(
-                    "userId",
-                    "user001"
-                )
-
-                .param(
-                    "shiftDate",
-                    "2026-08-01"
-                )
-
-                /*
-                 * 夜勤
-                 */
-                .param(
-                    "startTime",
-                    "22:00"
-                )
-
-                .param(
-                    "endTime",
-                    "06:00"
-                )
-
-        )
+                .andExpect(
+                        status()
+                        .is3xxRedirection());
 
 
-        .andExpect(
-            status().is3xxRedirection()
-        );
+
+        ArgumentCaptor<Shift> captor =
+                ArgumentCaptor.forClass(
+                        Shift.class);
 
 
-        verify(service)
-                .saveShift(any(Shift.class));
+
+        verify(shiftCreateService)
+                .saveShift(
+                        captor.capture());
+
+
+
+        Shift savedShift =
+                captor.getValue();
+
+
+
+        assertEquals(
+                1,
+                savedShift.getEventId());
+
+
+        assertEquals(
+                "user001",
+                savedShift.getUserId());
+
+
+        assertEquals(
+                LocalDate.of(2026,8,1),
+                savedShift.getShiftDate());
+
+
+        assertEquals(
+                1,
+                savedShift.getIsAvailable());
+
     }
-
-
-
-
-
-    /**
-     * テスト⑪
-     *
-     * createNewShiftで
-     * 初期値が正しく設定されることを確認
-     */
-    @Test
-    @WithMockUser
-    void 新規作成時は初期値が設定される()
-            throws Exception {
-
-
-        ShiftApplicationEvent event =
-                new ShiftApplicationEvent();
-
-        event.setEventId(1);
-
-
-
-        when(service.getEventList())
-                .thenReturn(
-                    List.of(event)
-                );
-
-
-        when(service.getCurrentEvent(1))
-                .thenReturn(event);
-
-
-        when(service.getShiftTable(1))
-                .thenReturn(
-                    List.of()
-                );
-
-
-        when(service.getTargetDateList(event))
-                .thenReturn(
-                    List.of()
-                );
-
-
-        when(service.getAllUsers())
-                .thenReturn(
-                    List.of()
-                );
-
-
-
-        mockMvc.perform(
-
-                get("/admin/shiftCreate/new")
-
-                .param(
-                    "eventId",
-                    "1"
-                )
-
-                .param(
-                    "userId",
-                    "user001"
-                )
-
-                .param(
-                    "shiftDate",
-                    "2026-08-01"
-                )
-        )
-
-
-        .andExpect(
-            status().isOk()
-        )
-
-
-        .andExpect(
-            model().attribute(
-                "showModal",
-                true
-            )
-        )
-
-
-        .andExpect(
-            model().attributeExists(
-                "shiftForm"
-            )
-        );
-    }
+    
 
 }
-    
