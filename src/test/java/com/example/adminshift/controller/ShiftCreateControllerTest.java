@@ -59,8 +59,17 @@ class ShiftCreateControllerTest {
         event.setTargetStartDate(
                 LocalDate.of(2026, 8, 1));
 
+
         event.setTargetEndDate(
                 LocalDate.of(2026, 8, 3));
+
+        when(service.getEventList())
+                .thenReturn(List.of(event));
+
+
+//        when(service.getLatestEvent())
+//                .thenReturn(event);
+
 
         event.setApplicationStartDate(
                 LocalDate.of(2026, 7, 1));
@@ -346,9 +355,16 @@ class ShiftCreateControllerTest {
                         createEvent());
 
 
+
         when(shiftCreateService.getShiftTable(1))
                 .thenReturn(
                         new ArrayList<>());
+
+//        when(service.saveShift(any(Shift.class)))
+//                .thenReturn(
+//                    new Shift()
+//                );
+
 
 
         when(shiftCreateService.getTargetDateList(any()))
@@ -422,9 +438,16 @@ class ShiftCreateControllerTest {
                         List.of(createUser()));
 
 
+
         when(shiftCreateService.getMonthlySummaryMap(any(), any()))
                 .thenReturn(
                         createSummaryMap());
+
+//        when(service.saveShift(any(Shift.class)))
+//                .thenReturn(
+//                    new Shift()
+//                );
+
 
 
 
@@ -636,9 +659,22 @@ class ShiftCreateControllerTest {
 
     }
     @Test
+
     @DisplayName("シフト更新_保存内容確認")
     @WithMockUser(roles = "ADMIN")
     void updateSaveContentCheck() throws Exception {
+=======
+    @WithMockUser
+    void 夜勤シフト保存時はServiceへ渡す()
+            throws Exception {
+
+
+//        when(service.saveShift(any(Shift.class)))
+//                .thenReturn(
+//                    new Shift()
+//                );
+
+
 
 
         mockMvc.perform(

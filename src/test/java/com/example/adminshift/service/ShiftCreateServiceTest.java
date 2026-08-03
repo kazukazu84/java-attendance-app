@@ -157,6 +157,7 @@ class ShiftCreateServiceTest {
 
 
 
+
     @Test
     @DisplayName("未来イベント取得")
     void getOldestEvent() {
@@ -207,6 +208,46 @@ class ShiftCreateServiceTest {
 
     }
 
+//
+//    /**
+//     * 最新イベント取得
+//     */
+//    @Test
+//    void getLatestEvent_存在する場合() {
+//
+//
+//        ShiftApplicationEvent event =
+//                new ShiftApplicationEvent();
+//
+//
+//        event.setEventId(10);
+//
+//
+//
+//        when(
+//            shiftApplicationEventRepository
+//            .findTopByOrderByEventIdDesc()
+//        )
+//        .thenReturn(
+//                Optional.of(event)
+//        );
+//
+//
+//
+//        ShiftApplicationEvent result =
+//                service.getLatestEvent();
+//
+//
+//
+//        assertNotNull(result);
+//
+//
+//        assertEquals(
+//                10,
+//                result.getEventId()
+//        );
+//
+//    }
 
 
     @Test
@@ -224,6 +265,7 @@ class ShiftCreateServiceTest {
                 .findById(any());
 
     }
+
 
 
 
@@ -268,6 +310,33 @@ class ShiftCreateServiceTest {
                 result.get(0));
 
     }
+
+    /**
+     * 最新イベントなし
+     */
+//    @Test
+//    void getLatestEvent_存在しない場合() {
+//
+//
+//        when(
+//            shiftApplicationEventRepository
+//            .findTopByOrderByEventIdDesc()
+//        )
+//        .thenReturn(
+//                Optional.empty()
+//        );
+//
+//
+//
+//        ShiftApplicationEvent result =
+//                service.getLatestEvent();
+//
+//
+//
+//        assertNull(result);
+//
+//    }
+
 
 
 
@@ -795,6 +864,7 @@ class ShiftCreateServiceTest {
                 createShift();
 
 
+
         september.setShiftDate(
                 LocalDate.of(2026,9,1));
 
@@ -892,5 +962,49 @@ class ShiftCreateServiceTest {
                 () -> service.saveShift(shift));
 
     }
+
+    /**
+     * シフト保存
+     */
+//    @Test
+//    void saveShift_正常保存() {
+//
+//
+//        Shift shift =
+//                new Shift();
+//
+//
+//        shift.setId(1);
+//
+//
+//
+//        when(
+//            shiftRepository.save(shift)
+//        )
+//        .thenReturn(
+//                shift
+//        );
+//
+//
+//
+//        Shift result =
+//                service.saveShift(shift);
+//
+//
+//
+//        assertEquals(
+//                1,
+//                result.getId()
+//        );
+//
+//
+//
+//        verify(
+//            shiftRepository
+//        )
+//        .save(shift);
+//
+//    }
+
 
 }
