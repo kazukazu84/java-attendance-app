@@ -3,16 +3,23 @@ package com.example.userShiftRequest.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.adminshift.repository.ShiftApplicationEventRepository;
 import com.example.userShiftRequest.dto.ShiftRequestSelectDto;
 import com.example.userShiftRequest.form.ShiftRequestSelectForm;
 
 @Service
 public class ShiftRequestSelectService {
+	
+	@Autowired
+	private ShiftApplicationEventRepository repository;
 
     public ShiftRequestSelectForm getShiftList
     (Integer selectedYear) {
+    	
+    	System.out.println(repository.findAll().size());    	
     	
     	// 動作確認用
     	System.out.println(
@@ -44,7 +51,9 @@ public class ShiftRequestSelectService {
     	 ----------------------------------------------*/
     	
     	// ここからダミーデータ↓（※後で変更する）
-    	dto1.setEventId(1);
+    	
+    	/*
+    	 * dto1.setEventId(1);
     	dto1.setSubmissionStatus("未提出");
     	dto1.setTargetPeriod("12/22～12/29");
     	dto1.setDeadlineDate("12/21");
@@ -64,6 +73,8 @@ public class ShiftRequestSelectService {
     	shiftList.add(dto2);
     	
     	form.setShiftList(shiftList);
+    	
+    	*/
     	
     	return form;
     }
