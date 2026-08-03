@@ -11,6 +11,8 @@ import com.example.account.entity.Wage;
 import com.example.account.repository.UserInfoRepository;
 import com.example.account.repository.WageRepository;
 import com.example.account.service.AccountService;
+import com.example.adminshift.entity.ShiftApplicationSetting;
+import com.example.adminshift.repository.ShiftApplicationSettingRepository;
 // 登録メッセージ用エンティティ＆リポジトリをインポート
 import com.example.main.entity.LogMessage;
 import com.example.main.repository.LogMessageRepository;
@@ -20,17 +22,20 @@ public class DataInitializer implements CommandLineRunner {
     private final UserInfoRepository userInfoRepository;
     private final WageRepository wageRepository;
     private final AccountService accountService;
-    private final LogMessageRepository logMessageRepository; // 👈 追加
+    private final LogMessageRepository logMessageRepository;
+    private final ShiftApplicationSettingRepository shiftApplicationSettingRepository;// 👈 追加
 
     // コンストラクタ注入（不要な PasswordEncoder を引数から削除）
     public DataInitializer(UserInfoRepository userInfoRepository, 
             WageRepository wageRepository,
             AccountService accountService,
-            LogMessageRepository logMessageRepository) { // 👈 追加
+            LogMessageRepository logMessageRepository,
+            ShiftApplicationSettingRepository shiftApplicationSettingRepository) { // 👈 追加
         this.userInfoRepository = userInfoRepository;
         this.wageRepository = wageRepository;
         this.accountService = accountService;
-        this.logMessageRepository = logMessageRepository; // 👈 追加
+        this.logMessageRepository = logMessageRepository;
+        this.shiftApplicationSettingRepository = shiftApplicationSettingRepository; // 👈 追加
     }
 
     @Override
@@ -90,6 +95,17 @@ public class DataInitializer implements CommandLineRunner {
             createLogMessage(1, 1, "{user_name}さんが退勤しました");
             createLogMessage(2, 0, "社員の皆様にメッセージがあります");
             createLogMessage(3, 0, "シフト申請受付が開始しました");
+        }
+        
+        // 4. シフト受付設定の初期データ作成
+        if (shiftApplicationSettingRepository.count() == 0) {
+        	ShiftApplicationSetting setting = new ShiftApplicationSetting();
+            setting.setSettingId(1);
+            setting.setTargetWeeks(2);
+            setting.setApplicationStartDays(30);
+            setting.setApplicationEndDays(14);
+
+            shiftApplicationSettingRepository.save(setting);
         }
     }
 
