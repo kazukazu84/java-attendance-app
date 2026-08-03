@@ -49,6 +49,9 @@ class ShiftCreateControllerTest {
     /**
      * イベント作成
      */
+    /**
+     * イベント作成
+     */
     private ShiftApplicationEvent createEvent() {
 
         ShiftApplicationEvent event =
@@ -59,14 +62,8 @@ class ShiftCreateControllerTest {
         event.setTargetStartDate(
                 LocalDate.of(2026, 8, 1));
 
-
         event.setTargetEndDate(
                 LocalDate.of(2026, 8, 3));
-
-
-//        when(service.getEventList())
-//                .thenReturn(List.of(event));
-
 
         event.setApplicationStartDate(
                 LocalDate.of(2026, 7, 1));
@@ -667,6 +664,8 @@ class ShiftCreateControllerTest {
     @DisplayName("夜勤シフト保存時はServiceへ渡す")
     @WithMockUser(roles = "ADMIN")
 
+   
+
 
 
     void 夜勤シフト保存時はServiceへ渡す()
@@ -677,6 +676,7 @@ class ShiftCreateControllerTest {
 //                .thenReturn(
 //                    new Shift()
 //                );
+
 
 
 
@@ -693,26 +693,19 @@ class ShiftCreateControllerTest {
                 .param("memo", "確認用")
                 )
                 .andExpect(
-                        status()
-                        .is3xxRedirection());
-
+                        status().is3xxRedirection());
 
 
         ArgumentCaptor<Shift> captor =
-                ArgumentCaptor.forClass(
-                        Shift.class);
-
+                ArgumentCaptor.forClass(Shift.class);
 
 
         verify(shiftCreateService)
-                .saveShift(
-                        captor.capture());
-
+                .saveShift(captor.capture());
 
 
         Shift savedShift =
                 captor.getValue();
-
 
 
         assertEquals(
@@ -733,7 +726,6 @@ class ShiftCreateControllerTest {
         assertEquals(
                 1,
                 savedShift.getIsAvailable());
-
     }
     
 
