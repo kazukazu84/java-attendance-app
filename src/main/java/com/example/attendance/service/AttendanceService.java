@@ -200,14 +200,22 @@ public class AttendanceService {
 	    user.setAttendanceStatus(0);
 	    userRepository.save(user);
 
-	    // ⑥ ★ workDate を DTO にセット（給与計算に必須）
-	    AttendanceDto dto = new AttendanceDto();
-	    dto.setStatusMessage("退勤しました");
-	    dto.setCanClockIn(false);
-	    dto.setCanClockOut(false);
-	    dto.setWorkDate(attendance.getWorkDate());   // ★ これが無いと 500 になる
+//	    // ⑥ ★ workDate を DTO にセット（給与計算に必須）
+//	    AttendanceDto dto = new AttendanceDto();
+//	    dto.setStatusMessage("退勤しました");
+//	    dto.setCanClockIn(false);
+//	    dto.setCanClockOut(false);
+//	    dto.setWorkDate(attendance.getWorkDate());   // ★ これが無いと 500 になる
+//
+//	    return dto;
+	    
+//	    ⑥夜勤判定のためコード置き換え(8/4 桝田)
+	    AttendanceDto dto = getStatus(userId);
 
-	    return dto;
+	 // 給与計算用なので勤務開始日は保持
+	 dto.setWorkDate(attendance.getWorkDate());
+
+	 return dto;
 	}
 
 }
