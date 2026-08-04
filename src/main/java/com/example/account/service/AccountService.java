@@ -29,24 +29,26 @@ public class AccountService {
 
 	@Autowired
 	private WageRepository wageRepo;
-
+	
 	@Autowired
 	private AttendanceService attendanceService;
+
 
 	@Autowired
 	private SalaryCalculationService salaryCalculationService;
 
 
 	public AccountService(
-			UserInfoRepository userRepo,
-			WageRepository wageRepo,
-			PasswordEncoder passwordEncoder) {
+	        UserInfoRepository userRepo,
+	        WageRepository wageRepo,
+	        PasswordEncoder passwordEncoder,
+	        AttendanceService attendanceService) {
 
-		this.userRepo = userRepo;
-		this.wageRepo = wageRepo;
-		this.passwordEncoder = passwordEncoder;
+	    this.userRepo = userRepo;
+	    this.wageRepo = wageRepo;
+	    this.passwordEncoder = passwordEncoder;
+	    this.attendanceService = attendanceService;
 	}
-
 
 	/**
 	 * IDによるユーザー検索

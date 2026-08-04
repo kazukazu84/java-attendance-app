@@ -26,9 +26,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
      *
      * clockOutが未設定（出勤中）の最新勤怠を取得
      */
-    Optional<Attendance> findFirstByUserIdAndClockOutIsNullOrderByWorkDateDesc(
-            String userId
-    );
+    
 
 
     /**
@@ -59,10 +57,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
                 end
         );
     }
-<<<<<<< HEAD
-}
-=======
-    
+
+
     
     Optional<Attendance> findFirstByUserIdAndClockOutIsNullOrderByWorkDateDesc(String userId);
     //最新レコード取得
@@ -70,4 +66,4 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
     
     
 }
->>>>>>> refs/heads/master
+
