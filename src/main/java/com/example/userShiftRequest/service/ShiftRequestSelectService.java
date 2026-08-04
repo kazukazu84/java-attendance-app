@@ -5,11 +5,90 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+
+import com.example.adminshift.entity.ShiftApplicationEvent;
+import com.example.adminshift.repository.ShiftApplicationEventRepository;
+import com.example.adminshift.repository.ShiftRequestRepository;
+
 import com.example.userShiftRequest.dto.ShiftRequestSelectDto;
 import com.example.userShiftRequest.form.ShiftRequestSelectForm;
 
 @Service
 public class ShiftRequestSelectService {
+
+
+
+    @Autowired
+    private ShiftApplicationEventRepository eventRepository;
+
+    @Autowired
+    private ShiftRequestRepository shiftRequestRepository;
+
+    /**
+     * シフト申請選択画面一覧取得
+     *
+     * @param selectedYear 選択年度
+     * @param currentUserId ログインユーザーID
+     * @return シフト申請選択画面フォーム
+     */
+    public ShiftRequestSelectForm getShiftList(
+            Integer selectedYear,
+            String currentUserId) {
+
+        System.out.println("検索年度 = " + selectedYear);
+        System.out.println("ログインユーザーID = " + currentUserId);
+
+        ShiftRequestSelectForm form = new ShiftRequestSelectForm();
+        form.setSelectedYear(selectedYear);
+
+        List<ShiftRequestSelectDto> shiftList = new ArrayList<>();
+
+        // TODO
+        // 将来的には年度(selectedYear)で絞り込みを行う
+        List<ShiftApplicationEvent> eventList = eventRepository.findAll();
+
+        for (ShiftApplicationEvent event : eventList) {
+
+            ShiftRequestSelectDto dto = new ShiftRequestSelectDto();
+
+            dto.setEventId(event.getEventId());
+
+            // 対象期間
+            dto.setTargetPeriod(event.getDisplayName());
+
+            // 締め日
+            if (event.getApplicationEndDate() != null) {
+                dto.setDeadlineDate(
+                        event.getApplicationEndDate().toString());
+            }
+
+            // 状態（受付中・受付終了など）
+            dto.setStartDate(event.getStatusName());
+
+            // 提出状態判定
+            boolean submitted =
+                    shiftRequestRepository.existsByIdUserIdAndIdEventId(
+                            currentUserId,
+                            event.getEventId());
+
+            if (submitted) {
+                dto.setSubmissionStatus("提出");
+            } else {
+                dto.setSubmissionStatus("未提出");
+            }
+
+            shiftList.add(dto);
+        }
+
+        form.setShiftList(shiftList);
+
+        return form;
+        
+    }
+	
+	@Autowired
+	private ShiftApplicationEventRepository repository;
+
 
     public ShiftRequestSelectForm getShiftList
     (Integer selectedYear) {
@@ -23,16 +102,59 @@ public class ShiftRequestSelectService {
     	
     	form.setSelectedYear(selectedYear);
     	
-    	List<ShiftRequestSelectDto> shiftList =
-    			new ArrayList<>();
     	
+    	
+    	List<ShiftRequestSelectDto> shiftList =
+    	        new ArrayList<>();
+
+//    	List<ShiftApplicationEvent> eventList =
+//    	        repository.findAll();
+    	
+    	//年度を取るためにメソッドを変更(桝田)
+    	List<Integer> yearList = repository.findEventYears();
+    	form.setYearList(yearList);
+
+    	List<ShiftApplicationEvent> eventList =
+    	        repository.findByTargetStartYear(selectedYear);
+
+    	for (ShiftApplicationEvent event : eventList) {
+    		
+    		System.out.println(
+    				event.getTargetStartDate().getYear());
+    		
+    		if (selectedYear != null
+    		        && event.getTargetStartDate().getYear()
+    		           != selectedYear) {
+    		    continue;
+    		}
+
+    	    ShiftRequestSelectDto dto =
+    	            new ShiftRequestSelectDto();
+
+    	    dto.setEventId(event.getEventId());
+
+    	    dto.setTargetPeriod(
+    	            event.getDisplayName());
+
+    	    dto.setStartDate(
+    	            event.getStatusName());
+    	    
+    	    dto.setDeadlineDate(
+    	    		event.getApplicationEndDate()
+    	    		.toString());
+
+    	    shiftList.add(dto);
+    	}
+
+    	form.setShiftList(shiftList);
     	
     	// TODO
     	// 管理者側機能連携後はイベントテーブルから取得する
     	// 現在は画面確認用のダミーデータ
     	
-    	ShiftRequestSelectDto dto1 =
+    	/*【後で消す】ShiftRequestSelectDto dto1 =
     			new ShiftRequestSelectDto();
+    	*/
     	
     	
     	/*----------------------------------------------
@@ -62,9 +184,11 @@ public class ShiftRequestSelectService {
     	dto2.setStartDate("開始済");
     	
     	shiftList.add(dto2);
-    	
+    	*/   	
     	form.setShiftList(shiftList);
     	
+
     	return form;
+
     }
 }
