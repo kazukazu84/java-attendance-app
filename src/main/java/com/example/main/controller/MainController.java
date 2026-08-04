@@ -17,13 +17,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.account.entity.UserInfo;
 import com.example.account.repository.UserInfoRepository;
-import com.example.adminshift.entity.ShiftSchedule;
+import com.example.adminshift.entity.ShiftRequestDetail;
+import com.example.adminshift.service.ShiftRequestDetailService;
 import com.example.adminshift.service.ShiftScheduleService;
 import com.example.attendance.dto.AttendanceDto;
 import com.example.attendance.service.AttendanceService;
 import com.example.main.dto.LogDto;
 import com.example.main.service.LogService;
 import com.example.main.service.UserShiftService;
+
 @Controller
 public class MainController {
     @Autowired
@@ -34,6 +36,9 @@ public class MainController {
 
     @Autowired
     private UserShiftService userShiftService;
+    
+    @Autowired
+    private ShiftRequestDetailService shiftRequestDetailService;
     
     @Autowired
     private ShiftScheduleService shiftScheduleService;
@@ -162,14 +167,14 @@ public class MainController {
 
         }
     
-        List<ShiftSchedule> monthlyShiftList =
-                shiftScheduleService.getShiftByUserIdAndDate(
+        List<ShiftRequestDetail> monthlyShiftList =
+                shiftRequestDetailService.getShiftByUserIdAndDate(
                         currentUserId,
                         monthStart,
                         monthEnd);
 
-        List<ShiftSchedule> weeklyShiftList =
-                shiftScheduleService.getShiftByUserIdAndDate(
+        List<ShiftRequestDetail> weeklyShiftList =
+                shiftRequestDetailService.getShiftByUserIdAndDate(
                         currentUserId,
                         startDate,
                         endDate);

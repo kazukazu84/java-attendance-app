@@ -212,12 +212,20 @@
 
 					                        <div style="height:55px;">
 
-					                            <span th:each="shift : ${monthlyShiftList}"
-					                                  th:if="${shift.id.workDate.dayOfMonth == day}"
-					                                  th:text="${shift.selectedStartTime == null ?
-					                                        '休み'
-					                                        : shift.selectedStartTime + '～' + shift.selectedEndTime}">
-					                            </span>
+												<span th:each="shift : ${monthlyShiftList}"
+												      th:if="${shift.workDate.dayOfMonth == day}">
+
+												    <span th:if="${shift.requestedStartTime != null}">
+												        <span th:text="${shift.requestedStartTime}"></span>
+												        <br>
+												        <span th:text="${'～' + shift.requestedEndTime}"></span>
+												    </span>
+
+												    <span th:if="${shift.requestedStartTime == null}">
+												        休み
+												    </span>
+
+												</span>
 
 					                        </div>
 
@@ -326,21 +334,21 @@
 					                <tr th:each="shift : ${weeklyShiftList}">
 
 										<td style="border:1px solid #ccc;"
-										    th:text="${shift.id.workDate + '(' +
-										        (shift.id.workDate.dayOfWeek.name() == 'MONDAY' ? '月' :
-										        shift.id.workDate.dayOfWeek.name() == 'TUESDAY' ? '火' :
-										        shift.id.workDate.dayOfWeek.name() == 'WEDNESDAY' ? '水' :
-										        shift.id.workDate.dayOfWeek.name() == 'THURSDAY' ? '木' :
-										        shift.id.workDate.dayOfWeek.name() == 'FRIDAY' ? '金' :
-										        shift.id.workDate.dayOfWeek.name() == 'SATURDAY' ? '土' :
+										    th:text="${shift.workDate + '(' +
+										        (shift.workDate.dayOfWeek.name() == 'MONDAY' ? '月' :
+										        shift.workDate.dayOfWeek.name() == 'TUESDAY' ? '火' :
+										        shift.workDate.dayOfWeek.name() == 'WEDNESDAY' ? '水' :
+										        shift.workDate.dayOfWeek.name() == 'THURSDAY' ? '木' :
+										        shift.workDate.dayOfWeek.name() == 'FRIDAY' ? '金' :
+										        shift.workDate.dayOfWeek.name() == 'SATURDAY' ? '土' :
 										        '日')
 										        + ')'}">
 										</td>
 
 										<td style="border:1px solid #ccc;"
-										    th:text="${shift.selectedStartTime == null ?
+										    th:text="${shift.requestedStartTime == null ?
 										            '休み'
-										            : shift.selectedStartTime + '～' + shift..selectedEndTime}">
+										            : shift.requestedStartTime + '～' + shift.requestedEndTime}">
 										</td>
 
 			
