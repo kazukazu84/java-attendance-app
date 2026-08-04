@@ -1,13 +1,14 @@
 package com.example.account.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.example.account.dto.UserRegisterForm;
 import com.example.account.entity.Position;
@@ -16,338 +17,437 @@ import com.example.account.entity.Wage;
 import com.example.account.repository.UserInfoRepository;
 import com.example.account.repository.WageRepository;
 import com.example.attendance.service.AttendanceService;
-import com.example.salary.service.SalaryCalculationService;
+
 
 @Service
 public class AccountService {
 
-	@Autowired
-	private UserInfoRepository userRepo;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserInfoRepository userRepo;
 
-	@Autowired
-	private WageRepository wageRepo;
-	
-	@Autowired
-	private AttendanceService attendanceService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-	@Autowired
-	private SalaryCalculationService salaryCalculationService;
 
+    @Autowired
+    private WageRepository wageRepo;
 
-	public AccountService(
-	        UserInfoRepository userRepo,
-	        WageRepository wageRepo,
-	        PasswordEncoder passwordEncoder,
-	        AttendanceService attendanceService) {
 
-	    this.userRepo = userRepo;
-	    this.wageRepo = wageRepo;
-	    this.passwordEncoder = passwordEncoder;
-	    this.attendanceService = attendanceService;
-	}
+    /*
+     * 在籍変更時の強制退勤処理用
+     *
+     * @Lazy:
+     * AccountService → AttendanceService
+     * AttendanceService → UserInfoRepository
+     * の循環を回避
+     */
+    @Autowired
+    @Lazy
+    private AttendanceService attendanceService;
 
-	/**
-	 * IDによるユーザー検索
-	 */
-	public Optional<UserInfo> findUserById(String id) {
-		return userRepo.findById(id);
-	}
 
 
-	/**
-	 * 賃金マスター取得
-	 */
-	public List<Wage> getAllWages() {
-		return wageRepo.findAllByOrderByWageValueAsc();
-	}
+    public AccountService(
+            UserInfoRepository userRepo,
+            WageRepository wageRepo,
+            PasswordEncoder passwordEncoder,
+            @Lazy AttendanceService attendanceService) {
 
+        this.userRepo = userRepo;
+        this.wageRepo = wageRepo;
+        this.passwordEncoder = passwordEncoder;
+        this.attendanceService = attendanceService;
+    }
 
-	/**
-	 * 編集用Form作成
-	 */
-	public UserRegisterForm getEditForm(UserInfo userInfo) {
 
-		UserRegisterForm form = new UserRegisterForm();
 
-		form.setUserId(userInfo.getUserId());
-		form.setUserName(userInfo.getUserName());
-		form.setPosition(userInfo.getPosition().name());
 
 
-		if (userInfo.getWage() != null) {
-			form.setWageId(userInfo.getWage().getWageId());
-		}
+    /**
+     * ID検索
+     */
+    public Optional<UserInfo> findUserById(String id) {
 
+        return userRepo.findById(id);
+    }
 
-		if (userInfo.getBirthDate() != null) {
-			java.sql.Date sqlDate =
-					new java.sql.Date(userInfo.getBirthDate().getTime());
 
-			form.setBirthDate(sqlDate.toLocalDate());
-		}
 
 
-		form.setEmploymentInsurance(
-				userInfo.isEmploymentInsurance());
 
-		form.setIsActive(
-				userInfo.getIsActive());
+    /**
+     * 賃金一覧取得
+     */
+    public List<Wage> getAllWages() {
 
+        return wageRepo.findAllByOrderByWageValueAsc();
+    }
 
-		// 編集画面ではパスワードを表示しない
-		form.setPassword("＊＊＊＊＊＊＊＊");
 
 
-		return form;
-	}
 
 
+    /**
+     * 編集画面用Form生成
+     */
+    public UserRegisterForm getEditForm(UserInfo userInfo) {
 
-	/**
-	 * ユーザーID存在確認
-	 */
-	public boolean existsByUserId(String id) {
-		return userRepo.existsById(id);
-	}
 
+        UserRegisterForm form =
+                new UserRegisterForm();
 
 
-	/**
-	 * 新規登録
-	 */
-	@Transactional
-	public void registerAccount(UserRegisterForm form) {
+        form.setUserId(
+                userInfo.getUserId()
+        );
 
 
-		if (existsByUserId(form.getUserId())) {
-			throw new IllegalArgumentException(
-					"このユーザーIDは既に登録されています。");
-		}
+        form.setUserName(
+                userInfo.getUserName()
+        );
 
 
-		UserInfo user = new UserInfo();
+        form.setPosition(
+                userInfo.getPosition().name()
+        );
 
 
-		user.setUserId(form.getUserId());
+        if (userInfo.getWage() != null) {
 
-		user.setPassword(
-				passwordEncoder.encode(form.getPassword()));
+            form.setWageId(
+                    userInfo.getWage().getWageId()
+            );
+        }
 
-		user.setUserName(form.getUserName());
 
-		user.setPosition(
-				Position.valueOf(form.getPosition()));
+        if (userInfo.getBirthDate() != null) {
 
+            java.sql.Date sqlDate =
+                    new java.sql.Date(
+                            userInfo.getBirthDate().getTime()
+                    );
 
+            form.setBirthDate(
+                    sqlDate.toLocalDate()
+            );
+        }
 
-		Wage wage = wageRepo.findById(form.getWageId())
-				.orElseThrow(() ->
-				new IllegalArgumentException(
-						"指定された賃金IDが存在しません"));
 
-		user.setWage(wage);
+        form.setEmploymentInsurance(
+                userInfo.isEmploymentInsurance()
+        );
 
 
+        form.setIsActive(
+                userInfo.getIsActive()
+        );
 
-		if(form.getBirthDate()!=null) {
-			user.setBirthDate(
-					java.sql.Date.valueOf(form.getBirthDate()));
-		}
 
+        // 表示用マスク
+        form.setPassword(
+                "＊＊＊＊＊＊＊＊"
+        );
 
-		// 初期状態は退勤
-		user.setAttendanceStatus(0);
 
-		user.setEmploymentInsurance(
-				form.isEmploymentInsurance());
+        return form;
+    }
 
 
-		user.setIsActive(
-				form.getIsActive());
 
 
 
-		userRepo.save(user);
-	}
+    /**
+     * ユーザー存在確認
+     */
+    public boolean existsByUserId(String id) {
 
+        return userRepo.existsById(id);
+    }
 
 
 
-	/**
-	 * 既存ユーザー更新
-	 */
-	@Transactional
-	public boolean updateAccount(UserRegisterForm form) {
 
 
-		Optional<UserInfo> userOpt =
-				userRepo.findById(form.getUserId());
+    /**
+     * 新規登録
+     */
+    @Transactional
+    public void registerAccount(UserRegisterForm form) {
 
 
-		if(userOpt.isEmpty()) {
-			return false;
-		}
+        if (existsByUserId(form.getUserId())) {
 
+            throw new IllegalArgumentException(
+                    "このユーザーIDは既に登録されています。"
+            );
+        }
 
-		UserInfo user = userOpt.get();
 
 
-		/*
-		 * 有効 → 無効変更
-		 * かつ現在出勤中
-		 */
-		boolean deactivate =
-				user.getIsActive() == 1
-				&& form.getIsActive() == 0;
+        UserInfo user =
+                new UserInfo();
 
 
-		if(deactivate
-				&& user.getAttendanceStatus() == 1) {
 
+        user.setUserId(
+                form.getUserId()
+        );
 
-			// 強制退勤
-			attendanceService.forceClockOut(
-					user.getUserId());
 
+        user.setPassword(
+                passwordEncoder.encode(
+                        form.getPassword()
+                )
+        );
 
-			// 給与再計算
-			LocalDate today = LocalDate.now();
 
-			salaryCalculationService
-				.calculateOrUpdateMonthlySalary(
-						user.getUserId(),
-						today.getYear(),
-						today.getMonthValue());
-		}
+        user.setUserName(
+                form.getUserName()
+        );
 
 
+        user.setPosition(
+                Position.valueOf(
+                        form.getPosition()
+                )
+        );
 
 
-		user.setUserName(
-				form.getUserName());
 
+        Wage wage =
+                wageRepo.findById(
+                        form.getWageId()
+                )
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "指定された賃金IDが存在しません"
+                        )
+                );
 
-		user.setPosition(
-				Position.valueOf(form.getPosition()));
 
+        user.setWage(wage);
 
 
-		Wage wage = wageRepo.findById(form.getWageId())
-				.orElseThrow(() ->
-				new IllegalArgumentException(
-						"指定された賃金IDが存在しません"));
 
+        if (form.getBirthDate() != null) {
 
-		user.setWage(wage);
+            user.setBirthDate(
+                    java.sql.Date.valueOf(
+                            form.getBirthDate()
+                    )
+            );
+        }
 
 
 
-		user.setBirthDate(
-				java.sql.Date.valueOf(
-						form.getBirthDate()));
+        user.setAttendanceStatus(0);
 
 
+        user.setEmploymentInsurance(
+                form.isEmploymentInsurance()
+        );
 
-		user.setEmploymentInsurance(
-				form.isEmploymentInsurance());
 
+        user.setIsActive(
+                form.getIsActive()
+        );
 
 
-		user.setIsActive(
-				form.getIsActive());
 
+        userRepo.save(user);
+    }
 
 
-		// パスワード変更時のみ更新
-		if(form.getPassword()!=null
-				&& !form.getPassword().trim().isEmpty()
-				&& !form.getPassword()
-				.equals("＊＊＊＊＊＊＊＊")) {
 
 
-			user.setPassword(
-					passwordEncoder.encode(
-							form.getPassword()));
-		}
 
 
 
-		userRepo.save(user);
+    /**
+     * アカウント更新
+     */
+    @Transactional
+    public boolean updateAccount(UserRegisterForm form) {
 
 
-		return true;
-	}
+        Optional<UserInfo> userOpt =
+                userRepo.findById(
+                        form.getUserId()
+                );
 
 
+        if (userOpt.isEmpty()) {
 
+            return false;
+        }
 
-	/**
-	 * 一括無効化
-	 */
-	@Transactional
-	public void deactivateUsers(List<String> userIds) {
 
 
-		List<UserInfo> users =
-				userRepo.findAllById(userIds);
+        UserInfo user =
+                userOpt.get();
 
 
 
-		for(UserInfo user : users) {
 
+        /*
+         * 有効 → 無効変更
+         *
+         * 出勤中なら強制退勤
+         */
+        if (user.getIsActive() == 1
+                && form.getIsActive() == 0
+                && user.getAttendanceStatus() == 1) {
 
-			if(user.getIsActive()==1
-					&& user.getAttendanceStatus()==1) {
 
+            attendanceService.forceClockOut(
+                    user.getUserId()
+            );
+        }
 
-				attendanceService.forceClockOut(
-						user.getUserId());
 
 
-				LocalDate today = LocalDate.now();
 
 
-				salaryCalculationService
-					.calculateOrUpdateMonthlySalary(
-							user.getUserId(),
-							today.getYear(),
-							today.getMonthValue());
-			}
+        user.setUserName(
+                form.getUserName()
+        );
 
 
+        user.setPosition(
+                Position.valueOf(
+                        form.getPosition()
+                )
+        );
 
-			user.setIsActive(0);
-		}
 
 
-		userRepo.saveAll(users);
-	}
+        Wage wage =
+                wageRepo.findById(
+                        form.getWageId()
+                )
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "指定された賃金IDが存在しません"
+                        )
+                );
 
 
+        user.setWage(wage);
 
 
-	/**
-	 * 検索
-	 */
-	public List<UserInfo> searchUsers(
-			String keyword,
-			String type) {
 
 
-		if("id".equals(type)) {
+        if (form.getBirthDate() != null) {
 
-			return userRepo.findByUserIdContaining(keyword);
+            user.setBirthDate(
+                    java.sql.Date.valueOf(
+                            form.getBirthDate()
+                    )
+            );
+        }
 
-		}else if("name".equals(type)) {
 
-			return userRepo.findByUserNameContaining(keyword);
-		}
 
+        user.setEmploymentInsurance(
+                form.isEmploymentInsurance()
+        );
 
-		return userRepo.findAll();
-	}
+
+
+        user.setIsActive(
+                form.getIsActive()
+        );
+
+
+
+
+        // パスワード変更時のみ更新
+        if (form.getPassword() != null
+                && !form.getPassword().trim().isEmpty()
+                && !form.getPassword().equals("＊＊＊＊＊＊＊＊")) {
+
+
+            user.setPassword(
+                    passwordEncoder.encode(
+                            form.getPassword()
+                    )
+            );
+        }
+
+
+
+        userRepo.save(user);
+
+
+        return true;
+    }
+
+
+
+
+
+
+
+    /**
+     * ユーザー一括無効化
+     */
+    @Transactional
+    public void deactivateUsers(List<String> userIds) {
+
+
+        List<UserInfo> users =
+                userRepo.findAllById(userIds);
+
+
+
+        for (UserInfo user : users) {
+
+
+            if (user.getAttendanceStatus() == 1) {
+
+
+                attendanceService.forceClockOut(
+                        user.getUserId()
+                );
+            }
+
+
+
+            user.setIsActive(0);
+        }
+
+
+
+        userRepo.saveAll(users);
+    }
+
+
+
+
+
+
+
+    /**
+     * 検索
+     */
+    public List<UserInfo> searchUsers(
+            String keyword,
+            String type) {
+
+
+        if ("id".equals(type)) {
+
+            return userRepo.findByUserIdContaining(keyword);
+
+        } else if ("name".equals(type)) {
+
+            return userRepo.findByUserNameContaining(keyword);
+        }
+
+
+        return userRepo.findAll();
+    }
+
 }
