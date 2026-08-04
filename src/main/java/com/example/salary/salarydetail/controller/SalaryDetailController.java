@@ -1,6 +1,7 @@
 package com.example.salary.salarydetail.controller;
 
 import java.time.Duration;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.attendance.dto.AttendanceDto;
@@ -37,9 +39,9 @@ public class SalaryDetailController {
     public String showDetail(
             @AuthenticationPrincipal UserDetails loginUser,
             HttpServletRequest request,
-            String userId,
-            int targetYear,
-            int targetMonth,
+            @RequestParam("userId") String userId,
+            @RequestParam("targetYear") int targetYear,
+            @RequestParam("targetMonth") int targetMonth,
             Model model,
             RedirectAttributes redirectAttributes) {
 
@@ -57,6 +59,7 @@ public class SalaryDetailController {
                 : "/user";
         model.addAttribute("basePath", basePath);
 
+
         // ★ 給与情報（単一）
         SalaryDetailDto detail = salaryDetailService.getSalaryDetail(
                 userId, targetYear, targetMonth
@@ -68,13 +71,46 @@ public class SalaryDetailController {
         }
 
         // ★ 当月の勤怠一覧（複数）
+
+        // ★ 給与情報（同年同月は必ず1件）
+        List<SalaryDetailDto> detailList;
+        try {
+            detailList = salaryDetailService.getSalaryDetailList(
+                    userId, targetYear, targetMonth
+            );
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "同年同月の給与データが複数存在します。修正が必要です。");
+            return "redirect:" + basePath + "/salary/confirm?userId=" + userId + "&targetYear=" + targetYear;
+        }
+
+        if (detailList.isEmpty()) {
+
+            // ★ null理由を取得
+            String reason = salaryDetailService.getNullReason(userId, targetYear, targetMonth);
+
+            redirectAttributes.addFlashAttribute("errorMessage", reason);
+
+            return "redirect:" + basePath + "/salary/confirm?userId=" + userId + "&targetYear=" + targetYear;
+        }
+
+
+        // ★ 代表データ（1件のみ）
+        SalaryDetailDto detail = detailList.get(0);
+
+        // ★ 当月の勤怠一覧（表示用）
+
         List<Attendance> attendanceList =
                 salaryDetailService.getAttendanceList(userId, targetYear, targetMonth)
                         .stream()
                         .sorted((a, b) -> b.getWorkDate().compareTo(a.getWorkDate())) // ★ 新しい日付 → 古い日付
                         .collect(Collectors.toList());
 
+
         // ★ 勤怠一覧を DTO に変換（Entity は触らない）
+
+        // ★ 勤怠一覧を DTO に変換（表示用）
+
         List<AttendanceDto> attendanceDtoList = attendanceList.stream()
                 .map(att -> {
                     AttendanceDto dto = new AttendanceDto();
@@ -82,6 +118,7 @@ public class SalaryDetailController {
                     dto.setClockIn(att.getClockIn() != null ? att.getClockIn().toString() : null);
                     dto.setClockOut(att.getClockOut() != null ? att.getClockOut().toString() : null);
                     dto.setRestTime(att.getRestTime());
+
 
                     // 勤務時間計算（Controller 側で完結）
                     if (att.getClockIn() != null && att.getClockOut() != null) {
@@ -96,9 +133,13 @@ public class SalaryDetailController {
                         dto.setWorkingHours(0.0);
                     }
 
-                    return dto;
-                })
-                .collect(Collectors.toList());
+                    // ★ 表示用の勤務時間（給与計算には使わない）
+                    if (att.getClockIn() != null && att.getClockOut() != null) {
+
+
+                        LocalTime in = att.getClockIn().withSecond(0);
+                        LocalTime out = att.getClockOut().withSecond(0);
+
 
         // ★ 勤務時間合計を計算（給与計算用）
         double totalWorkingHours = attendanceList.stream()
@@ -115,21 +156,37 @@ public class SalaryDetailController {
                     Double restMinutes = att.getRestTime();
                     if (restMinutes == null) restMinutes = 0.0;
 
-                    double restHours = restMinutes / 60.0;
+                        long minutes = Duration.between(in, out).toMinutes();
 
-                    double result = hours - restHours;
+                        double restMinutes = (att.getRestTime() == null ? 0 : att.getRestTime());
+                        minutes -= (long) restMinutes;
 
-                    if (Double.isNaN(result) || Double.isInfinite(result)) {
-                        return 0.0;
+
+                        if (minutes < 0) minutes = 0;
+
+                        double hours = Math.floor((minutes / 60.0) * 100) / 100.0;
+                        dto.setWorkingHours(hours);
+
+                    } else {
+                        dto.setWorkingHours(0.0);
                     }
+
 
                     return result;
 
+
+                    return dto;
+
                 })
-                .sum();
+                .collect(Collectors.toList());
+
 
 
         detail.setWorkingHours(totalWorkingHours);
+
+        // ★ detail の勤務時間は Service が計算済みの値をそのまま使う
+        // Controller で再計算しない（仕様変更）
+
 
         // ★ 画面状態セット
         detail.setInitialDisplay(true);
@@ -140,8 +197,8 @@ public class SalaryDetailController {
                 validator.validate(detail, ScreenStateGroup.class);
 
         if (!screenViolations.isEmpty()) {
-            model.addAttribute("error", "画面状態が不正です");
-            return "salaryDetail";
+            redirectAttributes.addFlashAttribute("errorMessage", "画面状態が不正です");
+            return "redirect:" + basePath + "/salary/confirm?userId=" + userId + "&targetYear=" + targetYear;
         }
 
         // Consistency チェック
@@ -149,11 +206,16 @@ public class SalaryDetailController {
                 validator.validate(detail, ConsistencyGroup.class);
 
         if (!consistencyViolations.isEmpty()) {
-            model.addAttribute("error", "整合性が不正です");
-            return "salaryDetail";
+            redirectAttributes.addFlashAttribute("errorMessage", "整合性が不正です");
+            return "redirect:" + basePath + "/salary/confirm?userId=" + userId + "&targetYear=" + targetYear;
         }
 
+
         // ★ 画面へ渡す（DTO 化した勤怠一覧）
+
+
+        // ★ 画面へ渡す（1件のみ）
+
         model.addAttribute("detail", detail);
         model.addAttribute("attendanceList", attendanceDtoList);
         model.addAttribute("userId", userId);

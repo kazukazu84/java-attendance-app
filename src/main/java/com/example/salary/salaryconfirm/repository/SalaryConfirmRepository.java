@@ -17,6 +17,13 @@ public interface SalaryConfirmRepository extends JpaRepository<SalaryEntity, Int
             int targetYear
     );
 
+    // ★ 重複検知用：同年同月の給与データを取得
+    List<SalaryEntity> findByUserInfoUserIdAndTargetYearAndTargetMonth(
+            String userId,
+            int targetYear,
+            int targetMonth
+    );
+
     // ★ 追加：ユーザーが持っている給与データの「年一覧」を返す
     @Query("""
         SELECT DISTINCT s.targetYear

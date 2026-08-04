@@ -3,7 +3,14 @@ package com.example.userShiftRequest.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+
+
+import com.example.adminshift.entity.ShiftApplicationEvent;
+import com.example.adminshift.repository.ShiftApplicationEventRepository;
+import com.example.adminshift.repository.ShiftRequestRepository;
 
 import com.example.userShiftRequest.dto.ShiftRequestSelectDto;
 import com.example.userShiftRequest.form.ShiftRequestSelectForm;
@@ -26,6 +33,62 @@ public class ShiftRequestSelectService {
     	List<ShiftRequestSelectDto> shiftList =
     			new ArrayList<>();
     	
+
+
+    	//年度を取るためにメソッドを変更(桝田)
+    	List<Integer> yearList = repository.findEventYears();
+    	form.setYearList(yearList);
+
+    	List<ShiftApplicationEvent> eventList =
+    	        repository.findByTargetStartYear(selectedYear);
+
+    	for (ShiftApplicationEvent event : eventList) {
+    		
+    		
+    		System.out.println(
+    			    event.getDisplayName()
+    			    + " : "
+    			    + event.getStatusName());
+    		
+    		System.out.println(
+    				event.getTargetStartDate().getYear());
+    		
+    		// 年度絞り込み
+    		if (selectedYear != null
+    		        && event.getTargetStartDate().getYear()
+    		           != selectedYear) {
+    		    continue;
+    		}
+    		
+    		// 受付中のみ表示
+    		if (!"受付中".equals(
+    		        event.getStatusName())) {
+    		    continue;
+    		}
+    		
+    		System.out.println(
+    		        event.getStatusName());
+    		
+    	    ShiftRequestSelectDto dto =
+    	            new ShiftRequestSelectDto();
+
+    	    dto.setEventId(event.getEventId());
+
+    	    dto.setTargetPeriod(
+    	            event.getDisplayName());
+
+    	    dto.setStartDate(
+    	            event.getStatusName());
+    	    
+    	    dto.setDeadlineDate(
+    	    		event.getApplicationEndDate()
+    	    		.toString());
+
+    	    shiftList.add(dto);
+    	}
+
+    	form.setShiftList(shiftList);
+
     	
     	// TODO
     	// 管理者側機能連携後はイベントテーブルから取得する
@@ -42,7 +105,7 @@ public class ShiftRequestSelectService {
     	 * ・提出状態はuserId + eventIdで判定予定
     	 * ・シフト一覧は管理者作成データを利用予定
     	 ----------------------------------------------*/
-    	
+    	/*
     	// ここからダミーデータ↓（※後で変更する）
     	dto1.setEventId(1);
     	dto1.setSubmissionStatus("未提出");
