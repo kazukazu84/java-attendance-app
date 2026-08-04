@@ -19,16 +19,20 @@
                 th:text="${isNew} ? '📋 新規アカウント作成' : '📋 アカウント情報の編集'">
             </h1>
             
-            <form th:action="${isNew} ? @{/admin/register} : @{/admin/update}" 
-                  th:object="${userRegisterForm}" 
-                  method="post" 
-                  class="needs-validation" novalidate>
+			<form th:action="${isNew} ? @{/admin/register} : @{/admin/update}"
+			      th:object="${userRegisterForm}"
+			      method="post"
+			      autocomplete="off"
+			      class="needs-validation"
+			      novalidate>
                 
                 <!-- ユーザーID -->
                 <div class="mb-3">
                     <label class="form-label fw-bold text-secondary small">ユーザーID</label>
-                    <input type="text" th:field="*{userId}" class="form-control" 
-                           th:readonly="${!isNew}" />
+					<input type="text"
+					       th:field="*{userId}"
+					       class="form-control"
+					       autocomplete="off" />
                     <div th:if="${#fields.hasErrors('userId')}" th:errors="*{userId}" class="error-message"></div>
                 </div>
                 
@@ -39,7 +43,11 @@
                     <!-- 【新規登録画面】 -->
                     <th:block th:if="${isNew}">
                         <div class="input-group">
-                            <input type="password" th:field="*{password}" class="form-control" id="passwordInputRegister" />
+							<input type="password"
+							       th:field="*{password}"
+							       class="form-control"
+							       id="passwordInputRegister"
+							       autocomplete="new-password" />
                             <button class="btn btn-secondary-custom" type="button" onclick="togglePasswordVisibility('passwordInputRegister', this)">👁️</button>
                         </div>
                     </th:block>
