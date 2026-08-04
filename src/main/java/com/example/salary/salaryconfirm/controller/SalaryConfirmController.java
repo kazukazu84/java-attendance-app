@@ -41,28 +41,24 @@ public class SalaryConfirmController {
 
         if (loginUser == null) return "redirect:/login";
 
-        // 権限に応じてURLを正規化
         String redirectUrl = checkAndRedirect(
                 loginUser, request,
                 "/user/salary/confirm", "/admin/salary/confirm"
         );
         if (redirectUrl != null) return redirectUrl;
 
-        // ★ 権限に応じて basePath を画面へ渡す
         String basePath = loginUser.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))
                 ? "/admin"
                 : "/user";
         model.addAttribute("basePath", basePath);
 
-        // ★ 初期表示フォーム（userId は String に変更）
         SalaryConfirmForm form = new SalaryConfirmForm();
-        form.setUserId(loginUser.getUsername()); // ★ ログインユーザーのIDをセット
+        form.setUserId(loginUser.getUsername());
 
         model.addAttribute("salaryConfirmForm", form);
         model.addAttribute("yearList",
                 salaryConfirmService.getAvailableYears(loginUser.getUsername()));
-
 
         return "salaryConfirm";
     }
@@ -91,7 +87,6 @@ public class SalaryConfirmController {
                 : "/user";
         model.addAttribute("basePath", basePath);
 
-        // ★ 年度未選択チェック（null → 500防止）
         if (form.getTargetYear() == null) {
             model.addAttribute("errorMessage", "年度を選択してください");
             model.addAttribute("salaryConfirmForm", form);
@@ -102,9 +97,22 @@ public class SalaryConfirmController {
 
         String userId = form.getUserId();
         int targetYear = form.getTargetYear();
+
+        // ★ 年度の全月を重複チェック（自動修正はしない）
+        try {
+            for (int m = 1; m <= 12; m++) {
+                salaryConfirmService.checkDuplicateSalary(userId, targetYear, m);
+            }
+        } catch (IllegalStateException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("salaryConfirmForm", form);
+            model.addAttribute("yearList",
+                    salaryConfirmService.getAvailableYears(loginUser.getUsername()));
+            return "salaryConfirm";
+        }
+
         Integer targetMonth = form.getTargetMonth();
 
-        // ★ 年間差引支給額
         int totalNetSalary = salaryConfirmService.getTotalNetSalary(userId, targetYear);
 
         SalaryConfirmDto dto = new SalaryConfirmDto(
@@ -117,7 +125,6 @@ public class SalaryConfirmController {
         dto.setInitialDisplay(true);
         dto.setFromScreen("main");
 
-        // ScreenState チェック
         Set<ConstraintViolation<SalaryConfirmDto>> screenViolations =
                 validator.validate(dto, ScreenStateGroup.class);
 
@@ -126,7 +133,6 @@ public class SalaryConfirmController {
             return "salaryConfirm";
         }
 
-        // Consistency チェック
         Set<ConstraintViolation<SalaryConfirmDto>> consistencyViolations =
                 validator.validate(dto, ConsistencyGroup.class);
 
@@ -135,11 +141,9 @@ public class SalaryConfirmController {
             return "salaryConfirm";
         }
 
-        // ★ 一覧データ取得
         List<SalaryConfirmDto> salaryList =
                 salaryConfirmService.getSalaryList(userId, targetYear);
 
-        // ★ 0件チェック（年度に給与データがない）
         if (salaryList.isEmpty()) {
             model.addAttribute("errorMessage", "該当年度の給与データがありません");
             model.addAttribute("salaryConfirmForm", form);
@@ -148,7 +152,6 @@ public class SalaryConfirmController {
             return "salaryConfirm";
         }
 
-        // ★ 正常時のみ画面へ渡す
         model.addAttribute("salaryConfirmDto", dto);
         model.addAttribute("salaryList", salaryList);
         model.addAttribute("totalWorkingHours",
@@ -162,9 +165,6 @@ public class SalaryConfirmController {
         return "salaryConfirm";
     }
 
-    /**
-     * MainController と同じ権限判定ロジック
-     */
     private String checkAndRedirect(
             UserDetails loginUser,
             HttpServletRequest request,

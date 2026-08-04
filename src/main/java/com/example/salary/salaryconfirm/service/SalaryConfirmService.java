@@ -18,15 +18,31 @@ public class SalaryConfirmService {
     private SalaryConfirmRepository salaryConfirmRepository;
 
     /**
+     * ★ 重複検知（自動修正はしない）
+     * 同年同月の給与データが複数存在する場合は例外を投げる。
+     */
+    public void checkDuplicateSalary(String userId, int year, int month) {
+
+        List<SalaryEntity> list =
+                salaryConfirmRepository.findByUserInfoUserIdAndTargetYearAndTargetMonth(
+                        userId, year, month
+                );
+
+        if (list.size() > 1) {
+            throw new IllegalStateException(
+                "同年同月の給与データが複数存在します。修正が必要です。"
+            );
+        }
+    }
+
+    /**
      * 給与一覧（DTO）を取得
      */
     public List<SalaryConfirmDto> getSalaryList(String userId, int targetYear) {
 
-        // ★ Repository から取得
         List<SalaryEntity> list =
                 salaryConfirmRepository.findByUserInfoUserIdAndTargetYear(userId, targetYear);
 
-        // ★ 月の降順（新しい月 → 古い月）にソート
         list = list.stream()
                 .sorted((a, b) -> Integer.compare(b.getTargetMonth(), a.getTargetMonth()))
                 .collect(Collectors.toList());
@@ -50,7 +66,6 @@ public class SalaryConfirmService {
         return dtoList;
     }
 
-
     /**
      * 年間勤務時間
      */
@@ -72,7 +87,7 @@ public class SalaryConfirmService {
                 .mapToInt(SalaryEntity::getNetSalary)
                 .sum();
     }
-    
+
     public List<Integer> getAvailableYears(String userId) {
         return salaryConfirmRepository.findYearsByUserId(userId);
     }
