@@ -2,6 +2,7 @@ package com.example.adminshift.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -31,4 +32,10 @@ public interface ShiftRequestDetailRepository
      * サイドバー表示用：特定のユーザー・イベントのシフト希望明細一覧を取得
      */
     List<ShiftRequestDetail> findByUserIdAndEventIdOrderByWorkDateAsc(String userId, Integer eventId);
+    
+    Optional<ShiftRequestDetail>
+    findByUserIdAndEventIdAndWorkDate(
+            String userId,
+            Integer eventId,
+            LocalDate workDate);
 }
