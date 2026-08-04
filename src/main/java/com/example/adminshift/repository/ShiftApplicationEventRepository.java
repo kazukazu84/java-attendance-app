@@ -154,4 +154,48 @@ public interface ShiftApplicationEventRepository
     List<ShiftApplicationEvent> findTargetEventsForAdminList(
             @Param("today") LocalDate today
     );
+
+    
+    /**
+     * イベントが存在する年度一覧を取得
+     */
+    @Query("""
+        SELECT DISTINCT YEAR(e.targetStartDate)
+        FROM ShiftApplicationEvent e
+        ORDER BY YEAR(e.targetStartDate)
+    """)
+    List<Integer> findEventYears();
+    
+    /**
+     * 指定年度のイベント一覧を取得
+     */
+    @Query("""
+        SELECT e
+        FROM ShiftApplicationEvent e
+        WHERE YEAR(e.targetStartDate) = :year
+        ORDER BY e.targetStartDate ASC
+    """)
+    List<ShiftApplicationEvent> findByTargetStartYear(
+            @Param("year") Integer year);
+    
+    /**
+     * 指定期間と重なるイベント一覧を取得
+     *
+     * 月間勤務時間集計用
+     *
+     * @param start 開始日
+     * @param end 終了日
+     * @return イベント一覧
+     */
+    @Query("""
+        SELECT e
+          FROM ShiftApplicationEvent e
+         WHERE e.targetStartDate <= :end
+           AND e.targetEndDate >= :start
+         ORDER BY e.targetStartDate ASC, e.eventId ASC
+    """)
+    List<ShiftApplicationEvent> findEventsOverlappingPeriod(
+            @Param("start") LocalDate start,
+            @Param("end") LocalDate end);
+
 }

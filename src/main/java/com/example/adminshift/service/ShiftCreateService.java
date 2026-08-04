@@ -1,5 +1,6 @@
 package com.example.adminshift.service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ import com.example.adminshift.entity.Users;
 import com.example.adminshift.repository.ShiftApplicationEventRepository;
 import com.example.adminshift.repository.ShiftRepository;
 import com.example.adminshift.repository.UsersRepository;
+import com.example.attendance.entity.Attendance;
+import com.example.attendance.repository.AttendanceRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,9 +34,17 @@ import lombok.RequiredArgsConstructor;
 public class ShiftCreateService {
 
     private final ShiftApplicationEventRepository shiftApplicationEventRepository;
+
     private final ShiftRepository shiftRepository;
+
     private final UsersRepository usersRepository;
 
+    /**
+     * 勤怠情報取得用
+     *
+     * 過去日の勤務時間集計で使用します。
+     */
+    private final AttendanceRepository attendanceRepository;
     /**
      * 全イベント一覧を取得します。
      *
@@ -214,60 +225,366 @@ public class ShiftCreateService {
      * @param userList ユーザーリスト
      * @return Map<ユーザーID, List<MonthlyShiftSummaryDto>>
      */
+    /**
+     * ユーザーごと・月ごとの勤務合計（日数・時間）を集計したマップを作成します。
+     *
+     * 過去日はattendanceテーブルの実績、
+     * 未来日はshiftsテーブルの予定を使用します。
+     *
+     * また、同じ年月内で複数イベントが存在する場合は、
+     * すべてのイベントを合算します。
+     *
+     * @param eventId 現在選択中イベントID
+     * @param userList ユーザーリスト
+     * @return Map<ユーザーID, List<MonthlyShiftSummaryDto>>
+     */
     public Map<String, List<MonthlyShiftSummaryDto>> getMonthlySummaryMap(
-            List<Shift> shiftList,
+            Integer eventId,
             List<Users> userList) {
 
-        Map<String, List<MonthlyShiftSummaryDto>> summaryMap = new LinkedHashMap<>();
 
-        if (userList == null || userList.isEmpty()) {
+        Map<String, List<MonthlyShiftSummaryDto>> summaryMap =
+                new LinkedHashMap<>();
+
+
+        if (eventId == null
+                || userList == null
+                || userList.isEmpty()) {
+
             return summaryMap;
         }
 
+
+        /*
+         * 現在イベント取得
+         */
+        ShiftApplicationEvent currentEvent =
+                shiftApplicationEventRepository
+                        .findById(eventId)
+                        .orElse(null);
+
+
+        if (currentEvent == null) {
+            return summaryMap;
+        }
+
+
+        /*
+         * 対象年月取得
+         */
+        YearMonth yearMonth =
+                YearMonth.from(
+                        currentEvent.getTargetStartDate()
+                );
+
+
+        LocalDate monthStart =
+                yearMonth.atDay(1);
+
+
+        LocalDate monthEnd =
+                yearMonth.atEndOfMonth();
+
+
+
+        /*
+         * 同じ月に存在するイベント取得
+         *
+         * 例：
+         * 8/1～8/24
+         * 8/25～8/31
+         */
+        List<ShiftApplicationEvent> monthlyEvents =
+                shiftApplicationEventRepository
+                        .findEventsOverlappingPeriod(
+                                monthStart,
+                                monthEnd
+                        );
+
+
+        if (monthlyEvents == null) {
+            monthlyEvents = Collections.emptyList();
+        }
+
+
+
+        /*
+         * 月内のShift取得
+         */
+        List<Shift> monthlyShifts =
+                shiftRepository.findByShiftDateBetween(
+                        monthStart,
+                        monthEnd
+                );
+
+
+        if (monthlyShifts == null) {
+            monthlyShifts = Collections.emptyList();
+        }
+
+
+
+        LocalDate today = LocalDate.now();
+
+
+
+        /*
+         * ユーザー単位集計
+         */
         for (Users user : userList) {
-            if (user == null || user.getUserId() == null) {
+
+
+            if (user == null
+                    || user.getUserId() == null) {
+
                 continue;
             }
 
-            // 該当ユーザーの出勤（isAvailable == 1）かつ時間が揃っているシフトのみを抽出
-            List<Shift> userShifts = (shiftList == null) ? Collections.emptyList() :
-                    shiftList.stream()
-                            .filter(s -> s != null && user.getUserId().equals(s.getUserId()))
-                            .filter(s -> Integer.valueOf(1).equals(s.getIsAvailable()))
-                            .filter(s -> s.getShiftDate() != null && s.getStartTime() != null && s.getEndTime() != null)
-                            .toList();
 
-            // 年月 (YearMonth) ごとにグループ化
-            Map<YearMonth, List<Shift>> shiftsByMonth = new LinkedHashMap<>();
+            int workingDays = 0;
 
-            for (Shift s : userShifts) {
-                YearMonth ym = YearMonth.from(s.getShiftDate());
-                shiftsByMonth.computeIfAbsent(ym, k -> new ArrayList<>()).add(s);
-            }
+            long totalMinutes = 0;
 
-            List<MonthlyShiftSummaryDto> summaryList = new ArrayList<>();
 
-            for (Map.Entry<YearMonth, List<Shift>> entry : shiftsByMonth.entrySet()) {
-                YearMonth yearMonth = entry.getKey();
-                List<Shift> monthShifts = entry.getValue();
-                int workingDays = monthShifts.size();
-                long totalMinutes = 0;
 
-                for (Shift s : monthShifts) {
-                    long minutes = java.time.Duration.between(s.getStartTime(), s.getEndTime()).toMinutes();
-                    if (minutes < 0) {
-                        // 日をまたぐ夜勤シフト対応 (+24時間)
-                        minutes += 24 * 60;
+            /*
+             * 月の日付を1日ずつ確認
+             */
+            LocalDate date = monthStart;
+
+
+            while (!date.isAfter(monthEnd)) {
+
+
+                final LocalDate targetDate = date;
+
+
+                boolean worked = false;
+
+
+                long minutes = 0;
+
+
+                /*
+                 * 過去日
+                 *
+                 * attendance実績使用
+                 */
+                if (!date.isAfter(today)) {
+
+
+                	Attendance attendance =
+                	        attendanceRepository
+                	                .findByUserIdAndWorkDate(
+                	                        user.getUserId(),
+                	                        targetDate
+                	                )
+                	                .orElse(null);
+
+
+
+                    if (attendance != null
+                            && attendance.getClockIn() != null
+                            && attendance.getClockOut() != null) {
+
+
+                        worked = true;
+
+
+                        minutes =
+                                calculateAttendanceMinutes(
+                                        attendance
+                                );
                     }
+
+
+                } else {
+
+
+                    /*
+                     * 未来日
+                     *
+                     * shift予定使用
+                     */
+                    Shift shift =
+                            monthlyShifts.stream()
+                                    .filter(s ->
+                                            user.getUserId()
+                                                    .equals(
+                                                            s.getUserId()
+                                                    ))
+                                    .filter(s ->
+                                    targetDate.equals(
+                                            s.getShiftDate()
+                                    ))
+                                    .filter(s ->
+                                            Integer.valueOf(1)
+                                                    .equals(
+                                                        s.getIsAvailable()
+                                                    ))
+                                    .findFirst()
+                                    .orElse(null);
+
+
+
+                    if (shift != null
+                            && shift.getStartTime() != null
+                            && shift.getEndTime() != null) {
+
+
+                        worked = true;
+
+
+                        minutes =
+                                calculateShiftMinutes(
+                                        shift
+                                );
+                    }
+                }
+
+
+
+                if (worked) {
+
+                    workingDays++;
+
                     totalMinutes += minutes;
                 }
 
-                summaryList.add(new MonthlyShiftSummaryDto(yearMonth, workingDays, totalMinutes));
+
+                date = date.plusDays(1);
             }
 
-            summaryMap.put(user.getUserId(), summaryList);
+
+
+            /*
+             * 勤務があるユーザーだけ追加
+             */
+            if (workingDays > 0) {
+
+
+                List<MonthlyShiftSummaryDto> list =
+                        new ArrayList<>();
+
+
+                list.add(
+                        new MonthlyShiftSummaryDto(
+                                yearMonth,
+                                workingDays,
+                                totalMinutes
+                        )
+                );
+
+
+                summaryMap.put(
+                        user.getUserId(),
+                        list
+                );
+            }
         }
 
+
         return summaryMap;
+    }
+    
+    /**
+     * Attendanceの勤務時間を分単位で計算します。
+     *
+     * 計算式：
+     * 退勤時間 - 出勤時間 - 休憩時間
+     *
+     * @param attendance 勤怠情報
+     * @return 勤務時間（分）
+     */
+    private long calculateAttendanceMinutes(
+            Attendance attendance) {
+
+
+        if (attendance == null
+                || attendance.getClockIn() == null
+                || attendance.getClockOut() == null) {
+
+            return 0;
+        }
+
+
+        long minutes =
+                Duration.between(
+                        attendance.getClockIn(),
+                        attendance.getClockOut()
+                )
+                .toMinutes();
+
+
+        /*
+         * 日跨ぎ勤務対応
+         */
+        if (minutes < 0) {
+
+            minutes += 24 * 60;
+        }
+
+
+        /*
+         * 休憩時間控除
+         *
+         * restTimeは時間単位
+         * 例：1.0 → 60分
+         */
+        if (attendance.getRestTime() != null) {
+
+            minutes -=
+                    (long)(attendance.getRestTime() * 60);
+        }
+
+
+        /*
+         * マイナス防止
+         */
+        if (minutes < 0) {
+
+            minutes = 0;
+        }
+
+
+        return minutes;
+    }
+    
+    /**
+     * Shiftの予定勤務時間を分単位で計算します。
+     *
+     * @param shift シフト情報
+     * @return 勤務時間（分）
+     */
+    private long calculateShiftMinutes(
+            Shift shift) {
+
+
+        if (shift == null
+                || shift.getStartTime() == null
+                || shift.getEndTime() == null) {
+
+            return 0;
+        }
+
+
+        long minutes =
+                Duration.between(
+                        shift.getStartTime(),
+                        shift.getEndTime()
+                )
+                .toMinutes();
+
+
+        /*
+         * 夜勤など日をまたぐ勤務対応
+         */
+        if (minutes < 0) {
+
+            minutes += 24 * 60;
+        }
+
+
+        return minutes;
     }
 }

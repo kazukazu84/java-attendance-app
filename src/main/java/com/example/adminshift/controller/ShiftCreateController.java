@@ -491,15 +491,23 @@ public class ShiftCreateController {
          * 月間勤務集計
          * ============================================
          *
-         * userId
+         * 過去日
          *   ↓
-         * 月別勤務集計
+         * attendanceテーブル実績
+         *
+         * 未来日
+         *   ↓
+         * shiftテーブル予定
+         *
+         * 同月イベントが複数存在する場合は
+         * 合算して表示
          */
         var monthlySummaryMap =
-                shiftCreateService.getMonthlySummaryMap(
-                        shiftList,
-                        userList
-                );
+        		shiftCreateService.getMonthlySummaryMap(
+        		        eventId,
+        		        userList
+        		);
+               
 
 
         /*
