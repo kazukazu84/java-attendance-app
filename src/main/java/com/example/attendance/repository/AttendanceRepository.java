@@ -29,4 +29,11 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
 
         return findByUserIdAndWorkDateBetween(userId, start, end);
     }
+    
+    
+    Optional<Attendance> findFirstByUserIdAndClockOutIsNullOrderByWorkDateDesc(String userId);
+    //最新レコード取得
+    Optional<Attendance> findFirstByUserIdOrderByWorkDateDesc(String userId);
+    
+    
 }
