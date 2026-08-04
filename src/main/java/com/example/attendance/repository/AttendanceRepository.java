@@ -12,23 +12,56 @@ import com.example.attendance.entity.Attendance;
 @Repository
 public interface AttendanceRepository extends JpaRepository<Attendance, Integer> {
 
-    Optional<Attendance> findByUserIdAndWorkDate(String userId, LocalDate workDate);
+    /**
+     * 指定ユーザーの指定日の勤怠取得
+     */
+    Optional<Attendance> findByUserIdAndWorkDate(
+            String userId,
+            LocalDate workDate
+    );
 
-    // ★ 月別勤怠一覧（Between で確実に動く）
+
+    /**
+     * ★ 管理者による強制退勤用
+     *
+     * clockOutが未設定（出勤中）の最新勤怠を取得
+     */
+    Optional<Attendance> findFirstByUserIdAndClockOutIsNullOrderByWorkDateDesc(
+            String userId
+    );
+
+
+    /**
+     * 月別勤怠一覧取得
+     */
     List<Attendance> findByUserIdAndWorkDateBetween(
             String userId,
             LocalDate start,
             LocalDate end
     );
 
-    // ★ 最新仕様：給与詳細画面用（当月の勤怠一覧）
-    default List<Attendance> findByUserIdAndYearMonth(String userId, int year, int month) {
+
+    /**
+     * 指定年月の勤怠一覧取得
+     */
+    default List<Attendance> findByUserIdAndYearMonth(
+            String userId,
+            int year,
+            int month
+    ) {
 
         LocalDate start = LocalDate.of(year, month, 1);
         LocalDate end = start.withDayOfMonth(start.lengthOfMonth());
 
-        return findByUserIdAndWorkDateBetween(userId, start, end);
+        return findByUserIdAndWorkDateBetween(
+                userId,
+                start,
+                end
+        );
     }
+<<<<<<< HEAD
+}
+=======
     
     
     Optional<Attendance> findFirstByUserIdAndClockOutIsNullOrderByWorkDateDesc(String userId);
@@ -37,3 +70,4 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
     
     
 }
+>>>>>>> refs/heads/master

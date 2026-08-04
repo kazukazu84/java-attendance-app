@@ -118,10 +118,11 @@
                 </div>
 
                 <!-- ボタンエリア -->
-                <div class="pt-2 d-flex justify-content-start align-items-center gap-2">
-                    <button type="submit" class="btn btn-primary-custom px-4 py-2"
-                            th:text="${isNew} ? 'アカウント登録' : '更新'">
-                    </button>
+				<button type="submit"
+				        class="btn btn-primary-custom px-4 py-2"
+				        onclick="return confirmDeactivate()"
+				        th:text="${isNew} ? 'アカウント登録' : '更新'">
+				</button>
                     
                     <a th:href="@{/admin/UserManagement}" class="btn btn-secondary-custom px-3 py-2">戻る</a>
                     
@@ -136,33 +137,75 @@
         </div>
     </div>
 
-    <script th:inline="javascript">
-        function handlePasswordReset() {
-            if (confirm("パスワードをリセットして再入力しますか？\n（「はい」を押すと新しいパスワードを入力できます）")) {
-                const passwordInput = document.getElementById("passwordInput");
-                const toggleBtn = document.getElementById("toggleVisibilityBtn");
-                
-                passwordInput.type = "password";
-                passwordInput.value = "";
-                passwordInput.readOnly = false;
-                
-                toggleBtn.style.display = "block";
-                passwordInput.focus();
-                
-                document.getElementById("resetPasswordBtn").style.display = "none";
-            }
-        }
+	<script th:inline="javascript">
 
-        function togglePasswordVisibility(inputId, buttonEl) {
-            const passwordInput = document.getElementById(inputId);
-            if (passwordInput.type === "password") {
-                passwordInput.type = "text";
-                buttonEl.textContent = "🙈";
-            } else {
-                passwordInput.type = "password";
-                buttonEl.textContent = "👁️";
-            }
-        }
-    </script>
+	    function handlePasswordReset() {
+	        if (confirm("パスワードをリセットして再入力しますか？\n（「はい」を押すと新しいパスワードを入力できます）")) {
+	            const passwordInput = document.getElementById("passwordInput");
+	            const toggleBtn = document.getElementById("toggleVisibilityBtn");
+	            
+	            passwordInput.type = "password";
+	            passwordInput.value = "";
+	            passwordInput.readOnly = false;
+	            
+	            toggleBtn.style.display = "block";
+	            passwordInput.focus();
+	            
+	            document.getElementById("resetPasswordBtn").style.display = "none";
+	        }
+	    }
+
+
+	    function togglePasswordVisibility(inputId, buttonEl) {
+	        const passwordInput = document.getElementById(inputId);
+
+	        if (passwordInput.type === "password") {
+	            passwordInput.type = "text";
+	            buttonEl.textContent = "🙈";
+	        } else {
+	            passwordInput.type = "password";
+	            buttonEl.textContent = "👁️";
+	        }
+	    }
+
+
+		// ★追加：無効化時の確認
+		function confirmDeactivate() {
+
+		    const isNew = /*[[${isNew}]]*/ false;
+
+		    // 新規登録の場合は確認不要
+		    if (isNew) {
+		        return true;
+		    }
+
+
+		    const activeSelect =
+		        document.querySelector('select[name="isActive"]');
+
+
+		    if (!activeSelect) {
+		        return true;
+		    }
+
+
+		    const activeStatus = activeSelect.value;
+
+
+		    // 有効 → 無効の場合だけ確認
+		    if (activeStatus === "0") {
+
+		        return confirm(
+		            "このユーザーを無効化します。\n\n" +
+		            "現在出勤中の場合は自動的に退勤処理されます。\n\n" +
+		            "よろしいですか？"
+		        );
+		    }
+
+
+		    return true;
+		}
+
+	</script>
 </body>
 </html>

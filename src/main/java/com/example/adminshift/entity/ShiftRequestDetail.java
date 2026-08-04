@@ -14,7 +14,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "shift_request_details")
+@Table(name = "shift_request_detail")
 public class ShiftRequestDetail {
 
     @Id
