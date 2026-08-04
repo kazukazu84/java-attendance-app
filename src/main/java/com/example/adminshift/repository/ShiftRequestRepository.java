@@ -22,12 +22,5 @@ public interface ShiftRequestRepository
            "WHERE u.isActive = 1 " +
            "ORDER BY u.userId ASC")
     List<Object[]> findUserShiftRequestListByEventId(@Param("eventId") Integer eventId);
-    
-    /**
-     * 指定ユーザーが指定イベントを提出済みか確認
-     */
-    boolean existsByIdUserIdAndIdEventId(
-            String userId,
-            Integer eventId);
 
 }

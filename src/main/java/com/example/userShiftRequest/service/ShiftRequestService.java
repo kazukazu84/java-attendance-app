@@ -8,9 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.adminshift.entity.ShiftApplicationEvent;
 import com.example.adminshift.entity.ShiftRequestDetail;
-import com.example.adminshift.repository.ShiftApplicationEventRepository;
 import com.example.adminshift.repository.ShiftRequestDetailRepository;
 import com.example.userShiftRequest.dto.ShiftRequestDto;
 import com.example.userShiftRequest.form.ShiftRequestForm;
@@ -21,9 +19,6 @@ public class ShiftRequestService {
 
     @Autowired
     private ShiftRequestDetailRepository repository;
-    
-    @Autowired
-    private ShiftApplicationEventRepository eventRepository;
 
 
     private final ShiftRequestValidator validator =
@@ -33,12 +28,10 @@ public class ShiftRequestService {
     /**
      * シフト希望情報取得
      */
-    public ShiftRequestForm getShiftRequestInfo(Integer eventId) {
+    public ShiftRequestForm getShiftRequestInfo() {
 
         ShiftRequestForm form = new ShiftRequestForm();
-        
-        ShiftApplicationEvent event = 
-        		eventRepository.findById(eventId).orElse(null);
+
 
         List<ShiftRequestDetail> entityList =
                 repository.findAll();
@@ -90,10 +83,7 @@ public class ShiftRequestService {
         }
 
 
-        if (event != null) {
-            form.setTargetPeriod(
-                    event.getDisplayName());
-        }
+        form.setTargetPeriod("12/22～12/29");
 
         form.setShiftList(shiftList);
 

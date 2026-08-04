@@ -97,22 +97,28 @@ public class SalaryCalculationService {
 
         long minutes = Duration.between(in, out).toMinutes();
 
+
+            // ★ clockIn / clockOut が null → スキップ
+            if (att.getClockIn() == null || att.getClockOut() == null) {
+                continue;
+            }
+
+            // ★ Duration 計算（ミリ秒対策：LocalTime は安全に扱える）
+            long minutes = Duration.between(att.getClockIn(), att.getClockOut()).toMinutes();
+
+            // ★ 休憩は「分」扱い → 時間に変換
+            Double restMinutes = att.getRestTime();
+            if (restMinutes == null) restMinutes = 0.0;
+
         Double restMinutes = att.getRestTime();
         if (restMinutes == null) restMinutes = 0.0;
 
         minutes -= restMinutes.intValue();
         if (minutes < 0) minutes = 0;
 
-        // ★ 日給計算（最新時給）
-        int wagePerMinute = (int) Math.floor(hourlyWage / 60.0);
-        int dailyGross = wagePerMinute * (int) minutes;
-
-        boolean appliedInsurance = user.isEmploymentInsurance();
-        int dailyInsurance = appliedInsurance ? (int) Math.floor(dailyGross * 0.003) : 0;
-        int dailyNet = dailyGross - dailyInsurance;
-
         // ★ 月給を取得（重複自動修正）
         SalaryEntity salary = resolveDuplicateSalary(userId, targetYear, targetMonth);
+
 
         if (salary == null) {
             salary = new SalaryEntity();
@@ -125,13 +131,51 @@ public class SalaryCalculationService {
             salary.setNetSalary(0);
         }
 
-        // ★ 勤務時間は加算方式（従来通り）
-        salary.setWorkingHours(salary.getWorkingHours() + (minutes / 60.0));
 
-        // ★ 給与は最新値で上書き（加算ではない）
-        salary.setGrossSalary(salary.getGrossSalary() + dailyGross);
-        salary.setInsuranceFee(salary.getInsuranceFee() + dailyInsurance);
-        salary.setNetSalary(salary.getNetSalary() + dailyNet);
+            // ★ マイナスや NaN を防ぐ
+            if (minutes < 0) minutes = 0;
+
+        // ★ 勤務時間は加算方式（従来通り）
+        double todayHours = minutes / 60.0;
+        salary.setWorkingHours(salary.getWorkingHours() + todayHours);
+
+
+        // ★ 月給を最新時給で再計算（workingHours を使う）
+        double totalHours = salary.getWorkingHours();
+        int totalMinutes = (int) Math.floor(totalHours * 60);
+
+        int wagePerMinute = (int) Math.floor(hourlyWage / 60.0);
+        int grossSalary = wagePerMinute * totalMinutes;
+
+        boolean appliedInsurance = user.isEmploymentInsurance();
+        int insuranceFee = appliedInsurance ? (int) Math.floor(grossSalary * 0.003) : 0;
+
+        int netSalary = grossSalary - insuranceFee;
+
+
+        // ⑦ 既存 salary を検索
+        SalaryEntity salary =
+                salaryDetailRepository.findByUserInfoUserIdAndTargetYearAndTargetMonth(
+                        userId, targetYear, targetMonth
+                ).orElse(null);
+
+        if (salary == null) {
+            // ★ 新規作成
+            salary = new SalaryEntity();
+            salary.setUserInfo(user);
+            salary.setTargetYear(targetYear);
+            salary.setTargetMonth(targetMonth);
+        }
+
+        // ★ 新規でも更新でも共通の値をセット
+        salary.setWorkingHours(totalWorkingHours);
+        salary.setAppliedHourlyWage(hourlyWage);
+        salary.setAppliedEmploymentInsurance(appliedInsurance);
+
+        // ★ 給与は最新値で上書き
+        salary.setGrossSalary(grossSalary);
+        salary.setInsuranceFee(insuranceFee);
+        salary.setNetSalary(netSalary);
 
         // ★ 最新の時給・保険適用を保存
         salary.setAppliedHourlyWage(hourlyWage);
@@ -139,5 +183,4 @@ public class SalaryCalculationService {
 
         salaryDetailRepository.save(salary);
     }
-
 }
