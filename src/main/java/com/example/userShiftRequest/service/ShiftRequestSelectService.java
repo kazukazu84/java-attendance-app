@@ -3,13 +3,12 @@ package com.example.userShiftRequest.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 
 import com.example.adminshift.entity.ShiftApplicationEvent;
 import com.example.adminshift.repository.ShiftApplicationEventRepository;
 import com.example.adminshift.repository.ShiftRequestRepository;
-
 import com.example.userShiftRequest.dto.ShiftRequestSelectDto;
 import com.example.userShiftRequest.form.ShiftRequestSelectForm;
 
@@ -164,7 +163,7 @@ public class ShiftRequestSelectService {
     	 * ・提出状態はuserId + eventIdで判定予定
     	 * ・シフト一覧は管理者作成データを利用予定
     	 ----------------------------------------------*/
-    	
+    	/*
     	// ここからダミーデータ↓（※後で変更する）
     	dto1.setEventId(1);
     	dto1.setSubmissionStatus("未提出");
