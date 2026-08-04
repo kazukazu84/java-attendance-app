@@ -27,17 +27,4 @@ public class ShiftRequestSelectForm {
     public void setShiftList(List<ShiftRequestSelectDto> shiftList) {
         this.shiftList = shiftList;
     }
-    
-    
-    //年度保持(桝田)
-    
-    private List<Integer> yearList;
-
-    public List<Integer> getYearList() {
-        return yearList;
-    }
-
-    public void setYearList(List<Integer> yearList) {
-        this.yearList = yearList;
-    }
 }

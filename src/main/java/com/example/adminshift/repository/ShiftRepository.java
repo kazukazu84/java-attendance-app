@@ -37,4 +37,9 @@ public interface ShiftRepository extends JpaRepository<Shift, Integer> {
     // --- 追加: 既存の日付一覧を取得（差分更新用） ---
     @Query("SELECT DISTINCT s.shiftDate FROM Shift s WHERE s.eventId = :eventId")
     List<LocalDate> findExistingShiftDatesByEventId(@Param("eventId") Integer eventId);
+
+    List<Shift> findByUserIdAndShiftDateBetweenOrderByShiftDateAsc(
+            String userId,
+            LocalDate startDate,
+            LocalDate endDate);
 }
