@@ -81,6 +81,8 @@ public class ShiftRequestSelectService {
         form.setShiftList(shiftList);
 
         return form;
+        
+    }
 	
 	@Autowired
 	private ShiftApplicationEventRepository repository;
