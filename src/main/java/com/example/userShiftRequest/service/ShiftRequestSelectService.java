@@ -47,6 +47,15 @@ public class ShiftRequestSelectService {
     	        repository.findByTargetStartYear(selectedYear);
 
     	for (ShiftApplicationEvent event : eventList) {
+    		
+    		System.out.println(
+    				event.getTargetStartDate().getYear());
+    		
+    		if (selectedYear != null
+    		        && event.getTargetStartDate().getYear()
+    		           != selectedYear) {
+    		    continue;
+    		}
 
     	    ShiftRequestSelectDto dto =
     	            new ShiftRequestSelectDto();
@@ -58,6 +67,10 @@ public class ShiftRequestSelectService {
 
     	    dto.setStartDate(
     	            event.getStatusName());
+    	    
+    	    dto.setDeadlineDate(
+    	    		event.getApplicationEndDate()
+    	    		.toString());
 
     	    shiftList.add(dto);
     	}

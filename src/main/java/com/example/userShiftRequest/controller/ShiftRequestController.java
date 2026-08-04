@@ -33,7 +33,7 @@ public class ShiftRequestController {
     	
     	// フォーム生成
         ShiftRequestForm form = 
-        		shiftRequestService.getShiftRequestInfo();
+        		shiftRequestService.getShiftRequestInfo(eventId);
        
         // 「entity.setEventId(1);」とリンクしている
         form.setEventId(eventId);
