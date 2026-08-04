@@ -35,39 +35,83 @@ public class AttendanceService {
 	private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("H時m分");
 
 	// 現在の勤怠ステータスを取得
+//	public AttendanceDto getStatus(String userId) {
+//	    LocalDate today = LocalDate.now();
+//	    Optional<Attendance> attendanceOpt = attendanceRepository.findByUserIdAndWorkDate(userId, today);
+//
+//	    if (attendanceOpt.isEmpty()) {
+//	        // ★ 未出勤なので workDate は today をセット
+//	        return new AttendanceDto("未出勤です", true, false, today);
+//	    }
+//
+//	    Attendance attendance = attendanceOpt.get();
+//	    String dateStr = attendance.getWorkDate().format(dateFormatter);
+//
+//	    if (attendance.getClockOut() == null) {
+//	        String timeStr = attendance.getClockIn().format(timeFormatter);
+//
+//	        // ★ 出勤中 → workDate をセット
+//	        return new AttendanceDto(
+//	                "現在 " + dateStr + timeStr + "～出勤しています",
+//	                false,
+//	                true,
+//	                attendance.getWorkDate()
+//	        );
+//	    } else {
+//	        String timeStr = attendance.getClockOut().format(timeFormatter);
+//
+//	        // ★ 退勤済み → workDate をセット
+//	        return new AttendanceDto(
+//	                "現在 " + dateStr + timeStr + "に退勤しました",
+//	                false,
+//	                false,
+//	                attendance.getWorkDate()
+//	        );
+//	    }
+//	}
+	
 	public AttendanceDto getStatus(String userId) {
-	    LocalDate today = LocalDate.now();
-	    Optional<Attendance> attendanceOpt = attendanceRepository.findByUserIdAndWorkDate(userId, today);
 
-	    if (attendanceOpt.isEmpty()) {
-	        // ★ 未出勤なので workDate は today をセット
-	        return new AttendanceDto("未出勤です", true, false, today);
-	    }
+	    // ① 未退勤レコードを探す
+	    Optional<Attendance> workingOpt =
+	            attendanceRepository.findFirstByUserIdAndClockOutIsNullOrderByWorkDateDesc(userId);
 
-	    Attendance attendance = attendanceOpt.get();
-	    String dateStr = attendance.getWorkDate().format(dateFormatter);
+	    if (workingOpt.isPresent()) {
 
-	    if (attendance.getClockOut() == null) {
+	        Attendance attendance = workingOpt.get();
+
+	        String dateStr = attendance.getWorkDate().format(dateFormatter);
 	        String timeStr = attendance.getClockIn().format(timeFormatter);
 
-	        // ★ 出勤中 → workDate をセット
 	        return new AttendanceDto(
 	                "現在 " + dateStr + timeStr + "～出勤しています",
 	                false,
 	                true,
 	                attendance.getWorkDate()
 	        );
-	    } else {
-	        String timeStr = attendance.getClockOut().format(timeFormatter);
-
-	        // ★ 退勤済み → workDate をセット
-	        return new AttendanceDto(
-	                "現在 " + dateStr + timeStr + "に退勤しました",
-	                false,
-	                false,
-	                attendance.getWorkDate()
-	        );
 	    }
+
+	    // ② 今日のレコードを探す
+	    LocalDate today = LocalDate.now();
+
+	    Optional<Attendance> attendanceOpt =
+	            attendanceRepository.findByUserIdAndWorkDate(userId, today);
+
+	    if (attendanceOpt.isEmpty()) {
+	        return new AttendanceDto("未出勤です", true, false, today);
+	    }
+
+	    Attendance attendance = attendanceOpt.get();
+
+	    String dateStr = attendance.getWorkDate().format(dateFormatter);
+	    String timeStr = attendance.getClockOut().format(timeFormatter);
+
+	    return new AttendanceDto(
+	            "現在 " + dateStr + timeStr + "に退勤しました",
+	            false,
+	            false,
+	            attendance.getWorkDate()
+	    );
 	}
 
 	/**
@@ -75,6 +119,16 @@ public class AttendanceService {
 	 */
 	@Transactional
 	public AttendanceDto clockIn(String userId) {
+		
+		// 前日の未退勤チェック
+		if (attendanceRepository
+		        .findFirstByUserIdAndClockOutIsNullOrderByWorkDateDesc(userId)
+		        .isPresent()) {
+
+		    throw new IllegalArgumentException(
+		            "未退勤の勤務があります。先に退勤してください。");
+		}
+		
 		// 💡 【追加】現在の状態をチェックし、出勤できない状態ならエラー（例外）を投げる
 		AttendanceDto currentStatus = this.getStatus(userId);
 		if (!currentStatus.isCanClockIn()) {
@@ -123,9 +177,15 @@ public class AttendanceService {
 	    }
 
 	    // ② 今日の勤怠を取得
-	    Attendance attendance = attendanceRepository
-	            .findByUserIdAndWorkDate(userId, LocalDate.now())
-	            .orElseThrow(() -> new RuntimeException("本日の出勤データが見つかりません。"));
+	    
+	    Attendance attendance =
+	            attendanceRepository
+	                .findFirstByUserIdAndClockOutIsNullOrderByWorkDateDesc(userId)
+	                .orElseThrow(() ->
+	                    new RuntimeException("退勤対象の勤怠が見つかりません。"));
+//	    Attendance attendance = attendanceRepository
+//	            .findByUserIdAndWorkDate(userId, LocalDate.now())
+//	            .orElseThrow(() -> new RuntimeException("本日の出勤データが見つかりません。"));
 
 	    // ③ 退勤時刻をセット
 	    attendance.setClockOut(LocalTime.now().withNano(0));
