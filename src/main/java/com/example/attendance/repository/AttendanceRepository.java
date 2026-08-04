@@ -59,4 +59,15 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
                 end
         );
     }
+<<<<<<< HEAD
 }
+=======
+    
+    
+    Optional<Attendance> findFirstByUserIdAndClockOutIsNullOrderByWorkDateDesc(String userId);
+    //最新レコード取得
+    Optional<Attendance> findFirstByUserIdOrderByWorkDateDesc(String userId);
+    
+    
+}
+>>>>>>> refs/heads/master

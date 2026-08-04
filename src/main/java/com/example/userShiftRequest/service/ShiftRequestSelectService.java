@@ -16,6 +16,7 @@ import com.example.userShiftRequest.form.ShiftRequestSelectForm;
 public class ShiftRequestSelectService {
 
 
+
     @Autowired
     private ShiftApplicationEventRepository eventRepository;
 
@@ -87,10 +88,9 @@ public class ShiftRequestSelectService {
 	@Autowired
 	private ShiftApplicationEventRepository repository;
 
+
     public ShiftRequestSelectForm getShiftList
     (Integer selectedYear) {
-    	
-    	System.out.println(repository.findAll().size());    	
     	
     	// 動作確認用
     	System.out.println(
@@ -118,15 +118,31 @@ public class ShiftRequestSelectService {
 
     	for (ShiftApplicationEvent event : eventList) {
     		
+    		
+    		System.out.println(
+    			    event.getDisplayName()
+    			    + " : "
+    			    + event.getStatusName());
+    		
     		System.out.println(
     				event.getTargetStartDate().getYear());
     		
+    		// 年度絞り込み
     		if (selectedYear != null
     		        && event.getTargetStartDate().getYear()
     		           != selectedYear) {
     		    continue;
     		}
-
+    		
+    		// 受付中のみ表示
+    		if (!"受付中".equals(
+    		        event.getStatusName())) {
+    		    continue;
+    		}
+    		
+    		System.out.println(
+    		        event.getStatusName());
+    		
     	    ShiftRequestSelectDto dto =
     	            new ShiftRequestSelectDto();
 
@@ -155,6 +171,7 @@ public class ShiftRequestSelectService {
     			new ShiftRequestSelectDto();
     	*/
     	
+    	
     	/*----------------------------------------------
     	 * 【管理者チーム連携待ち】
     	 * ・イベント一覧は現在ダミーデータ
@@ -162,11 +179,9 @@ public class ShiftRequestSelectService {
     	 * ・提出状態はuserId + eventIdで判定予定
     	 * ・シフト一覧は管理者作成データを利用予定
     	 ----------------------------------------------*/
-    	
-    	// ここからダミーデータ↓（※後で変更する）
-    	
     	/*
-    	 * dto1.setEventId(1);
+    	// ここからダミーデータ↓（※後で変更する）
+    	dto1.setEventId(1);
     	dto1.setSubmissionStatus("未提出");
     	dto1.setTargetPeriod("12/22～12/29");
     	dto1.setDeadlineDate("12/21");
@@ -187,7 +202,7 @@ public class ShiftRequestSelectService {
     	*/   	
     	form.setShiftList(shiftList);
     	
-    	
+
     	return form;
 
     }

@@ -111,13 +111,13 @@ body {
 /* テーブル */
 .shift-table {
     width: 100%;
+	margin: 0 auto;
     border-collapse: collapse;
 }
 
 .shift-table th {
     text-align: center;
     padding: 12px;
-    width: 40%;
     color: var(--text-secondary);
     font-weight: 700;
     background: #e6edf5;
