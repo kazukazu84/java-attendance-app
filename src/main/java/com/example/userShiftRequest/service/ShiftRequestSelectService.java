@@ -41,15 +41,31 @@ public class ShiftRequestSelectService {
 
     	for (ShiftApplicationEvent event : eventList) {
     		
+    		
+    		System.out.println(
+    			    event.getDisplayName()
+    			    + " : "
+    			    + event.getStatusName());
+    		
     		System.out.println(
     				event.getTargetStartDate().getYear());
     		
+    		// 年度絞り込み
     		if (selectedYear != null
     		        && event.getTargetStartDate().getYear()
     		           != selectedYear) {
     		    continue;
     		}
-
+    		
+    		// 受付中のみ表示
+    		if (!"受付中".equals(
+    		        event.getStatusName())) {
+    		    continue;
+    		}
+    		
+    		System.out.println(
+    		        event.getStatusName());
+    		
     	    ShiftRequestSelectDto dto =
     	            new ShiftRequestSelectDto();
 
