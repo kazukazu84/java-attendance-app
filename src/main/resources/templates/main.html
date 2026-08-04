@@ -144,6 +144,16 @@
 					                        <select name="month"
 					                                onchange="this.form.submit()">
 
+													<option value="9"
+													        th:selected="${month == 9}">
+													    2026年9月
+													</option>
+													
+													<option value="8"
+													        th:selected="${month == 8}">
+													    2026年8月
+													</option>
+													
 					                            <option value="7"
 					                                    th:selected="${month == 7}">
 					                                2026年7月
@@ -213,15 +223,15 @@
 					                        <div style="height:55px;">
 
 												<span th:each="shift : ${monthlyShiftList}"
-												      th:if="${shift.workDate.dayOfMonth == day}">
+												      th:if="${shift.shiftDate.dayOfMonth == day}">
 
-												    <span th:if="${shift.requestedStartTime != null}">
-												        <span th:text="${shift.requestedStartTime}"></span>
+												    <span th:if="${shift.startTime != null}">
+												        <span th:text="${shift.startTime}"></span>
 												        <br>
-												        <span th:text="${'～' + shift.requestedEndTime}"></span>
+												        <span th:text="${'～' + shift.endTime}"></span>
 												    </span>
 
-												    <span th:if="${shift.requestedStartTime == null}">
+												    <span th:if="${shift.startTime == null}">
 												        休み
 												    </span>
 
@@ -259,6 +269,16 @@
 					                        <select name="month"
 					                                onchange="this.form.submit()">
 
+													<option value="9"
+													        th:selected="${month == 9}">
+													    2026年9月
+													</option>
+													
+													<option value="8"
+													        th:selected="${month == 8}">
+													    2026年8月
+													</option>
+													
 					                            <option value="7"
 					                                    th:selected="${month == 7}">
 					                                2026年7月
@@ -334,21 +354,21 @@
 					                <tr th:each="shift : ${weeklyShiftList}">
 
 										<td style="border:1px solid #ccc;"
-										    th:text="${shift.workDate + '(' +
-										        (shift.workDate.dayOfWeek.name() == 'MONDAY' ? '月' :
-										        shift.workDate.dayOfWeek.name() == 'TUESDAY' ? '火' :
-										        shift.workDate.dayOfWeek.name() == 'WEDNESDAY' ? '水' :
-										        shift.workDate.dayOfWeek.name() == 'THURSDAY' ? '木' :
-										        shift.workDate.dayOfWeek.name() == 'FRIDAY' ? '金' :
-										        shift.workDate.dayOfWeek.name() == 'SATURDAY' ? '土' :
+										    th:text="${shift.shiftDate + '(' +
+										        (shift.shiftDate.dayOfWeek.name() == 'MONDAY' ? '月' :
+										        shift.shiftDate.dayOfWeek.name() == 'TUESDAY' ? '火' :
+										        shift.shiftDate.dayOfWeek.name() == 'WEDNESDAY' ? '水' :
+										        shift.shiftDate.dayOfWeek.name() == 'THURSDAY' ? '木' :
+										        shift.shiftDate.dayOfWeek.name() == 'FRIDAY' ? '金' :
+										        shift.shiftDate.dayOfWeek.name() == 'SATURDAY' ? '土' :
 										        '日')
 										        + ')'}">
 										</td>
 
 										<td style="border:1px solid #ccc;"
-										    th:text="${shift.requestedStartTime == null ?
+										    th:text="${shift.startTime == null ?
 										            '休み'
-										            : shift.requestedStartTime + '～' + shift.requestedEndTime}">
+										            : shift.startTime + '～' + shift.endTime}">
 										</td>
 
 			
