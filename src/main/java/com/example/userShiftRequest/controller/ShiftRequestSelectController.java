@@ -3,16 +3,16 @@ package com.example.userShiftRequest.controller;
 import java.security.Principal;
 import java.time.LocalDate;
 
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.userShiftRequest.form.ShiftRequestSelectForm;
+import com.example.userShiftRequest.form.ShiftSelectForm;
 import com.example.userShiftRequest.service.ShiftRequestSelectService;
-
-import jakarta.servlet.http.HttpSession;
 
 /**
  * シフト申請選択画面コントローラー
@@ -25,7 +25,7 @@ public class ShiftRequestSelectController {
 
     @GetMapping("/user/shiftRequestSelect")
     public String showShiftRequestSelect(
-            @RequestParam(required = false) Integer selectedYear,
+            @RequestParam(name = "selectedYear", required = false) Integer selectedYear,
             Principal principal,
             HttpSession session,
             Model model) {
@@ -49,8 +49,8 @@ public class ShiftRequestSelectController {
         System.out.println("選択年度 = " + selectedYear);
         System.out.println("ログインユーザーID = " + currentUserId);
 
-        // サービス呼び出し（年度とユーザーIDを渡す）
-        ShiftRequestSelectForm form = shiftRequestSelectService.getShiftList(selectedYear, currentUserId);
+        // 【修正】メソッド名を getShiftSelectList に変更し、ShiftSelectForm 型で受け取る
+        ShiftSelectForm form = shiftRequestSelectService.getShiftSelectList(selectedYear, currentUserId);
 
         // 画面（Thymeleaf）に渡すオブジェクトをセット
         model.addAttribute("form", form);
