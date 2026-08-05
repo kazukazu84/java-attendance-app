@@ -114,7 +114,7 @@ public interface ShiftRepository extends JpaRepository<Shift, Integer> {
     /**
      * 指定期間内の全シフト取得
      *
-     * 月間集計用
+     * 月間集計用（イベントを跨いで1日〜のシフトを取得する際にも使用）
      *
      * @param startDate 開始日
      * @param endDate 終了日
@@ -136,7 +136,7 @@ public interface ShiftRepository extends JpaRepository<Shift, Integer> {
     Optional<Shift> findByUserIdAndShiftDate(
             String userId,
             LocalDate shiftDate);
-    
+
     /**
      * 指定イベント・期間内のシフト取得
      *
