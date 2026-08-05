@@ -33,11 +33,24 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ShiftCreateService {
 
+
+    /**
+     * シフト申請イベント情報取得用
+     */
     private final ShiftApplicationEventRepository shiftApplicationEventRepository;
 
+
+    /**
+     * シフト情報取得・保存用
+     */
     private final ShiftRepository shiftRepository;
 
+
+    /**
+     * ユーザー情報取得用
+     */
     private final UsersRepository usersRepository;
+
 
     /**
      * 勤怠情報取得用
@@ -45,6 +58,7 @@ public class ShiftCreateService {
      * 過去日の勤務時間集計で使用します。
      */
     private final AttendanceRepository attendanceRepository;
+    
     /**
      * 全イベント一覧を取得します。
      *
@@ -52,61 +66,93 @@ public class ShiftCreateService {
      */
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public List<ShiftApplicationEvent> getEventList() {
+
         try {
-            List<ShiftApplicationEvent> list = shiftApplicationEventRepository.findAll();
-            return (list != null) ? list : Collections.emptyList();
+
+            List<ShiftApplicationEvent> list =
+                    shiftApplicationEventRepository.findAll();
+
+            return (list != null)
+                    ? list
+                    : Collections.emptyList();
+
+
         } catch (DataAccessException e) {
-            System.err.println("イベント一覧取得エラー (テーブル不在等): " + e.getMessage());
+
+            System.err.println(
+                    "イベント一覧取得エラー: "
+                    + e.getMessage()
+            );
+
             return Collections.emptyList();
         }
     }
 
+
     /**
-     * 初期表示用のイベントを取得します。
-     * 明日以降に開始・または本日進行中の有効なイベント（8月イベント等）を自動優先選択します。
+     * 初期表示用イベントを取得します。
      *
-     * @return 初期選択用イベント情報
+     * 現在受付中のイベントの中から
+     * 対象開始日が一番早いものを取得します。
+     *
+     * @return 初期表示イベント
      */
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public ShiftApplicationEvent getOldestEvent() {
 
+
         try {
 
-            LocalDate today = LocalDate.now();
+            LocalDate today =
+                    LocalDate.now();
+
 
             List<ShiftApplicationEvent> eventList =
                     shiftApplicationEventRepository.findAll();
 
 
-            if (eventList == null || eventList.isEmpty()) {
+            if (eventList == null
+                    || eventList.isEmpty()) {
+
                 return null;
             }
 
 
-            /*
-             * 現在受付中のイベントを取得
-             *
-             * applicationStartDate <= 今日
-             * applicationEndDate >= 今日
-             */
             return eventList.stream()
 
-                    .filter(e -> e.getApplicationStartDate() != null)
-                    .filter(e -> e.getApplicationEndDate() != null)
-
+                    /*
+                     * 受付開始日チェック
+                     */
                     .filter(e ->
-                        !today.isBefore(e.getApplicationStartDate())
-                        &&
-                        !today.isAfter(e.getApplicationEndDate())
-                    )
+                            e.getApplicationStartDate() != null)
 
                     /*
-                     * 対象開始日が一番早いもの
+                     * 受付終了日チェック
+                     */
+                    .filter(e ->
+                            e.getApplicationEndDate() != null)
+
+                    /*
+                     * 現在受付期間内
+                     */
+                    .filter(e ->
+                            !today.isBefore(
+                                    e.getApplicationStartDate()
+                            )
+                            &&
+                            !today.isAfter(
+                                    e.getApplicationEndDate()
+                            ))
+
+                    /*
+                     * 対象開始日が早い順
                      */
                     .sorted(
-                        (e1, e2) ->
-                            e1.getTargetStartDate()
-                              .compareTo(e2.getTargetStartDate())
+                            (e1, e2) ->
+                                    e1.getTargetStartDate()
+                                      .compareTo(
+                                              e2.getTargetStartDate()
+                                      )
                     )
 
                     .findFirst()
@@ -115,390 +161,410 @@ public class ShiftCreateService {
 
         } catch (DataAccessException e) {
 
+
             System.err.println(
-                "初期イベント取得エラー: "
-                + e.getMessage()
+                    "初期イベント取得エラー: "
+                    + e.getMessage()
             );
 
+
             return null;
         }
     }
 
+
     /**
-     * 指定されたイベントIDのイベント詳細情報を取得します。
+     * 指定イベントIDのイベント情報を取得します。
      *
      * @param eventId イベントID
-     * @return イベント情報（取得失敗時は null）
+     * @return イベント情報
      */
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public ShiftApplicationEvent getCurrentEvent(Integer eventId) {
+    public ShiftApplicationEvent getCurrentEvent(
+            Integer eventId) {
+
+
         if (eventId == null) {
+
             return null;
         }
+
+
         try {
-            return shiftApplicationEventRepository.findById(eventId).orElse(null);
+
+            return shiftApplicationEventRepository
+                    .findById(eventId)
+                    .orElse(null);
+
+
         } catch (DataAccessException e) {
-            System.err.println("カレントイベント取得エラー: " + e.getMessage());
+
+
+            System.err.println(
+                    "カレントイベント取得エラー: "
+                    + e.getMessage()
+            );
+
+
             return null;
         }
     }
-
+    
     /**
-     * 指定されたイベントIDのシフト一覧を取得します。
+     * 指定イベントIDのシフト一覧を取得します。
      *
      * @param eventId イベントID
-     * @return シフトリスト（取得失敗時は空リスト）
+     * @return シフト一覧
      */
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public List<Shift> getShiftTable(Integer eventId) {
+
+
         if (eventId == null) {
+
             return Collections.emptyList();
         }
+
+
         try {
-            List<Shift> list = shiftRepository.findByEventId(eventId);
-            return (list != null) ? list : Collections.emptyList();
+
+            List<Shift> list =
+                    shiftRepository.findByEventId(eventId);
+
+
+            return (list != null)
+                    ? list
+                    : Collections.emptyList();
+
+
         } catch (DataAccessException e) {
-            System.err.println("シフトテーブル取得エラー: " + e.getMessage());
+
+
+            System.err.println(
+                    "シフト一覧取得エラー: "
+                    + e.getMessage()
+            );
+
+
             return Collections.emptyList();
         }
     }
 
+
+
     /**
-     * イベントの開始日から終了日までの全日付リストを生成します。
+     * イベント期間の日付一覧を取得します。
      *
-     * @param event カレントイベント情報
-     * @return 日付リスト
+     * @param event 対象イベント
+     * @return 日付一覧
      */
-    public List<LocalDate> getTargetDateList(ShiftApplicationEvent event) {
-        if (event == null || event.getStartDate() == null || event.getEndDate() == null) {
+    public List<LocalDate> getTargetDateList(
+            ShiftApplicationEvent event) {
+
+
+        if (event == null
+                || event.getStartDate() == null
+                || event.getEndDate() == null) {
+
+
             return Collections.emptyList();
         }
 
-        List<LocalDate> dateList = new ArrayList<>();
-        LocalDate current = event.getStartDate();
-        LocalDate end = event.getEndDate();
+
+        List<LocalDate> dateList =
+                new ArrayList<>();
+
+
+        LocalDate current =
+                event.getStartDate();
+
+
+        LocalDate end =
+                event.getEndDate();
+
+
 
         while (!current.isAfter(end)) {
+
+
             dateList.add(current);
-            current = current.plusDays(1);
+
+
+            current =
+                    current.plusDays(1);
         }
+
 
         return dateList;
     }
 
+
+
     /**
-     * システムに登録されている全ユーザーを取得します。
+     * 全ユーザーを取得します。
      *
-     * @return ユーザーリスト（取得失敗時は空リスト）
+     * @return ユーザー一覧
      */
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public List<Users> getAllUsers() {
+
+
         try {
-            List<Users> list = usersRepository.findAll();
-            return (list != null) ? list : Collections.emptyList();
+
+
+            List<Users> list =
+                    usersRepository.findAll();
+
+
+            return (list != null)
+                    ? list
+                    : Collections.emptyList();
+
+
+
         } catch (DataAccessException e) {
-            System.err.println("ユーザー一覧取得エラー: " + e.getMessage());
+
+
+            System.err.println(
+                    "ユーザー一覧取得エラー: "
+                    + e.getMessage()
+            );
+
+
             return Collections.emptyList();
         }
     }
+
+
 
     /**
      * シフト詳細情報を取得します。
      *
      * @param shiftId シフトID
-     * @return シフト情報（取得失敗時は null）
+     * @return シフト情報
      */
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public Shift getShiftDetail(Integer shiftId) {
+    public Shift getShiftDetail(
+            Integer shiftId) {
+
+
         if (shiftId == null) {
+
             return null;
         }
+
+
         try {
-            return shiftRepository.findById(shiftId).orElse(null);
+
+
+            return shiftRepository
+                    .findById(shiftId)
+                    .orElse(null);
+
+
+
         } catch (DataAccessException e) {
-            System.err.println("シフト詳細取得エラー: " + e.getMessage());
+
+
+            System.err.println(
+                    "シフト詳細取得エラー: "
+                    + e.getMessage()
+            );
+
+
             return null;
         }
     }
 
+
+
     /**
-     * シフトの新規登録または更新を行います。
+     * シフトを新規登録または更新します。
      *
-     * @param shift シフト情報
+     * @param shift 保存対象シフト
      */
     @Transactional
-    public void saveShift(Shift shift) {
+    public void saveShift(
+            Shift shift) {
+
+
         if (shift == null) {
+
             return;
         }
+
+
         shiftRepository.save(shift);
     }
-
+    
     /**
-     * ユーザーごと・月ごとの勤務合計（日数・時間）を集計したマップを作成します。
+     * ユーザーごと・月ごとの勤務合計を取得します。
      *
-     * @param shiftList シフトリスト
-     * @param userList ユーザーリスト
-     * @return Map<ユーザーID, List<MonthlyShiftSummaryDto>>
-     */
-    /**
-     * ユーザーごと・月ごとの勤務合計（日数・時間）を集計したマップを作成します。
+     * 同月内の過去イベント（1日〜）のデータも合算して集計します。
+     * 過去日：attendanceテーブル
+     * 未来日：shiftsテーブル
      *
-     * 過去日はattendanceテーブルの実績、
-     * 未来日はshiftsテーブルの予定を使用します。
-     *
-     * また、同じ年月内で複数イベントが存在する場合は、
-     * すべてのイベントを合算します。
-     *
-     * @param eventId 現在選択中イベントID
-     * @param userList ユーザーリスト
-     * @return Map<ユーザーID, List<MonthlyShiftSummaryDto>>
+     * @param eventId イベントID
+     * @param userList ユーザー一覧
+     * @return ユーザー別月間集計
      */
     public Map<String, List<MonthlyShiftSummaryDto>> getMonthlySummaryMap(
             Integer eventId,
             List<Users> userList) {
 
+        Map<String, List<MonthlyShiftSummaryDto>> summaryMap = new LinkedHashMap<>();
 
-        Map<String, List<MonthlyShiftSummaryDto>> summaryMap =
-                new LinkedHashMap<>();
-
-
-        if (eventId == null
-                || userList == null
-                || userList.isEmpty()) {
-
+        if (eventId == null || userList == null || userList.isEmpty()) {
             return summaryMap;
         }
 
-
         /*
-         * 現在イベント取得
+         * 対象イベント取得
          */
-        ShiftApplicationEvent currentEvent =
-                shiftApplicationEventRepository
-                        .findById(eventId)
-                        .orElse(null);
+        ShiftApplicationEvent event = shiftApplicationEventRepository
+                .findById(eventId)
+                .orElse(null);
 
-
-        if (currentEvent == null) {
+        if (event == null || event.getTargetStartDate() == null || event.getTargetEndDate() == null) {
             return summaryMap;
         }
 
-
-        /*
-         * 対象年月取得
-         */
-        YearMonth yearMonth =
-                YearMonth.from(
-                        currentEvent.getTargetStartDate()
-                );
-
-
-        LocalDate monthStart =
-                yearMonth.atDay(1);
-
-
-        LocalDate monthEnd =
-                yearMonth.atEndOfMonth();
-
-
-
-        /*
-         * 同じ月に存在するイベント取得
-         *
-         * 例：
-         * 8/1～8/24
-         * 8/25～8/31
-         */
-        List<ShiftApplicationEvent> monthlyEvents =
-                shiftApplicationEventRepository
-                        .findEventsOverlappingPeriod(
-                                monthStart,
-                                monthEnd
-                        );
-
-
-        if (monthlyEvents == null) {
-            monthlyEvents = Collections.emptyList();
-        }
-
-
-
-        /*
-         * 月内のShift取得
-         */
-        List<Shift> monthlyShifts =
-                shiftRepository.findByShiftDateBetween(
-                        monthStart,
-                        monthEnd
-                );
-
-
-        if (monthlyShifts == null) {
-            monthlyShifts = Collections.emptyList();
-        }
-
-
+        LocalDate eventStart = event.getTargetStartDate();
+        LocalDate eventEnd = event.getTargetEndDate();
 
         LocalDate today = LocalDate.now();
 
-
-
         /*
-         * ユーザー単位集計
+         * ユーザーごと集計
          */
         for (Users user : userList) {
 
-
-            if (user == null
-                    || user.getUserId() == null) {
-
+            if (user == null || user.getUserId() == null) {
                 continue;
             }
 
+            List<MonthlyShiftSummaryDto> monthlyList = new ArrayList<>();
 
-            int workingDays = 0;
-
-            long totalMinutes = 0;
-
-
+            YearMonth month = YearMonth.from(eventStart);
+            YearMonth endMonth = YearMonth.from(eventEnd);
 
             /*
-             * 月の日付を1日ずつ確認
+             * イベント終了月まで繰り返す
              */
-            LocalDate date = monthStart;
+            while (!month.isAfter(endMonth)) {
 
-
-            while (!date.isAfter(monthEnd)) {
-
-
-                final LocalDate targetDate = date;
-
-
-                boolean worked = false;
-
-
-                long minutes = 0;
-
+                LocalDate monthStart = month.atDay(1);
+                LocalDate monthEnd = month.atEndOfMonth();
 
                 /*
-                 * 過去日
-                 *
-                 * attendance実績使用
+                 * 【★ここを修正★】
+                 * その月の集計開始日は「イベント開始日」ではなく「必ず1日(monthStart)」からにする。
+                 * 集計終了日は「イベント終了日」または「月末」のどちらか早い方にする。
                  */
-                if (!date.isAfter(today)) {
+                LocalDate calcStart = monthStart;
+                LocalDate calcEnd = eventEnd.isBefore(monthEnd) ? eventEnd : monthEnd;
 
+                /*
+                 * この月（1日〜集計終了日）のシフトをすべて取得
+                 * ※eventId依存ではなく日付範囲で検索する、または同月の全イベントを対象にするリポジトリメソッドを使用
+                 */
+                List<Shift> monthlyShifts = shiftRepository.findByShiftDateBetween(calcStart, calcEnd);
 
-                	Attendance attendance =
-                	        attendanceRepository
-                	                .findByUserIdAndWorkDate(
-                	                        user.getUserId(),
-                	                        targetDate
-                	                )
-                	                .orElse(null);
+                if (monthlyShifts == null) {
+                    monthlyShifts = Collections.emptyList();
+                }
 
+                int workingDays = 0;
+                long totalMinutes = 0;
 
+                LocalDate date = calcStart;
+                
+                while (!date.isAfter(calcEnd)) {
 
-                    if (attendance != null
-                            && attendance.getClockIn() != null
-                            && attendance.getClockOut() != null) {
+                    final LocalDate targetDate = date;
 
-
-                        worked = true;
-
-
-                        minutes =
-                                calculateAttendanceMinutes(
-                                        attendance
-                                );
-                    }
-
-
-                } else {
-
+                    boolean worked = false;
+                    long minutes = 0;
 
                     /*
-                     * 未来日
-                     *
-                     * shift予定使用
+                     * 過去日（今日含む）は勤怠実績を使用
                      */
-                    Shift shift =
-                            monthlyShifts.stream()
-                                    .filter(s ->
-                                            user.getUserId()
-                                                    .equals(
-                                                            s.getUserId()
-                                                    ))
-                                    .filter(s ->
-                                    targetDate.equals(
-                                            s.getShiftDate()
-                                    ))
-                                    .filter(s ->
-                                            Integer.valueOf(1)
-                                                    .equals(
-                                                        s.getIsAvailable()
-                                                    ))
-                                    .findFirst()
-                                    .orElse(null);
+                    if (!targetDate.isAfter(today)) {
 
+                        Attendance attendance = attendanceRepository
+                                .findByUserIdAndWorkDate(user.getUserId(), targetDate)
+                                .orElse(null);
 
+                        if (attendance != null
+                                && attendance.getClockIn() != null
+                                && attendance.getClockOut() != null) {
 
-                    if (shift != null
-                            && shift.getStartTime() != null
-                            && shift.getEndTime() != null) {
+                            worked = true;
+                            minutes = calculateAttendanceMinutes(attendance);
+                        }
 
+                    } else {
 
-                        worked = true;
+                        /*
+                         * 未来日はシフト予定を使用
+                         */
+                        Shift shift = monthlyShifts.stream()
+                                .filter(s -> user.getUserId().equals(s.getUserId()))
+                                .filter(s -> targetDate.equals(s.getShiftDate()))
+                                .filter(s -> Integer.valueOf(1).equals(s.getIsAvailable()))
+                                .findFirst()
+                                .orElse(null);
 
+                        if (shift != null
+                                && shift.getStartTime() != null
+                                && shift.getEndTime() != null) {
 
-                        minutes =
-                                calculateShiftMinutes(
-                                        shift
-                                );
+                            worked = true;
+                            minutes = calculateShiftMinutes(shift);
+                        }
                     }
+
+                    if (worked) {
+                        workingDays++;
+                        totalMinutes += minutes;
+                    }
+
+                    date = date.plusDays(1);
+                }
+                
+                /*
+                 * 勤務実績がある月だけ追加
+                 */
+                if (workingDays > 0) {
+
+                    monthlyList.add(
+                            new MonthlyShiftSummaryDto(
+                                    month,
+                                    workingDays,
+                                    totalMinutes
+                            )
+                    );
                 }
 
+                /*
+                 * 次の月へ
+                 */
+                month = month.plusMonths(1);
 
-
-                if (worked) {
-
-                    workingDays++;
-
-                    totalMinutes += minutes;
-                }
-
-
-                date = date.plusDays(1);
-            }
-
-
+            } // 月ループ終了
 
             /*
-             * 勤務があるユーザーだけ追加
+             * ユーザー単位で登録
              */
-            if (workingDays > 0) {
-
-
-                List<MonthlyShiftSummaryDto> list =
-                        new ArrayList<>();
-
-
-                list.add(
-                        new MonthlyShiftSummaryDto(
-                                yearMonth,
-                                workingDays,
-                                totalMinutes
-                        )
-                );
-
+            if (!monthlyList.isEmpty()) {
 
                 summaryMap.put(
                         user.getUserId(),
-                        list
+                        monthlyList
                 );
             }
-        }
 
+        } // ユーザーループ終了
 
         return summaryMap;
     }
@@ -507,6 +573,7 @@ public class ShiftCreateService {
      * Attendanceの勤務時間を分単位で計算します。
      *
      * 計算式：
+     *
      * 退勤時間 - 出勤時間 - 休憩時間
      *
      * @param attendance 勤怠情報
@@ -524,12 +591,14 @@ public class ShiftCreateService {
         }
 
 
+
         long minutes =
                 Duration.between(
                         attendance.getClockIn(),
                         attendance.getClockOut()
                 )
                 .toMinutes();
+
 
 
         /*
@@ -541,17 +610,23 @@ public class ShiftCreateService {
         }
 
 
+
         /*
          * 休憩時間控除
          *
-         * restTimeは時間単位
-         * 例：1.0 → 60分
+         * restTime:
+         * 時間単位
+         *
+         * 例：
+         * 1.0 → 60分
          */
         if (attendance.getRestTime() != null) {
+
 
             minutes -=
                     (long)(attendance.getRestTime() * 60);
         }
+
 
 
         /*
@@ -563,11 +638,16 @@ public class ShiftCreateService {
         }
 
 
+
         return minutes;
     }
-    
+
+
+
+
+
     /**
-     * Shiftの予定勤務時間を分単位で計算します。
+     * Shift予定勤務時間を分単位で計算します。
      *
      * @param shift シフト情報
      * @return 勤務時間（分）
@@ -580,8 +660,10 @@ public class ShiftCreateService {
                 || shift.getStartTime() == null
                 || shift.getEndTime() == null) {
 
+
             return 0;
         }
+
 
 
         long minutes =
@@ -592,8 +674,14 @@ public class ShiftCreateService {
                 .toMinutes();
 
 
+
         /*
-         * 夜勤など日をまたぐ勤務対応
+         * 夜勤対応
+         *
+         * 例：
+         *
+         * 22:00 ～ 05:00
+         *
          */
         if (minutes < 0) {
 
@@ -601,6 +689,8 @@ public class ShiftCreateService {
         }
 
 
+
         return minutes;
     }
+
 }
