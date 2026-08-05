@@ -1,149 +1,149 @@
 <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
 
-<html xmlns:th="http://www.thymeleaf.org">
-<html lang ="ja">
-	
 <head>
-	
+
 <meta charset="UTF-8">
 
 <title>シフト申請</title>
 
-
-    <link rel="stylesheet"
-	 th:href="@{/css/shiftRequest.css} " 
-	 href="/css/shiftRequest.css">
+<link rel="stylesheet"
+      th:href="@{/css/shiftRequest.css}"
+      href="/css/shiftRequest.css">
 
 </head>
 
-
-
 <body>
 
-<div class = "container">
-	
-	<h2 class = "page-title">
-		シフト申請
-	</h2>
-	
-	<div class = "card">
-	
-	<p th:if="${message}"
-	   th:text="${message}"
-	   class="success-message">
-	</p>
-	
-	<div class="period-box">		
-		
-	    <div class ="period-title">
-	        対象期間
-	    </div>
+<div class="container">
 
-	    <div class="period-value"
-			th:text = "${form.targetPeriod}">
-	    </div>
+    <h2 class="page-title">
+        シフト申請
+    </h2>
 
-	</div>
+    <div class="card">
 
-    <br>
-	
-	<form th:object = "${form}" 
-		  th:action = "@{/shiftRequest/apply}"
-		  method = "post">
-		  
-	
-	<input type = "hidden"
-		th:field = "*{eventId}"/>	  	  
-		
-		
-    <table class = "shift-table">
+        <p th:if="${message}"
+           th:text="${message}"
+           class="success-message">
+        </p>
 
-        <tr>
-            <th>日付</th>
-            <th>可否</th>
-            <th>出勤</th>
-            <th>退勤</th>
-        </tr>
-	
-	<tbody>
-		
-		<tr th:if="${#lists.isEmpty(form.shiftList)}">
-				
-			<td colspan="4">
-				現在受付中のシフト情報はありません。
-			</td>
-			
-		</tr>
-		
-		<tr th:each="shift, stat : ${form.shiftList}">
-			
-			
-			<td>
+        <div class="period-box">
 
-			    <span th:text="${shift.workDate}"></span>
+            <div class="period-title">
+                対象期間
+            </div>
 
-			    <input type="hidden"
-			           th:field="*{shiftList[__${stat.index}__].workDate}">
+            <div class="period-value"
+                 th:text="${form.targetPeriod}">
+            </div>
 
-			</td>
+        </div>
 
-			
-			<td>
-				<select th:field="*{shiftList[__${stat.index}__].available}">
-					<option value = "">選択してください</option>
-				    <option value = "○">○</option>
-				    <option value = "×">×</option>
-				</select>
-			</td>
+        <br>
 
-			<td>
-				<input type="time"
-				       th:field="*{shiftList[__${stat.index}__].startTime}">
-			</td>
+        <form th:object="${form}"
+              th:action="@{/shiftRequest/apply}"
+              method="post">
 
-			<td>
-				<input type="time"
-				       th:field="*{shiftList[__${stat.index}__].endTime}">
-			</td>
+            <!-- イベントID -->
+            <input type="hidden"
+                   th:field="*{eventId}" />
 
-		</tr>
-		
-	</tbody>
+            <!-- 戻るボタン用 -->
+            <input type="hidden"
+                   th:field="*{selectedYear}" />
 
-    </table>
+            <table class="shift-table">
 
-    <br>
+                <thead>
+                <tr>
+                    <th>日付</th>
+                    <th>可否</th>
+                    <th>出勤</th>
+                    <th>退勤</th>
+                </tr>
+                </thead>
 
-	
-	
-<div class = "button-area button">
-	
-	
-<!--【画面遷移】「キャンセル」ボタン → 「シフト申請選択画面」-->
-	<button type = "button"
-		th:onclick = 
-			"|location.href = 
-			'@{/user/shiftRequestSelect
-				(selectedYear = ${form.selectedYear})}'|">
-		キャンセル
-    </button>
-	
-	
-<!--【データ送信】ボタン押下 → 管理者側へシフト情報が送信される -->
-    <button type = "submit"
-	th:disabled = "${#lists.isEmpty(form.shiftList)}">
-		申請
-    </button>
-	
-	
+                <tbody>
+
+                <tr th:if="${#lists.isEmpty(form.shiftList)}">
+
+                    <td colspan="4">
+                        現在受付中のシフト情報はありません。
+                    </td>
+
+                </tr>
+
+                <tr th:each="shift, stat : ${form.shiftList}">
+
+                    <!-- 日付 -->
+                    <td>
+
+                        <span th:text="${shift.workDate}"></span>
+
+                        <input type="hidden"
+                               th:field="*{shiftList[__${stat.index}__].workDate}" />
+
+                    </td>
+
+                    <!-- 出勤可否 -->
+                    <td>
+
+                        <select th:field="*{shiftList[__${stat.index}__].available}">
+                            <option value="">選択してください</option>
+                            <option value="○">○</option>
+                            <option value="×">×</option>
+                        </select>
+
+                    </td>
+
+                    <!-- 開始時間 -->
+                    <td>
+
+                        <input type="time"
+                               th:field="*{shiftList[__${stat.index}__].startTime}" />
+
+                    </td>
+
+                    <!-- 終了時間 -->
+                    <td>
+
+                        <input type="time"
+                               th:field="*{shiftList[__${stat.index}__].endTime}" />
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+            <br>
+
+            <div class="button-area button">
+
+                <!-- キャンセル -->
+                <button
+                        type="button"
+                        th:onclick="|location.href='@{/user/shiftRequestSelect(selectedYear=${form.selectedYear})}'|">
+                    キャンセル
+                </button>
+
+                <!-- 申請 -->
+                <button type="submit"
+                        th:disabled="${#lists.isEmpty(form.shiftList)}">
+                    申請
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
 </div>
-	
-</form>
-
-
-</div>	<!-- ここまでが「card」の適用範囲 -->
-
-</div>	<!-- ここまでが「container」の適用範囲 -->
 
 </body>
 

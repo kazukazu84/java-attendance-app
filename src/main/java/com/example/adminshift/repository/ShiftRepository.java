@@ -153,9 +153,19 @@ public interface ShiftRepository extends JpaRepository<Shift, Integer> {
     @Query("SELECT DISTINCT s.shiftDate FROM Shift s WHERE s.eventId = :eventId")
     List<LocalDate> findExistingShiftDatesByEventId(@Param("eventId") Integer eventId);
 
+    
+    /**
+     * ユーザー申請画面表示用
+     */
+    List<Shift> findByEventIdAndUserIdOrderByShiftDateAsc(
+            Integer eventId,
+            String userId);
+=======
+
     List<Shift> findByUserIdAndShiftDateBetweenOrderByShiftDateAsc(
             String userId,
             LocalDate startDate,
             LocalDate endDate);
+
 
 }
