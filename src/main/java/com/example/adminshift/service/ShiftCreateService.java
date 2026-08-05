@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,10 @@ public class ShiftCreateService {
 
     /**
      * 初期表示用イベントを取得します。
+     * 
+     * 受付期間内のイベントを最優先とし、複数ある場合は対象開始日が最新のものを取得します。
+     *
+     * @return 初期表示用イベント
      */
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public ShiftApplicationEvent getOldestEvent() {
@@ -62,30 +67,39 @@ public class ShiftCreateService {
 
             LocalDate today = LocalDate.now();
 
-            // ① 明日以降に対象期間（targetStartDate）が始まる未来のイベントを最優先（例: 2026/08/01〜）
+            // ① 本日が受付期間内（applicationStartDate 〜 applicationEndDate）のイベントを最優先
+            //    複数存在する場合は targetStartDate が最新（降順）のものを選択
+            ShiftApplicationEvent activeEvent = eventList.stream()
+                    .filter(e -> e.getApplicationStartDate() != null && e.getApplicationEndDate() != null)
+                    .filter(e -> !today.isBefore(e.getApplicationStartDate()) && !today.isAfter(e.getApplicationEndDate()))
+                    .max(Comparator.comparing(
+                            ShiftApplicationEvent::getTargetStartDate,
+                            Comparator.nullsFirst(Comparator.naturalOrder())
+                    ))
+                    .orElse(null);
+
+            if (activeEvent != null) {
+                return activeEvent;
+            }
+
+            // ② 受付中のイベントが無い場合：これから開始する未来のイベントを優先
             ShiftApplicationEvent futureEvent = eventList.stream()
                     .filter(e -> e.getTargetStartDate() != null)
                     .filter(e -> e.getTargetStartDate().isAfter(today))
-                    .findFirst()
+                    .min(Comparator.comparing(ShiftApplicationEvent::getTargetStartDate))
                     .orElse(null);
 
             if (futureEvent != null) {
                 return futureEvent;
             }
 
-            // ② 本日が受付期間内（applicationStartDate 〜 applicationEndDate）のイベントを検索
-            for (ShiftApplicationEvent event : eventList) {
-                if (event.getApplicationStartDate() != null && event.getApplicationEndDate() != null) {
-                    boolean isStarted = !today.isBefore(event.getApplicationStartDate());
-                    boolean isNotEnded = !today.isAfter(event.getApplicationEndDate());
-                    if (isStarted && isNotEnded) {
-                        return event;
-                    }
-                }
-            }
-
-            // ③ 該当がなければ最新（リストの最後）のイベントを返却
-            return eventList.get(eventList.size() - 1);
+            // ③ それでも該当がなければ、全イベントの中で最新のもの（リストの最後、または targetStartDate が最大）
+            return eventList.stream()
+                    .max(Comparator.comparing(
+                            ShiftApplicationEvent::getTargetStartDate,
+                            Comparator.nullsFirst(Comparator.naturalOrder())
+                    ))
+                    .orElse(eventList.get(eventList.size() - 1));
 
         } catch (DataAccessException e) {
             System.err.println("初期イベント取得エラー: " + e.getMessage());
