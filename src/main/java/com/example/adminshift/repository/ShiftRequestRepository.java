@@ -23,4 +23,6 @@ public interface ShiftRequestRepository
            "ORDER BY u.userId ASC")
     List<Object[]> findUserShiftRequestListByEventId(@Param("eventId") Integer eventId);
 
+	boolean existsByIdUserIdAndIdEventId(String currentUserId, Integer eventId);
+
 }
