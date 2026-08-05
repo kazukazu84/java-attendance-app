@@ -25,10 +25,22 @@ public class SalaryDetailService {
      * - 同年同月は必ず1件のみ
      * - 複数件存在したら例外を投げる（Controller が拾ってエラー画面へ）
      */
-    public List<SalaryDetailDto> getSalaryDetailList(String userId, int targetYear, int targetMonth) {
+    public SalaryDetailDto getSalaryDetail(String userId, int targetYear, int targetMonth) {
 
-        List<SalaryEntity> salaryList = salaryDetailRepository
-                .findByUserInfoUserIdAndTargetYearAndTargetMonth(userId, targetYear, targetMonth);
+        SalaryEntity salary = salaryDetailRepository
+                .findByUserInfoUserIdAndTargetYearAndTargetMonth(userId, targetYear, targetMonth)
+                .orElse(null);
+
+
+        if (salary == null) {
+            return null;
+        }
+
+        // ★ DB に保存されている値をそのまま返す（計算しない）
+        return new SalaryDetailDto(
+                salary.getTargetYear(),
+                salary.getTargetMonth(),
+                salary.getWorkingHours(),
 
         // ★ 0件なら空リスト
         if (salaryList.isEmpty()) {
@@ -47,13 +59,16 @@ public class SalaryDetailService {
                 salary.getTargetYear(),
                 salary.getTargetMonth(),
                 salary.getWorkingHours(),          // 時間（小数2桁）
+
                 salary.getAppliedHourlyWage(),
                 salary.getGrossSalary(),
                 salary.getInsuranceFee(),
                 salary.getNetSalary()
         );
 
+
         return List.of(dto);
+
     }
 
     /**

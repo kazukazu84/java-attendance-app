@@ -136,7 +136,17 @@ public interface ShiftRepository extends JpaRepository<Shift, Integer> {
     Optional<Shift> findByUserIdAndShiftDate(
             String userId,
             LocalDate shiftDate);
-    
+
+    /**
+     * ユーザー申請画面表示用
+     */
+    List<Shift> findByEventIdAndUserIdOrderByShiftDateAsc(
+            Integer eventId,
+            String userId);
+
+    /**
+     * 指定ユーザー・期間内のシフト取得（日付昇順）
+     */
     List<Shift> findByUserIdAndShiftDateBetweenOrderByShiftDateAsc(
             String userId,
             LocalDate startDate,
