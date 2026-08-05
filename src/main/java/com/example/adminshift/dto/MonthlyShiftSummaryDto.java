@@ -35,6 +35,11 @@ public class MonthlyShiftSummaryDto {
      * 例：8月
      */
     public String getMonthText() {
+
+        if (yearMonth == null) {
+            return "";
+        }
+
         return yearMonth.getMonthValue() + "月";
     }
 
@@ -58,4 +63,6 @@ public class MonthlyShiftSummaryDto {
     public String getWorkingDaysText() {
         return workingDays + "日";
     }
+    
+    
 }

@@ -114,7 +114,7 @@ public interface ShiftRepository extends JpaRepository<Shift, Integer> {
     /**
      * 指定期間内の全シフト取得
      *
-     * 月間集計用
+     * 月間集計用（イベントを跨いで1日〜のシフトを取得する際にも使用）
      *
      * @param startDate 開始日
      * @param endDate 終了日
@@ -138,7 +138,26 @@ public interface ShiftRepository extends JpaRepository<Shift, Integer> {
             LocalDate shiftDate);
 
     /**
-     * ユーザー申請画面表示用
+     * 指定イベント・期間内のシフト取得
+     *
+     * 月跨ぎ集計用
+     *
+     * @param eventId イベントID
+     * @param startDate 開始日
+     * @param endDate 終了日
+     * @return シフト一覧
+     */
+    List<Shift> findByEventIdAndShiftDateBetween(
+            Integer eventId,
+            LocalDate startDate,
+            LocalDate endDate);
+
+    /**
+     * ユーザー申請画面表示用（指定イベント・ユーザーのシフトを取得）
+     *
+     * @param eventId イベントID
+     * @param userId ユーザーID
+     * @return シフト一覧
      */
     List<Shift> findByEventIdAndUserIdOrderByShiftDateAsc(
             Integer eventId,
@@ -146,6 +165,11 @@ public interface ShiftRepository extends JpaRepository<Shift, Integer> {
 
     /**
      * 指定ユーザー・期間内のシフト取得（日付昇順）
+     *
+     * @param userId ユーザーID
+     * @param startDate 開始日
+     * @param endDate 終了日
+     * @return シフト一覧
      */
     List<Shift> findByUserIdAndShiftDateBetweenOrderByShiftDateAsc(
             String userId,
