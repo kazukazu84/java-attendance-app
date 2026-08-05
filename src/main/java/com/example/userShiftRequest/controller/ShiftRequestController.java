@@ -1,95 +1,93 @@
 package com.example.userShiftRequest.controller;
 
+import java.security.Principal;
+
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.userShiftRequest.dto.ShiftRequestDto;
 import com.example.userShiftRequest.form.ShiftRequestForm;
 import com.example.userShiftRequest.service.ShiftRequestService;
 
+/**
+ * シフト申請入力・表示コントローラー
+ */
 @Controller
 public class ShiftRequestController {
-	
-	@Autowired
-	private ShiftRequestService shiftRequestService;
+
+    @Autowired
+    private ShiftRequestService shiftRequestService;
 
     /**
-     * シフト申請画面表示
+     * シフト申請入力画面表示
      */
-    @GetMapping("/shiftRequest")
+    @GetMapping("/user/shiftRequest")
     public String showShiftRequest(
-    		@RequestParam Integer eventId,
-    		@RequestParam(required = false) Integer selectedYear,
-    		Model model) {
-    	
-    	System.out.println("選択イベントID = " + eventId);
-    	
-    	// フォーム生成
-        ShiftRequestForm form = 
-        		shiftRequestService.getShiftRequestInfo(eventId);
-       
-        // 「entity.setEventId(1);」とリンクしている
+            @RequestParam("eventId") Integer eventId,
+            Principal principal,
+            HttpSession session,
+            Model model) {
+
+        System.out.println("★★ shiftRequest 起動 (eventId=" + eventId + ") ★★");
+
+        // ログインユーザーID取得
+        String currentUserId = null;
+        if (principal != null) {
+            currentUserId = principal.getName();
+        } else if (session.getAttribute("userId") != null) {
+            currentUserId = (String) session.getAttribute("userId");
+        }
+
+        // 【修正】型名を ShiftRequestForm に修正
+        ShiftRequestForm form = shiftRequestService.getShiftRequestInfo(eventId, currentUserId);
+
+        // フォームオブジェクトに eventId を確実に入れておく
         form.setEventId(eventId);
-        
-        form.setSelectedYear(selectedYear);
-        
-     // 画面へ渡す
+
+        // 【統一】HTML側（${form.xxx}）に合わせて "form" でセット
         model.addAttribute("form", form);
 
-     // 画面表示
-        return "/shiftRequest";
-
+        return "shiftRequest";
     }
-    
-    @PostMapping("/shiftRequest/apply")
-    public String applyShiftRequest
-    (ShiftRequestForm form, RedirectAttributes redirectAttributes,
-    		@AuthenticationPrincipal UserDetails loginUser) {
-    	
-    	String currentUserId =
-    	        loginUser.getUsername();
-    	
-    	System.out.println("currentUserId=" + currentUserId);
-    	
-    	
-    	if(form.getShiftList() != null) {
-    	
-    		for (ShiftRequestDto dto : form.getShiftList()) {
 
-    			System.out.println("日付=" + dto.getWorkDate());
-    			
-    			System.out.println("可否=" + dto.getAvailable());
-    			
-    			System.out.println("出勤=" + dto.getStartTime());
-    			
-    			System.out.println("退勤=" + dto.getEndTime());
-    	}
-    	
-    	}
-    	
-    	boolean result =
-    	        shiftRequestService.applyShiftRequest(
-    	                form,
-    	                currentUserId);
-        
-        if(result) {
-        	
-        	redirectAttributes.addFlashAttribute
-        	("message", "申請が完了しました。");
-            
-        } else {
-        	redirectAttributes.addFlashAttribute
-        	("message", "入力内容を確認してください。");
+    /**
+     * シフト申請登録処理
+     */
+    @PostMapping("/user/shiftRequest")
+    public String applyShiftRequest(
+            // 【統一】ModelAttributeの名称も "form" に統一
+            @ModelAttribute("form") ShiftRequestForm form,
+            Principal principal,
+            HttpSession session,
+            Model model) {
+
+        // ログインユーザーID取得
+        String currentUserId = null;
+        if (principal != null) {
+            currentUserId = principal.getName();
+        } else if (session.getAttribute("userId") != null) {
+            currentUserId = (String) session.getAttribute("userId");
         }
-        
-        return "redirect:/shiftRequest?eventId=" + form.getEventId();
-    }
 
+        System.out.println("★★ shiftRequest 申請実行 (eventId=" + form.getEventId() + ", userId=" + currentUserId + ") ★★");
+
+        // 登録・更新処理の実行
+        boolean success = shiftRequestService.applyShiftRequest(form, currentUserId);
+
+        if (success) {
+            // リダイレクト先の先頭に "/" を付与
+            return "redirect:/user/shiftRequestSelect";
+        } else {
+            model.addAttribute("errorMessage", "申請処理に失敗しました。入力内容を確認してください。");
+            // 【修正】ここも "form" に統一
+            model.addAttribute("form", form);
+            return "shiftRequest";
+        }
+    }
 }
