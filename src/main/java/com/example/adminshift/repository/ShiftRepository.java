@@ -51,7 +51,6 @@ public interface ShiftRepository extends JpaRepository<Shift, Integer> {
      * @param endDate 終了日
      */
     @Modifying
-
     @Query("""
         DELETE FROM Shift s
          WHERE s.eventId = :eventId
@@ -138,34 +137,18 @@ public interface ShiftRepository extends JpaRepository<Shift, Integer> {
             String userId,
             LocalDate shiftDate);
 
-    @Query("DELETE FROM Shift s WHERE s.eventId = :eventId AND (s.shiftDate < :startDate OR s.shiftDate > :endDate)")
-    void deleteByEventIdAndShiftDateOutsideRange(@Param("eventId") Integer eventId,
-                                                 @Param("startDate") LocalDate startDate,
-                                                 @Param("endDate") LocalDate endDate);
-
-    // --- 追加: イベント期間外になるShiftデータが存在するか確認 ---
-    @Query("SELECT COUNT(s) > 0 FROM Shift s WHERE s.eventId = :eventId AND (s.shiftDate < :startDate OR s.shiftDate > :endDate)")
-    boolean existsByEventIdAndShiftDateOutsideRange(@Param("eventId") Integer eventId,
-                                                    @Param("startDate") LocalDate startDate,
-                                                    @Param("endDate") LocalDate endDate);
-
-    // --- 追加: 既存の日付一覧を取得（差分更新用） ---
-    @Query("SELECT DISTINCT s.shiftDate FROM Shift s WHERE s.eventId = :eventId")
-    List<LocalDate> findExistingShiftDatesByEventId(@Param("eventId") Integer eventId);
-
-    
     /**
      * ユーザー申請画面表示用
      */
     List<Shift> findByEventIdAndUserIdOrderByShiftDateAsc(
             Integer eventId,
             String userId);
-=======
 
+    /**
+     * 指定ユーザー・期間内のシフト取得（日付昇順）
+     */
     List<Shift> findByUserIdAndShiftDateBetweenOrderByShiftDateAsc(
             String userId,
             LocalDate startDate,
             LocalDate endDate);
-
-
 }
