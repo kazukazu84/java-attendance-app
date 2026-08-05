@@ -1,150 +1,101 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
-<meta charset="UTF-8">
-
-<title>シフト申請</title>
-
-<link rel="stylesheet"
-      th:href="@{/css/shiftRequest.css}"
-      href="/css/shiftRequest.css">
-
+    <meta charset="UTF-8">
+    <title>シフト申請入力</title>
+    <link rel="stylesheet" th:href="@{/css/shiftRequest.css}">
 </head>
 
 <body>
 
 <div class="container">
 
-    <h2 class="page-title">
-        シフト申請
-    </h2>
+    <h2 class="page-title">シフト申請入力</h2>
 
     <div class="card">
 
-        <p th:if="${message}"
-           th:text="${message}"
-           class="success-message">
-        </p>
-
-        <div class="period-box">
-
-            <div class="period-title">
-                対象期間
-            </div>
-
-            <div class="period-value"
-                 th:text="${form.targetPeriod}">
-            </div>
-
+        <!-- 対象期間表示エリア -->
+        <div class="period-area">
+            <label>対象期間：</label>
+            <span th:text="${form.targetPeriod}">2026/09/01 ～ 2026/09/15</span>
         </div>
 
-        <br>
+        <!-- シフト入力フォーム -->
+        <form th:action="@{/user/shiftRequest}" th:object="${form}" method="post">
 
-        <form th:object="${form}"
-              th:action="@{/shiftRequest/apply}"
-              method="post">
-
-            <!-- イベントID -->
-            <input type="hidden"
-                   th:field="*{eventId}" />
-
-            <!-- 戻るボタン用 -->
-            <input type="hidden"
-                   th:field="*{selectedYear}" />
+            <!-- イベントID（非表示） -->
+            <input type="hidden" th:field="*{eventId}" />
 
             <table class="shift-table">
-
                 <thead>
-                <tr>
-                    <th>日付</th>
-                    <th>可否</th>
-                    <th>出勤</th>
-                    <th>退勤</th>
-                </tr>
+                    <tr>
+                        <th>日付</th>
+                        <th>出勤可否</th>
+                        <th>開始希望時間</th>
+                        <th>終了希望時間</th>
+                    </tr>
                 </thead>
-
                 <tbody>
+                    <tr th:each="shift, stat : *{shiftList}">
+                        <!-- 日付 -->
+                        <td>
+                            <span th:text="${shift.workDate}">2026-09-01</span>
+                            <input type="hidden" th:field="*{shiftList[__${stat.index}__].workDate}" />
+                        </td>
 
-                <tr th:if="${#lists.isEmpty(form.shiftList)}">
+                        <!-- 出勤可否 (○ / ×) -->
+                        <td>
+                            <select th:field="*{shiftList[__${stat.index}__].available}">
+                                <option value="○">○</option>
+                                <option value="×">×</option>
+                            </select>
+                        </td>
 
-                    <td colspan="4">
-                        現在受付中のシフト情報はありません。
-                    </td>
+                        <!-- 開始希望時間 -->
+                        <td>
+                            <input type="time" th:field="*{shiftList[__${stat.index}__].startTime}" />
+                        </td>
 
-                </tr>
-
-                <tr th:each="shift, stat : ${form.shiftList}">
-
-                    <!-- 日付 -->
-                    <td>
-
-                        <span th:text="${shift.workDate}"></span>
-
-                        <input type="hidden"
-                               th:field="*{shiftList[__${stat.index}__].workDate}" />
-
-                    </td>
-
-                    <!-- 出勤可否 -->
-                    <td>
-
-                        <select th:field="*{shiftList[__${stat.index}__].available}">
-                            <option value="">選択してください</option>
-                            <option value="○">○</option>
-                            <option value="×">×</option>
-                        </select>
-
-                    </td>
-
-                    <!-- 開始時間 -->
-                    <td>
-
-                        <input type="time"
-                               th:field="*{shiftList[__${stat.index}__].startTime}" />
-
-                    </td>
-
-                    <!-- 終了時間 -->
-                    <td>
-
-                        <input type="time"
-                               th:field="*{shiftList[__${stat.index}__].endTime}" />
-
-                    </td>
-
-                </tr>
-
+                        <!-- 終了希望時間 -->
+                        <td>
+                            <input type="time" th:field="*{shiftList[__${stat.index}__].endTime}" />
+                        </td>
+                    </tr>
                 </tbody>
-
             </table>
 
-            <br>
+            <!-- ボタン＆メッセージ表示エリア -->
+            <div class="button-area" style="margin-top: 20px; display: flex; align-items: center; gap: 15px;">
+                
+                <!-- 申請ボタン -->
+                <button type="submit" class="submit-btn">申請</button>
 
-            <div class="button-area button">
+                <!-- 【申請成功メッセージ】（申請成功時にボタンの横に表示） -->
+                <span th:if="${successMessage}" 
+                      th:text="${successMessage}" 
+                      style="color: #2e7d32; font-weight: bold; font-size: 1.1em;">
+                    申請しました
+                </span>
 
-                <!-- キャンセル -->
-                <button
-                        type="button"
-                        th:onclick="|location.href='@{/user/shiftRequestSelect(selectedYear=${form.selectedYear})}'|">
-                    キャンセル
-                </button>
-
-                <!-- 申請 -->
-                <button type="submit"
-                        th:disabled="${#lists.isEmpty(form.shiftList)}">
-                    申請
-                </button>
+                <!-- 【エラーメッセージ】（バリデーションエラー等で表示） -->
+                <span th:if="${errorMessage}" 
+                      th:text="${errorMessage}" 
+                      style="color: #d32f2f; font-weight: bold; font-size: 1.1em;">
+                </span>
 
             </div>
 
         </form>
 
-    </div>
+        <!-- 戻るボタンエリア -->
+        <div class="back-area" style="margin-top: 25px;">
+            <a th:href="@{/user/shiftRequestSelect}">シフト申請選択画面へ戻る</a>
+        </div>
 
-</div>
+    </div> <!-- /.card -->
+
+</div> <!-- /.container -->
 
 </body>
-
 </html>

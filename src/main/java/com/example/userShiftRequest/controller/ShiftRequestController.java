@@ -15,9 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.userShiftRequest.form.ShiftRequestForm;
 import com.example.userShiftRequest.service.ShiftRequestService;
 
-/**
- * シフト申請入力・表示コントローラー
- */
 @Controller
 public class ShiftRequestController {
 
@@ -34,9 +31,6 @@ public class ShiftRequestController {
             HttpSession session,
             Model model) {
 
-        System.out.println("★★ shiftRequest 起動 (eventId=" + eventId + ") ★★");
-
-        // ログインユーザーID取得
         String currentUserId = null;
         if (principal != null) {
             currentUserId = principal.getName();
@@ -44,13 +38,9 @@ public class ShiftRequestController {
             currentUserId = (String) session.getAttribute("userId");
         }
 
-        // 【修正】型名を ShiftRequestForm に修正
         ShiftRequestForm form = shiftRequestService.getShiftRequestInfo(eventId, currentUserId);
-
-        // フォームオブジェクトに eventId を確実に入れておく
         form.setEventId(eventId);
 
-        // 【統一】HTML側（${form.xxx}）に合わせて "form" でセット
         model.addAttribute("form", form);
 
         return "shiftRequest";
@@ -61,13 +51,11 @@ public class ShiftRequestController {
      */
     @PostMapping("/user/shiftRequest")
     public String applyShiftRequest(
-            // 【統一】ModelAttributeの名称も "form" に統一
             @ModelAttribute("form") ShiftRequestForm form,
             Principal principal,
             HttpSession session,
             Model model) {
 
-        // ログインユーザーID取得
         String currentUserId = null;
         if (principal != null) {
             currentUserId = principal.getName();
@@ -75,19 +63,18 @@ public class ShiftRequestController {
             currentUserId = (String) session.getAttribute("userId");
         }
 
-        System.out.println("★★ shiftRequest 申請実行 (eventId=" + form.getEventId() + ", userId=" + currentUserId + ") ★★");
-
-        // 登録・更新処理の実行
+        // 保存処理実行
         boolean success = shiftRequestService.applyShiftRequest(form, currentUserId);
 
         if (success) {
-            // リダイレクト先の先頭に "/" を付与
-            return "redirect:/user/shiftRequestSelect";
+            // リダイレクトせず、成功メッセージを添えて同じ画面を再表示
+            model.addAttribute("successMessage", "申請しました");
         } else {
             model.addAttribute("errorMessage", "申請処理に失敗しました。入力内容を確認してください。");
-            // 【修正】ここも "form" に統一
-            model.addAttribute("form", form);
-            return "shiftRequest";
         }
+
+        // 入力フォームの内容・イベントID等を保持したまま表示
+        model.addAttribute("form", form);
+        return "shiftRequest";
     }
 }
