@@ -28,6 +28,9 @@ public interface ShiftRequestDetailRepository
     boolean existsByEventIdAndWorkDateOutsideRange(@Param("eventId") Integer eventId,
                                                    @Param("startDate") LocalDate startDate,
                                                    @Param("endDate") LocalDate endDate);
+ // ShiftRequestDetailRepository.java 内に追加
+    boolean existsByEventIdAndUserId(Integer eventId, String userId);
+    
     /**
      * サイドバー表示用：特定のユーザー・イベントのシフト希望明細一覧を取得
      */
