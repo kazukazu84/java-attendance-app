@@ -25,6 +25,7 @@ public class ShiftRequestController {
      */
     @GetMapping("/shiftRequest")
     public String showShiftRequest(
+
             @RequestParam Integer eventId,
             @RequestParam(required = false) Integer selectedYear,
             @AuthenticationPrincipal UserDetails loginUser,
@@ -41,6 +42,19 @@ public class ShiftRequestController {
                 shiftRequestService.getShiftRequestInfo(
                         eventId,
                         currentUserId);
+
+
+    		@RequestParam Integer eventId,
+    		@RequestParam(required = false) Integer selectedYear,
+    		Model model) {
+    	
+    	System.out.println("選択イベントID = " + eventId);
+    	
+    	// フォーム生成
+        ShiftRequestForm form = 
+        		shiftRequestService.getShiftRequestInfo();
+       
+        // 「entity.setEventId(1);」とリンクしている
 
         form.setEventId(eventId);
         form.setSelectedYear(selectedYear);

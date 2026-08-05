@@ -10,11 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import com.example.adminshift.entity.Shift;
 import com.example.adminshift.entity.ShiftApplicationEvent;
 import com.example.adminshift.entity.ShiftRequestDetail;
 import com.example.adminshift.repository.ShiftApplicationEventRepository;
 import com.example.adminshift.repository.ShiftRepository;
+
+import com.example.adminshift.entity.ShiftRequestDetail;
+
 import com.example.adminshift.repository.ShiftRequestDetailRepository;
 import com.example.userShiftRequest.dto.ShiftRequestDto;
 import com.example.userShiftRequest.form.ShiftRequestForm;
@@ -25,10 +29,14 @@ import com.example.userShiftRequest.validation.ShiftRequestValidator;
 public class ShiftRequestService {
 
     @Autowired
+
     private ShiftRepository shiftRepository;
 
     @Autowired
     private ShiftRequestDetailRepository detailRepository;
+
+    private ShiftRequestDetailRepository repository;
+
 
     @Autowired
     private ShiftApplicationEventRepository eventRepository;
@@ -40,11 +48,21 @@ public class ShiftRequestService {
      * シフト申請画面表示
      * Shiftsテーブルから取得する
      */
+
     public ShiftRequestForm getShiftRequestInfo(
             Integer eventId,
             String currentUserId) {
 
         ShiftRequestForm form = new ShiftRequestForm();
+
+    public ShiftRequestForm getShiftRequestInfo() {
+
+        ShiftRequestForm form = new ShiftRequestForm();
+
+
+        List<ShiftRequestDetail> entityList =
+                repository.findAll();
+
 
         ShiftApplicationEvent event =
                 eventRepository.findById(eventId).orElse(null);
@@ -83,10 +101,14 @@ public class ShiftRequestService {
             dtoList.add(dto);
         }
 
+
         if (event != null) {
             form.setTargetPeriod(
                     event.getDisplayName());
         }
+
+        form.setTargetPeriod("12/22～12/29");
+
 
         form.setEventId(eventId);
         form.setShiftList(dtoList);

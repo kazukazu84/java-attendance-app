@@ -32,10 +32,22 @@ public interface ShiftRequestDetailRepository
      * サイドバー表示用：特定のユーザー・イベントのシフト希望明細一覧を取得
      */
     List<ShiftRequestDetail> findByUserIdAndEventIdOrderByWorkDateAsc(String userId, Integer eventId);
+
     
     Optional<ShiftRequestDetail>
     findByUserIdAndEventIdAndWorkDate(
             String userId,
             Integer eventId,
             LocalDate workDate);
+
+
+/**
+ * ログインユーザーのシフト取得
+ */
+List<ShiftRequestDetail>
+    findByUserIdAndWorkDateBetweenOrderByWorkDateAsc(
+            String userId,
+            LocalDate startDate,
+            LocalDate endDate);
+
 }

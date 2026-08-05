@@ -17,13 +17,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.account.entity.UserInfo;
 import com.example.account.repository.UserInfoRepository;
-import com.example.adminshift.entity.ShiftSchedule;
-import com.example.adminshift.service.ShiftScheduleService;
+import com.example.adminshift.entity.Shift;
+import com.example.adminshift.service.ShiftService;
 import com.example.attendance.dto.AttendanceDto;
 import com.example.attendance.service.AttendanceService;
 import com.example.main.dto.LogDto;
 import com.example.main.service.LogService;
 import com.example.main.service.UserShiftService;
+
 @Controller
 public class MainController {
     @Autowired
@@ -36,7 +37,7 @@ public class MainController {
     private UserShiftService userShiftService;
     
     @Autowired
-    private ShiftScheduleService shiftScheduleService;
+    private ShiftService shiftService;
     
     //@Autowired
    // private ShiftScheduleTestService shiftScheduleTestService;
@@ -115,7 +116,7 @@ public class MainController {
         }
 
         if (month == null) {
-            month = 7;
+            month = 9;
         }
 
         LocalDate monthStart =
@@ -162,18 +163,17 @@ public class MainController {
 
         }
     
-        List<ShiftSchedule> monthlyShiftList =
-                shiftScheduleService.getShiftByUserIdAndDate(
+        List<Shift> monthlyShiftList =
+                shiftService.getShiftByUserIdAndDate(
                         currentUserId,
                         monthStart,
                         monthEnd);
 
-        List<ShiftSchedule> weeklyShiftList =
-                shiftScheduleService.getShiftByUserIdAndDate(
+        List<Shift> weeklyShiftList =
+                shiftService.getShiftByUserIdAndDate(
                         currentUserId,
                         startDate,
                         endDate);
-       
         
     List<Integer> days = new ArrayList<>();
 
