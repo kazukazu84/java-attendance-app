@@ -154,6 +154,7 @@ public interface ShiftApplicationEventRepository
     List<ShiftApplicationEvent> findTargetEventsForAdminList(
             @Param("today") LocalDate today
     );
+
     
     /**
      * イベントが存在する年度一覧を取得
@@ -196,4 +197,5 @@ public interface ShiftApplicationEventRepository
     List<ShiftApplicationEvent> findEventsOverlappingPeriod(
             @Param("start") LocalDate start,
             @Param("end") LocalDate end);
+
 }

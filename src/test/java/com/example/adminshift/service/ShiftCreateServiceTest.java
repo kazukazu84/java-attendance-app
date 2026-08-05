@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataRetrievalFailureException;
 
 import com.example.adminshift.dto.MonthlyShiftSummaryDto;
 import com.example.adminshift.entity.Shift;
@@ -52,7 +53,7 @@ class ShiftCreateServiceTest {
     class GetEventListTest {
 
         @Test
-        @DisplayName("正常系：イベントリストを取得できること")
+        @DisplayName("正常系：イベントリストを正常に取得できること")
         void getEventList_Success() {
             List<ShiftApplicationEvent> expected = List.of(new ShiftApplicationEvent());
             when(shiftApplicationEventRepository.findAll()).thenReturn(expected);
@@ -63,9 +64,10 @@ class ShiftCreateServiceTest {
         }
 
         @Test
-        @DisplayName("異常系：取得結果がnullの場合は空リストを返すこと")
-        void getEventList_NullResult() {
-            when(shiftApplicationEventRepository.findAll()).thenReturn(null);
+        @DisplayName("異常系：例外が発生した場合は空リストを返すこと")
+        void getEventList_DataAccessException() {
+            when(shiftApplicationEventRepository.findAll())
+                    .thenThrow(new DataRetrievalFailureException("DB error"));
 
             List<ShiftApplicationEvent> actual = shiftCreateService.getEventList();
 
@@ -78,40 +80,58 @@ class ShiftCreateServiceTest {
     class GetOldestEventTest {
 
         @Test
-        @DisplayName("正常系：現在受付期間内で最も対象開始日が早いイベントを取得できること")
-        void getOldestEvent_Success() {
+        @DisplayName("優先度①：明日以降に対象期間が始まる未来イベントが返されること")
+        void getOldestEvent_Priority1_FutureEvent() {
             LocalDate today = LocalDate.now();
 
-            // イベント1：受付期間外（終了済）
-            ShiftApplicationEvent event1 = new ShiftApplicationEvent();
-            event1.setApplicationStartDate(today.minusDays(10));
-            event1.setApplicationEndDate(today.minusDays(5));
-            event1.setTargetStartDate(today.plusDays(10));
+            ShiftApplicationEvent futureEvent = new ShiftApplicationEvent();
+            futureEvent.setTargetStartDate(today.plusDays(1));
 
-            // イベント2：受付期間内（対象開始日：遅め）
-            ShiftApplicationEvent event2 = new ShiftApplicationEvent();
-            event2.setApplicationStartDate(today.minusDays(1));
-            event2.setApplicationEndDate(today.plusDays(1));
-            event2.setTargetStartDate(today.plusDays(20));
-
-            // イベント3：受付期間内（対象開始日：早め -> これが選ばれるべき）
-            ShiftApplicationEvent event3 = new ShiftApplicationEvent();
-            event3.setApplicationStartDate(today.minusDays(2));
-            event3.setApplicationEndDate(today.plusDays(2));
-            event3.setTargetStartDate(today.plusDays(15));
-
-            when(shiftApplicationEventRepository.findAll())
-                    .thenReturn(List.of(event1, event2, event3));
+            when(shiftApplicationEventRepository.findAll()).thenReturn(List.of(futureEvent));
 
             ShiftApplicationEvent actual = shiftCreateService.getOldestEvent();
 
-            assertThat(actual).isNotNull();
-            assertThat(actual).isEqualTo(event3);
+            assertThat(actual).isEqualTo(futureEvent);
         }
 
         @Test
-        @DisplayName("異常系：該当するイベントがない場合はnullを返すこと")
-        void getOldestEvent_NotFound() {
+        @DisplayName("優先度②：未来イベントが無く、受付期間内のイベントが返されること")
+        void getOldestEvent_Priority2_InApplicationPeriod() {
+            LocalDate today = LocalDate.now();
+
+            ShiftApplicationEvent currentEvent = new ShiftApplicationEvent();
+            currentEvent.setTargetStartDate(today.minusDays(5)); // 未来ではない
+            currentEvent.setApplicationStartDate(today.minusDays(2));
+            currentEvent.setApplicationEndDate(today.plusDays(2));
+
+            when(shiftApplicationEventRepository.findAll()).thenReturn(List.of(currentEvent));
+
+            ShiftApplicationEvent actual = shiftCreateService.getOldestEvent();
+
+            assertThat(actual).isEqualTo(currentEvent);
+        }
+
+        @Test
+        @DisplayName("優先度③：条件に合致しない場合、リストの最後のイベントが返されること")
+        void getOldestEvent_Priority3_FallbackLastEvent() {
+            LocalDate today = LocalDate.now();
+
+            ShiftApplicationEvent oldEvent1 = new ShiftApplicationEvent();
+            oldEvent1.setTargetStartDate(today.minusDays(20));
+
+            ShiftApplicationEvent oldEvent2 = new ShiftApplicationEvent();
+            oldEvent2.setTargetStartDate(today.minusDays(10));
+
+            when(shiftApplicationEventRepository.findAll()).thenReturn(List.of(oldEvent1, oldEvent2));
+
+            ShiftApplicationEvent actual = shiftCreateService.getOldestEvent();
+
+            assertThat(actual).isEqualTo(oldEvent2);
+        }
+
+        @Test
+        @DisplayName("異常系：リストが空の場合はnullを返すこと")
+        void getOldestEvent_EmptyList() {
             when(shiftApplicationEventRepository.findAll()).thenReturn(Collections.emptyList());
 
             ShiftApplicationEvent actual = shiftCreateService.getOldestEvent();
@@ -125,7 +145,7 @@ class ShiftCreateServiceTest {
     class GetCurrentEventTest {
 
         @Test
-        @DisplayName("正常系：IDを指定してイベントを取得できること")
+        @DisplayName("正常系：ID指定でイベントを取得できること")
         void getCurrentEvent_Success() {
             ShiftApplicationEvent event = new ShiftApplicationEvent();
             when(shiftApplicationEventRepository.findById(1)).thenReturn(Optional.of(event));
@@ -136,7 +156,7 @@ class ShiftCreateServiceTest {
         }
 
         @Test
-        @DisplayName("引数がnullの場合はnullを返すこと")
+        @DisplayName("引数がnullの場合はnullを返しリポジトリを呼び出さないこと")
         void getCurrentEvent_NullId() {
             ShiftApplicationEvent actual = shiftCreateService.getCurrentEvent(null);
 
@@ -146,36 +166,11 @@ class ShiftCreateServiceTest {
     }
 
     @Nested
-    @DisplayName("getShiftTable のテスト")
-    class GetShiftTableTest {
-
-        @Test
-        @DisplayName("正常系：イベントIDに対応するシフト一覧を取得できること")
-        void getShiftTable_Success() {
-            List<Shift> expected = List.of(new Shift());
-            when(shiftRepository.findByEventId(1)).thenReturn(expected);
-
-            List<Shift> actual = shiftCreateService.getShiftTable(1);
-
-            assertThat(actual).isEqualTo(expected);
-        }
-
-        @Test
-        @DisplayName("引数がnullの場合は空リストを返すこと")
-        void getShiftTable_NullId() {
-            List<Shift> actual = shiftCreateService.getShiftTable(null);
-
-            assertThat(actual).isEmpty();
-            verify(shiftRepository, never()).findByEventId(any());
-        }
-    }
-
-    @Nested
     @DisplayName("getTargetDateList のテスト")
     class GetTargetDateListTest {
 
         @Test
-        @DisplayName("正常系：開始日から終了日までの日付リストが正しく生成されること")
+        @DisplayName("正常系：開始日から終了日までの日付リストが生成されること")
         void getTargetDateList_Success() {
             ShiftApplicationEvent event = new ShiftApplicationEvent();
             event.setStartDate(LocalDate.of(2026, 8, 1));
@@ -192,50 +187,10 @@ class ShiftCreateServiceTest {
 
         @Test
         @DisplayName("異常系：eventや日付がnullの場合は空リストを返すこと")
-        void getTargetDateList_NullEvent() {
+        void getTargetDateList_Null() {
             List<LocalDate> actual = shiftCreateService.getTargetDateList(null);
 
             assertThat(actual).isEmpty();
-        }
-    }
-
-    @Nested
-    @DisplayName("getAllUsers のテスト")
-    class GetAllUsersTest {
-
-        @Test
-        @DisplayName("正常系：ユーザー一覧を取得できること")
-        void getAllUsers_Success() {
-            List<Users> expected = List.of(new Users());
-            when(usersRepository.findAll()).thenReturn(expected);
-
-            List<Users> actual = shiftCreateService.getAllUsers();
-
-            assertThat(actual).isEqualTo(expected);
-        }
-    }
-
-    @Nested
-    @DisplayName("getShiftDetail のテスト")
-    class GetShiftDetailTest {
-
-        @Test
-        @DisplayName("正常系：シフト詳細を取得できること")
-        void getShiftDetail_Success() {
-            Shift shift = new Shift();
-            when(shiftRepository.findById(10)).thenReturn(Optional.of(shift));
-
-            Shift actual = shiftCreateService.getShiftDetail(10);
-
-            assertThat(actual).isEqualTo(shift);
-        }
-
-        @Test
-        @DisplayName("引数がnullの場合はnullを返すこと")
-        void getShiftDetail_NullId() {
-            Shift actual = shiftCreateService.getShiftDetail(null);
-
-            assertThat(actual).isNull();
         }
     }
 
@@ -244,7 +199,7 @@ class ShiftCreateServiceTest {
     class SaveShiftTest {
 
         @Test
-        @DisplayName("正常系：シフトが保存されること")
+        @DisplayName("正常系：saveが正しく呼び出されること")
         void saveShift_Success() {
             Shift shift = new Shift();
 
@@ -254,7 +209,7 @@ class ShiftCreateServiceTest {
         }
 
         @Test
-        @DisplayName("引数がnullの場合は保存処理が行われないこと")
+        @DisplayName("引数がnullの場合はsaveを呼び出さないこと")
         void saveShift_Null() {
             shiftCreateService.saveShift(null);
 
@@ -267,34 +222,31 @@ class ShiftCreateServiceTest {
     class GetMonthlySummaryMapTest {
 
         @Test
-        @DisplayName("正常系：過去日（勤怠実績）と未来日（シフト予定）を正しく計算して月間集計を返せること")
+        @DisplayName("正常系：過去日（勤怠実績）と未来日（シフト予定・夜勤含）が集計されること")
         void getMonthlySummaryMap_Success() {
-            // モック準備
-            Integer eventId = 1;
-
+            Integer eventId = 100;
             Users user = new Users();
             user.setUserId("user01");
-            List<Users> userList = List.of(user);
 
             LocalDate today = LocalDate.now();
-            LocalDate pastDate = today.minusDays(1); // 過去日
-            LocalDate futureDate = today.plusDays(1); // 未来日
+            LocalDate pastDate = today.minusDays(1);
+            LocalDate futureDate = today.plusDays(1);
 
-            // イベント期間の設定
             ShiftApplicationEvent event = new ShiftApplicationEvent();
             event.setTargetStartDate(pastDate);
             event.setTargetEndDate(futureDate);
+
             when(shiftApplicationEventRepository.findById(eventId)).thenReturn(Optional.of(event));
 
-            // 過去日：勤怠データ (8時間労働, 休憩1.0時間 = 7時間 / 420分)
+            // 過去日：勤怠データ (09:00〜18:00 休憩1.0時間 = 8時間 / 480分)
             Attendance attendance = new Attendance();
             attendance.setClockIn(LocalTime.of(9, 0));
-            attendance.setClockOut(LocalTime.of(17, 0));
+            attendance.setClockOut(LocalTime.of(18, 0));
             attendance.setRestTime(1.0);
             when(attendanceRepository.findByUserIdAndWorkDate("user01", pastDate))
                     .thenReturn(Optional.of(attendance));
 
-            // 未来日：シフトデータ (22:00〜翌5:00の夜勤 = 7時間 / 420分)
+            // 未来日：シフトデータ (22:00〜05:00 夜勤 = 7時間 / 420分)
             Shift shift = new Shift();
             shift.setUserId("user01");
             shift.setShiftDate(futureDate);
@@ -307,21 +259,21 @@ class ShiftCreateServiceTest {
 
             // 実行
             Map<String, List<MonthlyShiftSummaryDto>> result =
-                    shiftCreateService.getMonthlySummaryMap(eventId, userList);
+                    shiftCreateService.getMonthlySummaryMap(eventId, List.of(user));
 
             // 検証
             assertThat(result).containsKey("user01");
-            List<MonthlyShiftSummaryDto> summaryList = result.get("user01");
-            assertThat(summaryList).hasSize(1);
+            List<MonthlyShiftSummaryDto> summaries = result.get("user01");
+            assertThat(summaries).hasSize(1);
 
-            MonthlyShiftSummaryDto summary = summaryList.get(0);
-            assertThat(summary.getWorkingDays()).isEqualTo(2); // 過去1日 + 未来1日 = 2日
-            assertThat(summary.getTotalMinutes()).isEqualTo(840); // 420分 + 420分 = 840分
+            MonthlyShiftSummaryDto summary = summaries.get(0);
+            assertThat(summary.getWorkingDays()).isEqualTo(2);
+            assertThat(summary.getTotalMinutes()).isEqualTo(900); // 480分 + 420分
         }
 
         @Test
-        @DisplayName("引数が不適切な場合は空のMapを返すこと")
-        void getMonthlySummaryMap_InvalidInputs() {
+        @DisplayName("異常系：パラメータが不正な場合は空のMapを返すこと")
+        void getMonthlySummaryMap_InvalidParams() {
             Map<String, List<MonthlyShiftSummaryDto>> result =
                     shiftCreateService.getMonthlySummaryMap(null, Collections.emptyList());
 

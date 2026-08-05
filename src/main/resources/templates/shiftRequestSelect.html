@@ -27,20 +27,8 @@
 			th:action = "@{/user/shiftRequestSelect}">
 		
 			<label>年度</label>
-			
-			<select name="selectedYear"
-			        onchange="this.form.submit()">
-
-			    <option
-			        th:each="year : ${form.yearList}"
-			        th:value="${year}"
-			        th:text="${year}"
-			        th:selected="${year == form.selectedYear}">
-			    </option>
-
-			</select>
 		
-			 <!-- <select name = "selectedYear"
+			 <select name = "selectedYear"
 					 onchange = "this.form.submit()">
 				 
 			<option value="2025"
@@ -58,9 +46,7 @@
 					2027
 			</option>
 			
-			
-			
-			</select> -->
+			</select>
 		
 		</form>
 		
