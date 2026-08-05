@@ -27,4 +27,9 @@ public class ShiftRequestSelectForm {
     public void setShiftList(List<ShiftRequestSelectDto> shiftList) {
         this.shiftList = shiftList;
     }
+
+	public void setYearList(List<Integer> yearList) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
 }
