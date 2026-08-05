@@ -1,6 +1,7 @@
 package com.example.userShiftRequest.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.adminshift.entity.ShiftApplicationEvent;
+import com.example.adminshift.entity.ShiftRequest;
 import com.example.adminshift.entity.ShiftRequestDetail;
+import com.example.adminshift.entity.ShiftRequestId;
 import com.example.adminshift.repository.ShiftApplicationEventRepository;
 import com.example.adminshift.repository.ShiftRequestDetailRepository;
+import com.example.adminshift.repository.ShiftRequestRepository;
 import com.example.userShiftRequest.dto.ShiftRequestDto;
 import com.example.userShiftRequest.form.ShiftRequestForm;
 import com.example.userShiftRequest.validation.ShiftRequestValidator;
@@ -27,6 +31,9 @@ public class ShiftRequestService {
     
     @Autowired
     private ShiftApplicationEventRepository eventRepository;
+    
+    @Autowired
+    private ShiftRequestRepository shiftRequestRepository;
 
     private final ShiftRequestValidator validator = new ShiftRequestValidator();
 
@@ -99,6 +106,18 @@ public class ShiftRequestService {
         }
 
         boolean saved = false;
+        
+        ShiftRequestId requestId = new ShiftRequestId();
+        requestId.setUserId(currentUserId);
+        requestId.setEventId(form.getEventId());
+
+        ShiftRequest request = shiftRequestRepository.findById(requestId)
+                .orElse(new ShiftRequest());
+
+        request.setId(requestId);
+        request.setSubmittedAt(LocalDateTime.now());
+
+        shiftRequestRepository.save(request);
 
         for (ShiftRequestDto dto : form.getShiftList()) {
 
