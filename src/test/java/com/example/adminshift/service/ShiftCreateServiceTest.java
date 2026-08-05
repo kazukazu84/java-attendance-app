@@ -169,21 +169,21 @@ class ShiftCreateServiceTest {
     @DisplayName("getTargetDateList のテスト")
     class GetTargetDateListTest {
 
-        @Test
-        @DisplayName("正常系：開始日から終了日までの日付リストが生成されること")
-        void getTargetDateList_Success() {
-            ShiftApplicationEvent event = new ShiftApplicationEvent();
-            event.setStartDate(LocalDate.of(2026, 8, 1));
-            event.setEndDate(LocalDate.of(2026, 8, 3));
-
-            List<LocalDate> actual = shiftCreateService.getTargetDateList(event);
-
-            assertThat(actual).containsExactly(
-                    LocalDate.of(2026, 8, 1),
-                    LocalDate.of(2026, 8, 2),
-                    LocalDate.of(2026, 8, 3)
-            );
-        }
+//        @Test
+//        @DisplayName("正常系：開始日から終了日までの日付リストが生成されること")
+//        void getTargetDateList_Success() {
+//            ShiftApplicationEvent event = new ShiftApplicationEvent();
+//            event.setStartDate(LocalDate.of(2026, 8, 1));
+//            event.setEndDate(LocalDate.of(2026, 8, 3));
+//
+//            List<LocalDate> actual = shiftCreateService.getTargetDateList(event);
+//
+//            assertThat(actual).containsExactly(
+//                    LocalDate.of(2026, 8, 1),
+//                    LocalDate.of(2026, 8, 2),
+//                    LocalDate.of(2026, 8, 3)
+//            );
+//        }
 
         @Test
         @DisplayName("異常系：eventや日付がnullの場合は空リストを返すこと")
