@@ -28,11 +28,7 @@ public class ShiftRequestSelectService {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d");
 
     /**
-     * 指定された年度およびユーザーIDに基づくシフト申請一覧データの取得
-     *
-     * @param selectedYear 選択された年度
-     * @param currentUserId ログイン中のユーザーID
-     * @return 画面表示用フォームオブジェクト
+     * 指定された年度およびユーザーIDに基づくシフト申請一覧データの取得（受付中のみ）
      */
     public ShiftSelectForm getShiftSelectList(int selectedYear, String currentUserId) {
 
@@ -45,8 +41,10 @@ public class ShiftRequestSelectService {
 
         for (ShiftApplicationEvent event : events) {
             
-            // 年度の判定（イベントの開始日の年で判定）
-            if (event.getTargetStartDate() != null && event.getTargetStartDate().getYear() == selectedYear) {
+            // 【修正箇所】選択された年度 かつ 受付状態が「受付中」のものだけを抽出
+            if (event.getTargetStartDate() != null 
+                    && event.getTargetStartDate().getYear() == selectedYear
+                    && "受付中".equals(event.getStatusName())) { // ⇐ ここを追加！
                 
                 ShiftSelectDto dto = new ShiftSelectDto();
                 dto.setEventId(event.getEventId());
@@ -60,7 +58,7 @@ public class ShiftRequestSelectService {
                     dto.setTargetPeriod(period);
                 }
 
-                // 【修正】締め日（applicationEndDate）のフォーマット設定（例: 12/21）
+                // 締め日（applicationEndDate）のフォーマット設定（例: 12/21）
                 if (event.getApplicationEndDate() != null) {
                     dto.setDeadlineDate(event.getApplicationEndDate().format(DATE_FORMATTER));
                 } else {
@@ -68,7 +66,6 @@ public class ShiftRequestSelectService {
                 }
 
                 // 【提出・未提出の判定】
-                // 該当ユーザーかつ該当イベントIDの申請詳細データが存在するかチェック
                 boolean isSubmitted = false;
                 if (currentUserId != null) {
                     isSubmitted = detailRepository.existsByEventIdAndUserId(event.getEventId(), currentUserId);

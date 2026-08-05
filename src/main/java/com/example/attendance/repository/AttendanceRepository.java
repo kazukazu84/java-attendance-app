@@ -37,6 +37,12 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Integer>
             LocalDate start,
             LocalDate end
     );
+    
+ // AttendanceRepository 内に定義
+    List<Attendance> findByUserIdInAndWorkDateBetween(
+            List<String> userIds,
+            LocalDate startDate,
+            LocalDate endDate);
 
 
     /**
