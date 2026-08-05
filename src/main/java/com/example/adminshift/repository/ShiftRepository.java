@@ -16,6 +16,19 @@ import com.example.adminshift.entity.Shift;
 public interface ShiftRepository extends JpaRepository<Shift, Integer> {
 
     /**
+     * 複数ユーザー・指定期間内のシフト一括取得（高速化用）
+     * 
+     * @param userIds ユーザーIDリスト
+     * @param startDate 開始日
+     * @param endDate 終了日
+     * @return シフト一覧
+     */
+    List<Shift> findByUserIdInAndShiftDateBetween(
+            List<String> userIds,
+            LocalDate startDate,
+            LocalDate endDate);
+
+    /**
      * 指定イベントのシフト一覧取得
      *
      * @param eventId イベントID
