@@ -44,13 +44,24 @@
                             <input type="hidden" th:field="*{shiftList[__${stat.index}__].workDate}" />
                         </td>
 
-                        <!-- 出勤可否 (○ / ×) -->
-                        <td>
-                            <select th:field="*{shiftList[__${stat.index}__].available}">
-                                <option value="○">○</option>
-                                <option value="×">×</option>
-                            </select>
-                        </td>
+						<!-- 出勤可否 (○ / ×) -->
+						<td class="availability-cell">
+
+						    <label>
+						        <input type="radio"
+						               th:field="*{shiftList[__${stat.index}__].available}"
+						               value="○">
+						        ○
+						    </label>
+
+						    <label>
+						        <input type="radio"
+						               th:field="*{shiftList[__${stat.index}__].available}"
+						               value="×">
+						        ×
+						    </label>
+
+						</td>
 
                         <!-- 開始希望時間 -->
                         <td>
