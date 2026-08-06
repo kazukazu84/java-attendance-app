@@ -174,3 +174,17 @@ body {
 	padding: 8px 16px;
 	border-radius: 6px;
 }
+
+.availability-cell {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.availability-cell label {
+    margin: 0 8px;
+    cursor: pointer;
+}
+
+.availability-cell input[type="radio"] {
+    margin-right: 4px;
+}
