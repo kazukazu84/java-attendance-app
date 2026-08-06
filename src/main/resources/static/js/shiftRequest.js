@@ -226,3 +226,77 @@ if (bulkButton) {
     );
 
 }
+
+/*
+ * ○の日を全選択
+ */
+const selectAvailableButton =
+    document.getElementById(
+        "selectAvailable"
+    );
+
+if (selectAvailableButton) {
+
+    selectAvailableButton.addEventListener(
+        "click",
+        function () {
+
+            const rows =
+                document.querySelectorAll(
+                    ".shift-table tbody tr"
+                );
+
+            rows.forEach(function (row) {
+
+                const check =
+                    row.querySelector(
+                        ".shift-check"
+                    );
+
+                const checkedRadio =
+                    row.querySelector(
+                        'input[type="radio"]:checked'
+                    );
+
+                if (
+                    checkedRadio &&
+                    checkedRadio.value === "○"
+                ) {
+                    check.checked = true;
+                } else {
+                    check.checked = false;
+                }
+
+            });
+
+        }
+    );
+
+}
+
+/*
+ * 選択解除
+ */
+const clearSelectionButton =
+    document.getElementById(
+        "clearSelection"
+    );
+
+if (clearSelectionButton) {
+
+    clearSelectionButton.addEventListener(
+        "click",
+        function () {
+
+            document
+                .querySelectorAll(".shift-check")
+                .forEach(function (check) {
+
+                    check.checked = false;
+
+                });
+
+        }
+    );
+
+}

@@ -33,31 +33,33 @@
 			
 			<div class="bulk-edit-area">
 
-			    <h3>
-			        選択日一括編集
-			    </h3>
+			    
+				<div class="bulk-edit-area">
 
+				    <h3>選択日一括編集</h3>
 
-			    <label>
-			        開始時間
-			    </label>
+				    <label>開始時間</label>
+				    <input type="time" id="bulkStartTime">
 
-			    <input type="time"
-			           id="bulkStartTime">
+				    <label>終了時間</label>
+				    <input type="time" id="bulkEndTime">
 
+				    <button type="button"
+				            id="selectAvailable">
+				        ○の日を全選択
+				    </button>
 
-			    <label>
-			        終了時間
-			    </label>
+				    <button type="button"
+				            id="clearSelection">
+				        選択解除
+				    </button>
 
-			    <input type="time"
-			           id="bulkEndTime">
+				    <button type="button"
+				            id="applyBulkTime">
+				        選択日に反映
+				    </button>
 
-
-			    <button type="button"
-			            id="applyBulkTime">
-			        選択日に反映
-			    </button>
+				</div>
 
 			</div>
 
