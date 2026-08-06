@@ -1,0 +1,287 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   1. 変数定義 (Design System)
+   ========================================================================== */
+:root {
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --bg-color: #f8fafc;
+    --card-bg: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    
+    --table-header-bg: #eff6ff;
+    --table-row-hover: #f1f5f9;
+
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    
+    --radius-md: 8px;
+    --radius-lg: 12px;
+
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================================
+   2. 全体レイアウト & アニメーション
+   ========================================================================== */
+body {
+    margin: 0;
+    padding: 40px 20px;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    animation: fadeIn var(--transition-normal);
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 40px;
+    transition: box-shadow var(--transition-fast);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+/* ==========================================================================
+   3. ページタイトル
+   ========================================================================== */
+.page-title {
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-top: 0;
+    margin-bottom: 24px;
+    position: relative;
+    padding-bottom: 12px;
+}
+
+.page-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background-color: var(--primary-color);
+    border-radius: 2px;
+}
+
+/* ==========================================================================
+   4. 年度選択エリア (.year-area)
+   ========================================================================== */
+.year-area {
+    margin-bottom: 24px;
+}
+
+.year-area form {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.year-area label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+.year-area select {
+    width: 140px;
+    padding: 8px 16px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    background-color: #ffffff;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-md);
+    outline: none;
+    cursor: pointer;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2064748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px;
+    padding-right: 36px;
+}
+
+.year-area select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* ==========================================================================
+   5. シフト申請選択テーブル (.shift-table)
+   ========================================================================== */
+.shift-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+}
+
+.shift-table th {
+    background-color: var(--table-header-bg);
+    color: var(--text-primary);
+    font-weight: 700;
+    text-align: center;
+    padding: 14px 16px;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+}
+
+.shift-table th:last-child {
+    border-right: none;
+}
+
+.shift-table td {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    padding: 14px 16px;
+    font-size: 0.95rem;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    transition: background-color var(--transition-fast);
+}
+
+.shift-table td:last-child {
+    border-right: none;
+}
+
+.shift-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.shift-table tbody tr:hover td {
+    background-color: var(--table-row-hover);
+}
+
+/* 各列の幅の均等調整 */
+.shift-table th:nth-child(1), .shift-table td:nth-child(1) { width: 20%; }
+.shift-table th:nth-child(2), .shift-table td:nth-child(2) { width: 35%; }
+.shift-table th:nth-child(3), .shift-table td:nth-child(3) { width: 25%; }
+.shift-table th:nth-child(4), .shift-table td:nth-child(4) { width: 20%; }
+
+/* テーブル内のボタン用フォーム */
+.shift-table form {
+    margin: 0;
+    display: inline-block;
+}
+
+/* 「受付中」アクションボタン */
+.shift-table button[type="submit"] {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    padding: 6px 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+}
+
+.shift-table button[type="submit"]:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.shift-table button[type="submit"]:active {
+    transform: translateY(0);
+}
+
+/* ==========================================================================
+   6. 戻るボタンエリア (.back-area)
+   ========================================================================== */
+.back-area {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.back-area a {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 20px;
+    font-size: 0.93rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background-color: #ffffff;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.back-area a:hover {
+    color: var(--text-primary);
+    border-color: #cbd5e1;
+    background-color: var(--bg-color);
+    transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   7. レスポンシブ対応
+   ========================================================================== */
+@media (max-width: 768px) {
+    body {
+        padding: 20px 12px;
+    }
+
+    .card {
+        padding: 24px 16px;
+    }
+
+    .shift-table th, 
+    .shift-table td {
+        padding: 10px 6px;
+        font-size: 0.85rem;
+    }
+
+    .shift-table button[type="submit"] {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+}
