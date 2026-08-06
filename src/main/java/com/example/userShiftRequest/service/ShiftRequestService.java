@@ -109,6 +109,14 @@ public class ShiftRequestService {
 
             return false;
         }
+        
+        /*
+         * 夜勤による翌日シフト重複チェック
+         */
+        if (!checkNightShiftOverlap(form)) {
+
+            return false;
+        }
 
         ShiftRequestId requestId = new ShiftRequestId();
         requestId.setUserId(currentUserId);
@@ -243,6 +251,135 @@ public class ShiftRequestService {
         }
 
         return saved;
+    }
+    
+    /**
+     * 夜勤による翌日シフト重複チェック
+     *
+     * 例：
+     * 8/1 22:00～08:00
+     * 8/2 07:00～12:00
+     *
+     * のような場合をエラーにする
+     */
+    private boolean checkNightShiftOverlap(
+            ShiftRequestForm form) {
+
+
+        List<ShiftRequestDto> list =
+                form.getShiftList();
+
+
+        for (int i = 0; i < list.size(); i++) {
+
+
+            ShiftRequestDto current =
+                    list.get(i);
+
+
+            /*
+             * 未出勤・時間未入力は対象外
+             */
+            if (!"○".equals(current.getAvailable())
+                    || current.getStartTime() == null
+                    || current.getEndTime() == null
+                    || current.getStartTime().isBlank()
+                    || current.getEndTime().isBlank()) {
+
+                continue;
+            }
+
+
+            LocalTime currentStart =
+                    LocalTime.parse(
+                            current.getStartTime()
+                    );
+
+
+            LocalTime currentEnd =
+                    LocalTime.parse(
+                            current.getEndTime()
+                    );
+
+
+            /*
+             * 夜勤ではない場合は対象外
+             *
+             * 例：
+             * 09:00～18:00
+             */
+            if (!currentStart.isAfter(currentEnd)) {
+
+                continue;
+            }
+
+
+            /*
+             * 夜勤の場合
+             *
+             * 翌日の申請を確認
+             */
+            LocalDate currentDate =
+                    LocalDate.parse(
+                            current.getWorkDate()
+                    );
+
+
+            LocalDate nextDate =
+                    currentDate.plusDays(1);
+
+
+
+            for (ShiftRequestDto next : list) {
+
+
+                if (!nextDate.equals(
+                        LocalDate.parse(
+                                next.getWorkDate()))) {
+
+                    continue;
+                }
+
+
+                /*
+                 * 翌日が休みなら問題なし
+                 */
+                if (!"○".equals(next.getAvailable())) {
+
+                    continue;
+                }
+
+
+                if (next.getStartTime() == null
+                        || next.getStartTime().isBlank()) {
+
+                    continue;
+                }
+
+
+                LocalTime nextStart =
+                        LocalTime.parse(
+                                next.getStartTime()
+                        );
+
+
+                /*
+                 * 夜勤終了時間以前に
+                 * 翌日の勤務開始がある場合
+                 */
+                if (!nextStart.isAfter(currentEnd)) {
+
+
+                    return false;
+
+                }
+
+            }
+
+        }
+
+
+        return true;
     }
 
 }
