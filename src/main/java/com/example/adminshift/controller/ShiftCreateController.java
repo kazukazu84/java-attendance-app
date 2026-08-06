@@ -21,6 +21,7 @@ import com.example.adminshift.entity.ShiftApplicationEvent;
 import com.example.adminshift.entity.Users;
 import com.example.adminshift.form.ShiftForm;
 import com.example.adminshift.form.ShiftSearchForm;
+import com.example.adminshift.repository.ShiftRequestRepository;
 import com.example.adminshift.service.ShiftCreateService;
 
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,8 @@ import lombok.RequiredArgsConstructor;
 public class ShiftCreateController {
 
     private final ShiftCreateService shiftCreateService;
+    
+    private final ShiftRequestRepository shiftRequestRepository;
 
 
     /**
@@ -543,15 +546,11 @@ public class ShiftCreateController {
              * ユーザーのシフトが1件でもあれば提出済み
              */
             boolean submitted =
-                    shiftList.stream()
-                            .anyMatch(
-                                    shift ->
-                                            user.getUserId()
-                                                    .equals(
-                                                            shift.getUserId()
-                                                    )
-                            );
-
+                    shiftRequestRepository
+                        .existsByIdUserIdAndIdEventId(
+                                user.getUserId(),
+                                eventId
+                        );
 
             /*
              * 提出状況をMapへ格納

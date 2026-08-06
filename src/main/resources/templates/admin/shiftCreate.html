@@ -198,29 +198,40 @@
                                                             : '')}"
                                                     th:disabled="${showModal == true}">
 
-                                                <!-- 出勤 -->
-                                                <div th:if="${targetShift.isAvailable == 1}"
-                                                     class="time-container">
+													<!-- 出勤時間あり -->
+													<div th:if="${targetShift.isAvailable == 1
+													             and targetShift.startTime != null
+													             and targetShift.endTime != null}"
+													     class="time-container">
 
-                                                    <span
-                                                        th:text="${targetShift.startTime != null
-                                                            ? #temporals.format(targetShift.startTime, 'H:mm')
-                                                            : ''}">
-                                                        09:00
-                                                    </span>
+													    <span
+													        th:text="${#temporals.format(targetShift.startTime, 'H:mm')}">
+													        09:00
+													    </span>
 
-                                                    <span class="time-sep">
-                                                        ～
-                                                    </span>
+													    <span class="time-sep">
+													        ～
+													    </span>
 
-                                                    <span
-                                                        th:text="${targetShift.endTime != null
-                                                            ? #temporals.format(targetShift.endTime, 'H:mm')
-                                                            : ''}">
-                                                        18:00
-                                                    </span>
+													    <span
+													        th:text="${#temporals.format(targetShift.endTime, 'H:mm')}">
+													        18:00
+													    </span>
 
-                                                </div>
+													</div>
+
+
+													<!-- 未入力Shift -->
+													<div th:if="${targetShift.isAvailable == 1
+													             and (targetShift.startTime == null
+													             or targetShift.endTime == null)}"
+													     class="unsubmitted-container">
+
+													    未
+
+													</div>
+
+                                               
 
 
                                                 <!-- 休み -->
