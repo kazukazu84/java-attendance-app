@@ -52,7 +52,10 @@ public class MainController {
             HttpServletRequest request,
 
             @RequestParam(required = false)
-            Integer month,
+            Integer year,
+            
+            @RequestParam(required = false)
+            String month,
 
             @RequestParam(required = false)
             Integer week,
@@ -114,15 +117,28 @@ public class MainController {
             week = 1;
         }
 
-        int currentYear =
-                LocalDate.now().getYear();
+        if (year == null) {
+            year = LocalDate.now().getYear();
+        }
+
+        int targetYear;
+        int targetMonth;
 
         if (month == null) {
-            month = LocalDate.now().getMonthValue();
+
+            targetYear = LocalDate.now().getYear();
+            targetMonth = LocalDate.now().getMonthValue();
+
+        } else {
+
+            String[] ym = month.split("-");
+
+            targetYear = Integer.parseInt(ym[0]);
+            targetMonth = Integer.parseInt(ym[1]);
         }
 
         LocalDate monthStart =
-                LocalDate.of(currentYear, month, 1);
+                LocalDate.of(targetYear, targetMonth, 1);
 
         LocalDate monthEnd =
                 monthStart.withDayOfMonth(
@@ -154,8 +170,8 @@ public class MainController {
         }
 
         LocalDate startDate =
-                LocalDate.of(currentYear, month, startDay);
-
+                LocalDate.of(targetYear, targetMonth, startDay);
+        
         LocalDate endDate =
                 startDate.plusDays(6);
 
@@ -223,8 +239,8 @@ public class MainController {
     }
     
     String selectedYearMonth =
-            currentYear + "-" + month;
-
+            targetYear + "-" + targetMonth;
+    
     model.addAttribute(
             "selectedYearMonth",
             selectedYearMonth);
@@ -260,7 +276,8 @@ public class MainController {
 
     model.addAttribute(
             "currentYear",
-            currentYear);
+            year);
+    
 
     model.addAttribute(
             "month",
