@@ -30,6 +30,36 @@
 
         <!-- シフト入力フォーム -->
         <form th:action="@{/user/shiftRequest}" th:object="${form}" method="post">
+			
+			<div class="bulk-edit-area">
+
+			    <h3>
+			        選択日一括編集
+			    </h3>
+
+
+			    <label>
+			        開始時間
+			    </label>
+
+			    <input type="time"
+			           id="bulkStartTime">
+
+
+			    <label>
+			        終了時間
+			    </label>
+
+			    <input type="time"
+			           id="bulkEndTime">
+
+
+			    <button type="button"
+			            id="applyBulkTime">
+			        選択日に反映
+			    </button>
+
+			</div>
 
             <!-- イベントID（非表示） -->
             <input type="hidden" th:field="*{eventId}" />
@@ -46,10 +76,17 @@
                 <tbody>
                     <tr th:each="shift, stat : *{shiftList}">
                         <!-- 日付 -->
-                        <td>
-                            <span th:text="${shift.workDate}">2026-09-01</span>
-                            <input type="hidden" th:field="*{shiftList[__${stat.index}__].workDate}" />
-                        </td>
+						<td>
+						    <input type="checkbox"
+						           class="shift-check">
+
+						    <span th:text="${shift.workDate}">
+						        2026-09-01
+						    </span>
+
+						    <input type="hidden"
+						           th:field="*{shiftList[__${stat.index}__].workDate}" />
+						</td>
 
 						<!-- 出勤可否 (○ / ×) -->
 						<td class="availability-cell">
