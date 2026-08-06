@@ -99,158 +99,258 @@ public class ShiftRequestService {
     /**
      * シフト申請
      */
+    /**
+     * シフト申請
+     */
     public boolean applyShiftRequest(
             ShiftRequestForm form,
             String currentUserId) {
 
+
+        /*
+         * 基本チェック
+         */
         if (form == null
                 || form.getShiftList() == null
                 || form.getEventId() == null) {
 
             return false;
         }
-        
+
+
         /*
-         * 夜勤による翌日シフト重複チェック
+         * =====================================================
+         * ① 全日分バリデーション
+         *
+         * 1件でも不正があれば
+         * 申請全体を失敗させる
+         * =====================================================
+         */
+        for (ShiftRequestDto dto : form.getShiftList()) {
+            if (!validator.isValid(dto)) {
+               return false;
+            }
+        }
+
+
+
+        /*
+         * =====================================================
+         * ② 夜勤による翌日重複チェック
+         * =====================================================
          */
         if (!checkNightShiftOverlap(form)) {
-
             return false;
         }
 
-        ShiftRequestId requestId = new ShiftRequestId();
-        requestId.setUserId(currentUserId);
-        requestId.setEventId(form.getEventId());
+
+
+        /*
+         * =====================================================
+         * ③ 申請情報作成
+         * =====================================================
+         */
+        ShiftRequestId requestId =
+                new ShiftRequestId();
+
+        requestId.setUserId(
+                currentUserId
+        );
+
+        requestId.setEventId(
+                form.getEventId()
+        );
+
 
         ShiftRequest request =
                 shiftRequestRepository
                         .findById(requestId)
                         .orElse(new ShiftRequest());
 
+
         request.setId(requestId);
-        request.setSubmittedAt(LocalDateTime.now());
+
+        request.setSubmittedAt(
+                LocalDateTime.now()
+        );
 
         shiftRequestRepository.save(request);
 
+        /*
+         * 保存処理
+         */
         boolean saved = false;
 
         for (ShiftRequestDto dto : form.getShiftList()) {
 
-            if (!validator.isValid(dto)) {
-                continue;
-            }
 
             LocalDate workDate =
-                    LocalDate.parse(dto.getWorkDate());
+                    LocalDate.parse(
+                            dto.getWorkDate()
+                    );
 
             Optional<Shift> shiftOpt =
-                    shiftRepository.findByEventIdAndUserIdAndShiftDate(
+                    shiftRepository
+                    .findByEventIdAndUserIdAndShiftDate(
                             form.getEventId(),
                             currentUserId,
-                            workDate);
+                            workDate
+                    );
 
+            /*
+             * 対象シフトが存在しない場合
+             */
             if (shiftOpt.isEmpty()) {
                 return false;
             }
 
             Shift shift = shiftOpt.get();
 
+
+
             boolean available =
-                    "○".equals(dto.getAvailable());
+                    "○".equals(
+                            dto.getAvailable()
+                    );
+
+
+
+            /*
+             * =====================================================
+             * shifts更新
+             * =====================================================
+             */
 
             shift.setIsAvailable(
-                    available ? 1 : 0);
+                    available ? 1 : 0
+            );
 
             if (available) {
+                shift.setStartTime(
+                        dto.getStartTime() == null
+                        || dto.getStartTime().isBlank()
+                        ? null
+                        : LocalTime.parse(
+                                dto.getStartTime()
+                          )
+                );
 
-                if (dto.getStartTime() != null
-                        && !dto.getStartTime().isBlank()) {
 
-                    shift.setStartTime(
-                            LocalTime.parse(dto.getStartTime()));
+                shift.setEndTime(
+                        dto.getEndTime() == null
+                        || dto.getEndTime().isBlank()
+                        ? null
+                        : LocalTime.parse(
+                                dto.getEndTime()
+                          )
+                );
 
-                } else {
-
-                    shift.setStartTime(null);
-
-                }
-
-                if (dto.getEndTime() != null
-                        && !dto.getEndTime().isBlank()) {
-
-                    shift.setEndTime(
-                            LocalTime.parse(dto.getEndTime()));
-
-                } else {
-
-                    shift.setEndTime(null);
-
-                }
 
             } else {
 
+
                 shift.setStartTime(null);
+
                 shift.setEndTime(null);
 
             }
 
-            shiftRepository.save(shift);
+
+
+            shiftRepository.save(
+                    shift
+            );
+
+
+
+            /*
+             * =====================================================
+             * shift_request_detail保存
+             * =====================================================
+             */
 
             Optional<ShiftRequestDetail> detailOpt =
-                    repository.findByUserIdAndEventIdAndWorkDate(
+                    repository
+                    .findByUserIdAndEventIdAndWorkDate(
                             currentUserId,
                             form.getEventId(),
-                            workDate);
+                            workDate
+                    );
+
+
 
             ShiftRequestDetail detail =
                     detailOpt.orElseGet(
-                            ShiftRequestDetail::new);
+                            ShiftRequestDetail::new
+                    );
 
-            detail.setUserId(currentUserId);
-            detail.setEventId(form.getEventId());
-            detail.setWorkDate(workDate);
 
-            detail.setIsAvailable(available);
+
+            detail.setUserId(
+                    currentUserId
+            );
+
+            detail.setEventId(
+                    form.getEventId()
+            );
+
+            detail.setWorkDate(
+                    workDate
+            );
+
+
+            detail.setIsAvailable(
+                    available
+            );
+
+
 
             if (available) {
 
-                if (dto.getStartTime() != null
-                        && !dto.getStartTime().isBlank()) {
 
-                    detail.setRequestedStartTime(
-                            LocalTime.parse(dto.getStartTime()));
+                detail.setRequestedStartTime(
+                        LocalTime.parse(
+                                dto.getStartTime()
+                        )
+                );
 
-                } else {
 
-                    detail.setRequestedStartTime(null);
+                detail.setRequestedEndTime(
+                        LocalTime.parse(
+                                dto.getEndTime()
+                        )
+                );
 
-                }
-
-                if (dto.getEndTime() != null
-                        && !dto.getEndTime().isBlank()) {
-
-                    detail.setRequestedEndTime(
-                            LocalTime.parse(dto.getEndTime()));
-
-                } else {
-
-                    detail.setRequestedEndTime(null);
-
-                }
 
             } else {
 
-                detail.setRequestedStartTime(null);
-                detail.setRequestedEndTime(null);
+
+                detail.setRequestedStartTime(
+                        null
+                );
+
+
+                detail.setRequestedEndTime(
+                        null
+                );
 
             }
 
-            repository.save(detail);
+
+
+            repository.save(
+                    detail
+            );
+
+
 
             saved = true;
+
         }
 
+
         return saved;
+
     }
     
     /**
