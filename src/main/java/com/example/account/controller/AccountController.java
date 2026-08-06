@@ -62,6 +62,26 @@ public class AccountController {
 		if (form.getPassword() == null || form.getPassword().trim().isEmpty()) {
 			result.rejectValue("password", "error.password", "パスワードは必須入力です。");
 		}
+		
+		// 生年月日チェック
+		if (form.isUnder16()) {
+
+		    result.rejectValue(
+		            "birthDate",
+		            "error.birthDate",
+		            "16歳未満のユーザーは登録できません。"
+		    );
+		}
+
+
+		if (form.isFutureBirthDate()) {
+
+		    result.rejectValue(
+		            "birthDate",
+		            "error.birthDate",
+		            "生年月日に未来の日付は設定できません。"
+		    );
+		}
 
 		// 💡 【変更点】ここにあった controller 側の if (accountService.existsByUserId(...)) は丸ごと削除！
 		// 重複チェックはサービスへ完全委譲します。
@@ -138,6 +158,27 @@ public class AccountController {
 
 		if (form.getPassword() != null && form.getPassword().trim().isEmpty()) {
 			result.rejectValue("password", "error.password", "パスワードを入力してください。");
+		}
+		
+		// 生年月日16歳未満チェック
+		if (form.isUnder16()) {
+
+		    result.rejectValue(
+		            "birthDate",
+		            "error.birthDate",
+		            "16歳未満のユーザーは登録できません。"
+		    );
+		}
+
+
+		// 生年月日未来日チェック
+		if (form.isFutureBirthDate()) {
+
+		    result.rejectValue(
+		            "birthDate",
+		            "error.birthDate",
+		            "生年月日に未来の日付は設定できません。"
+		    );
 		}
 
 		if (result.hasErrors()) {
