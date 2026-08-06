@@ -21,6 +21,7 @@ public class ShiftRequestController {
     @Autowired
     private ShiftRequestService shiftRequestService;
 
+
     /**
      * シフト申請入力画面表示
      */
@@ -31,20 +32,26 @@ public class ShiftRequestController {
             HttpSession session,
             Model model) {
 
-        String currentUserId = null;
-        if (principal != null) {
-            currentUserId = principal.getName();
-        } else if (session.getAttribute("userId") != null) {
-            currentUserId = (String) session.getAttribute("userId");
-        }
 
-        ShiftRequestForm form = shiftRequestService.getShiftRequestInfo(eventId, currentUserId);
+        String currentUserId = getCurrentUserId(principal, session);
+
+
+        ShiftRequestForm form =
+                shiftRequestService.getShiftRequestInfo(
+                        eventId,
+                        currentUserId);
+
+
         form.setEventId(eventId);
+
 
         model.addAttribute("form", form);
 
+
         return "shiftRequest";
     }
+
+
 
     /**
      * シフト申請登録処理
@@ -56,25 +63,79 @@ public class ShiftRequestController {
             HttpSession session,
             Model model) {
 
-        String currentUserId = null;
-        if (principal != null) {
-            currentUserId = principal.getName();
-        } else if (session.getAttribute("userId") != null) {
-            currentUserId = (String) session.getAttribute("userId");
-        }
 
-        // 保存処理実行
-        boolean success = shiftRequestService.applyShiftRequest(form, currentUserId);
+        String currentUserId =
+                getCurrentUserId(principal, session);
+
+
+
+        boolean success =
+                shiftRequestService.applyShiftRequest(
+                        form,
+                        currentUserId);
+
+
 
         if (success) {
-            // リダイレクトせず、成功メッセージを添えて同じ画面を再表示
-            model.addAttribute("successMessage", "申請しました");
+
+            model.addAttribute(
+                    "successMessage",
+                    "申請しました");
+
         } else {
-            model.addAttribute("errorMessage", "申請処理に失敗しました。入力内容を確認してください。");
+
+            model.addAttribute(
+                    "errorMessage",
+                    "申請処理に失敗しました。入力内容を確認してください。");
         }
 
-        // 入力フォームの内容・イベントID等を保持したまま表示
-        model.addAttribute("form", form);
+
+
+        model.addAttribute(
+                "form",
+                form);
+
+
+
         return "shiftRequest";
     }
+
+
+
+    /**
+     * ログインユーザー取得
+     *
+     * Spring Security利用時：
+     * principal.getName()
+     *
+     * セッションログイン利用時：
+     * session userId
+     *
+     */
+    private String getCurrentUserId(
+            Principal principal,
+            HttpSession session) {
+
+
+        if (principal != null) {
+
+            return principal.getName();
+
+        }
+
+
+        Object userId =
+                session.getAttribute("userId");
+
+
+        if (userId != null) {
+
+            return userId.toString();
+
+        }
+
+
+        return null;
+    }
+
 }
