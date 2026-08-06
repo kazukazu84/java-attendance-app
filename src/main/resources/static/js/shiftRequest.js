@@ -95,3 +95,134 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+
+/*
+ * 選択日一括時間反映
+ */
+const bulkButton =
+    document.getElementById(
+        "applyBulkTime"
+    );
+
+
+if (bulkButton) {
+
+
+    bulkButton.addEventListener(
+        "click",
+        function () {
+
+
+            const bulkStart =
+                document.getElementById(
+                    "bulkStartTime"
+                ).value;
+
+
+            const bulkEnd =
+                document.getElementById(
+                    "bulkEndTime"
+                ).value;
+
+
+
+            /*
+             * 時間未入力チェック
+             */
+            if (!bulkStart || !bulkEnd) {
+
+                alert(
+                    "開始時間と終了時間を入力してください"
+                );
+
+                return;
+            }
+
+
+
+            const checks =
+                document.querySelectorAll(
+                    ".shift-check:checked"
+                );
+
+
+            /*
+             * 選択チェック
+             */
+            if (checks.length === 0) {
+
+                alert(
+                    "反映する日を選択してください"
+                );
+
+                return;
+            }
+
+
+
+            checks.forEach(
+                function(check){
+
+
+                    const row =
+                        check.closest("tr");
+
+
+                    const radios =
+                        row.querySelectorAll(
+                            'input[type="radio"]'
+                        );
+
+
+                    /*
+                     * ×の日には反映しない
+                     */
+                    let available = null;
+
+
+                    radios.forEach(
+                        function(radio){
+
+                            if(radio.checked){
+
+                                available =
+                                    radio.value;
+
+                            }
+
+                        }
+                    );
+
+
+                    if(available !== "○"){
+                        return;
+                    }
+
+
+
+                    const startInput =
+                        row.querySelector(
+                            'input[type="time"][name*="startTime"]'
+                        );
+
+
+                    const endInput =
+                        row.querySelector(
+                            'input[type="time"][name*="endTime"]'
+                        );
+
+
+                    startInput.value =
+                        bulkStart;
+
+
+                    endInput.value =
+                        bulkEnd;
+
+                }
+            );
+
+        }
+    );
+
+}
