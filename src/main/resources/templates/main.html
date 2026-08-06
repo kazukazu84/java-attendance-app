@@ -144,12 +144,12 @@
 												   <select name="month"
 												           onchange="this.form.submit()">
 
-												       <option th:each="m : ${monthList}"
-												               th:value="${m.monthValue}"
-												               th:text="${m.year + '年' + m.monthValue + '月'}"
-															   th:selected="${selectedYearMonth ==
-															                 (m.year + '-' + m.monthValue)}">
-												       </option>
+														   <option th:each="m : ${monthList}"
+														           th:value="${m.year + '-' + m.monthValue}"
+														           th:text="${m.year + '年' + m.monthValue + '月'}"
+														           th:selected="${selectedYearMonth ==
+														                         (m.year + '-' + m.monthValue)}">
+														   </option>
 
 												   </select>
 
@@ -253,16 +253,18 @@
 										    <input type="hidden"
 										           name="mode"
 										           value="week">
-
+												
+														  
 												   <select name="month"
 												           onchange="this.form.submit()">
 
-												       <option th:each="m : ${monthList}"
-												               th:value="${m.monthValue}"
-												               th:text="${m.year + '年' + m.monthValue + '月'}"
-																   th:selected="${selectedYearMonth ==
-															                 (m.year + '-' + m.monthValue)}">
-												       </option>
+														   <option th:each="m : ${monthList}"
+														           th:value="${m.year + '-' + m.monthValue}"
+														           th:text="${m.year + '年' + m.monthValue + '月'}"
+														           th:selected="${selectedYearMonth ==
+														                         (m.year + '-' + m.monthValue)}">
+														   </option>
+														   `
 
 												   </select>
 
