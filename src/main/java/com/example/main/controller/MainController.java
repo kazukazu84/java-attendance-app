@@ -114,12 +114,15 @@ public class MainController {
             week = 1;
         }
 
+        int currentYear =
+                LocalDate.now().getYear();
+
         if (month == null) {
-            month = 9;
+            month = LocalDate.now().getMonthValue();
         }
 
         LocalDate monthStart =
-                LocalDate.of(2026, month, 1);
+                LocalDate.of(currentYear, month, 1);
 
         LocalDate monthEnd =
                 monthStart.withDayOfMonth(
@@ -151,7 +154,7 @@ public class MainController {
         }
 
         LocalDate startDate =
-                LocalDate.of(2026, month, startDay);
+                LocalDate.of(currentYear, month, startDay);
 
         LocalDate endDate =
                 startDate.plusDays(6);
@@ -218,6 +221,14 @@ public class MainController {
         calendarWeeks.add(weekList);
 
     }
+    
+    String selectedYearMonth =
+            currentYear + "-" + month;
+
+    model.addAttribute(
+            "selectedYearMonth",
+            selectedYearMonth);
+    
     model.addAttribute(
             "monthlyShiftList",
             monthlyShiftList);
@@ -229,6 +240,27 @@ public class MainController {
     model.addAttribute(
             "calendarWeeks",
             calendarWeeks);
+    
+    List<LocalDate> monthList =
+            new ArrayList<>();
+
+    LocalDate current =
+            LocalDate.now();
+
+    for (int i = -60; i <= 60; i++) {
+
+        monthList.add(
+                current.plusMonths(i));
+
+    }
+
+    model.addAttribute(
+            "monthList",
+            monthList);
+
+    model.addAttribute(
+            "currentYear",
+            currentYear);
 
     model.addAttribute(
             "month",
