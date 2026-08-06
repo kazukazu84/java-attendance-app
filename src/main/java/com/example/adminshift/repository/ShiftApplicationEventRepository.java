@@ -157,13 +157,18 @@ public interface ShiftApplicationEventRepository
 
     
     /**
-     * イベントが存在する年度一覧を取得
+     * イベントが存在する年度一覧（4月～翌3月）
      */
-    @Query("""
-        SELECT DISTINCT YEAR(e.targetStartDate)
-        FROM ShiftApplicationEvent e
-        ORDER BY YEAR(e.targetStartDate)
-    """)
+    @Query(value = """
+        SELECT DISTINCT
+            CASE
+                WHEN EXTRACT(MONTH FROM target_start_date) >= 4
+                    THEN EXTRACT(YEAR FROM target_start_date)
+                ELSE EXTRACT(YEAR FROM target_start_date) - 1
+            END AS fiscal_year
+        FROM shift_application_event
+        ORDER BY fiscal_year
+        """, nativeQuery = true)
     List<Integer> findEventYears();
     
     /**

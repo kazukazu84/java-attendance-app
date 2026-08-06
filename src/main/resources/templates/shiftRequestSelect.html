@@ -30,23 +30,15 @@
 			<label>年度</label>
 		
 			<select name="selectedYear"
-					onchange="this.form.submit()">
-				 
-				<option value="2025"
-					th:selected="${form.selectedYear == 2025}">
-						2025
-				</option>
-				
-				<option value="2026"
-					th:selected="${form.selectedYear == 2026}">
-						2026
-				</option>
-				
-				<option value="2027"
-					th:selected="${form.selectedYear == 2027}">
-						2027
-				</option>
-			
+			        onchange="this.form.submit()">
+
+			    <option
+			        th:each="year : ${form.yearList}"
+			        th:value="${year}"
+			        th:text="${year + '年度'}"
+			        th:selected="${year == form.selectedYear}">
+			    </option>
+
 			</select>
 		
 		</form>
