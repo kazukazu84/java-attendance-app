@@ -188,3 +188,9 @@ body {
 .availability-cell input[type="radio"] {
     margin-right: 4px;
 }
+
+.disabled-input {
+    background-color: #e0e0e0;
+    color: #777;
+    cursor: not-allowed;
+}
