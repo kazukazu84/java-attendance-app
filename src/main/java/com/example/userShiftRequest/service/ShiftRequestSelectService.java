@@ -32,8 +32,15 @@ public class ShiftRequestSelectService {
      */
     public ShiftSelectForm getShiftSelectList(int selectedYear, String currentUserId) {
 
-        ShiftSelectForm form = new ShiftSelectForm();
-        form.setSelectedYear(selectedYear);
+    	ShiftSelectForm form = new ShiftSelectForm();
+
+    	form.setSelectedYear(selectedYear);
+
+    	/*
+    	 * 年度プルダウン
+    	 */
+    	form.setYearList(
+    	        eventRepository.findEventYears());
 
         // 対象イベント一覧を取得
         List<ShiftApplicationEvent> events = eventRepository.findAll();
@@ -42,9 +49,9 @@ public class ShiftRequestSelectService {
         for (ShiftApplicationEvent event : events) {
             
             // 【修正箇所】選択された年度 かつ 受付状態が「受付中」のものだけを抽出
-            if (event.getTargetStartDate() != null 
-                    && event.getTargetStartDate().getYear() == selectedYear
-                    && "受付中".equals(event.getStatusName())) { // ⇐ ここを追加！
+        	if (event.getTargetStartDate() != null
+        	        && getFiscalYear(event.getTargetStartDate()) == selectedYear
+        	        && "受付中".equals(event.getStatusName())) {// ⇐ ここを追加！
                 
                 ShiftSelectDto dto = new ShiftSelectDto();
                 dto.setEventId(event.getEventId());
@@ -83,5 +90,17 @@ public class ShiftRequestSelectService {
 
         form.setShiftList(shiftList);
         return form;
+    }
+    
+    /**
+     * 日付から年度（4月～翌3月）を取得
+     */
+    private int getFiscalYear(java.time.LocalDate date) {
+
+        if (date.getMonthValue() >= 4) {
+            return date.getYear();
+        }
+
+        return date.getYear() - 1;
     }
 }
