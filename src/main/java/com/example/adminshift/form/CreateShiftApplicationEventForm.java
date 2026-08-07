@@ -18,9 +18,6 @@ import lombok.Data;
 @ValidCreateShiftApplicationEvent
 
 
-
-
-
 @ValidShiftApplicationEventDate
 
 
