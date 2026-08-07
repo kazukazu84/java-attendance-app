@@ -1,5 +1,7 @@
 package com.example.account.service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +18,10 @@ import com.example.account.entity.UserInfo;
 import com.example.account.entity.Wage;
 import com.example.account.repository.UserInfoRepository;
 import com.example.account.repository.WageRepository;
+import com.example.adminshift.entity.Shift;
+import com.example.adminshift.entity.ShiftApplicationEvent;
+import com.example.adminshift.repository.ShiftApplicationEventRepository;
+import com.example.adminshift.repository.ShiftRepository;
 import com.example.attendance.service.AttendanceService;
 
 
@@ -35,13 +41,15 @@ public class AccountService {
     private WageRepository wageRepo;
 
 
+
     /*
      * 在籍変更時の強制退勤処理用
      *
-     * @Lazy:
-     * AccountService → AttendanceService
-     * AttendanceService → UserInfoRepository
-     * の循環を回避
+     * AccountService
+     *        ↓
+     * AttendanceService
+     *
+     * 循環回避
      */
     @Autowired
     @Lazy
@@ -49,17 +57,52 @@ public class AccountService {
 
 
 
+    /*
+     * 新規ユーザー登録時
+     * 既存イベント取得用
+     */
+    @Autowired
+    private ShiftApplicationEventRepository shiftApplicationEventRepository;
+
+
+
+    /*
+     * 新規ユーザー登録時
+     * シフト作成用
+     */
+    @Autowired
+    private ShiftRepository shiftRepository;
+
+
+
+
+
     public AccountService(
             UserInfoRepository userRepo,
             WageRepository wageRepo,
             PasswordEncoder passwordEncoder,
-            @Lazy AttendanceService attendanceService) {
+            @Lazy AttendanceService attendanceService,
+            ShiftApplicationEventRepository shiftApplicationEventRepository,
+            ShiftRepository shiftRepository) {
+
 
         this.userRepo = userRepo;
+
         this.wageRepo = wageRepo;
+
         this.passwordEncoder = passwordEncoder;
+
         this.attendanceService = attendanceService;
+
+        this.shiftApplicationEventRepository =
+                shiftApplicationEventRepository;
+
+        this.shiftRepository =
+                shiftRepository;
     }
+
+
+
 
 
 
@@ -77,6 +120,9 @@ public class AccountService {
 
 
 
+
+
+
     /**
      * 賃金一覧取得
      */
@@ -84,6 +130,9 @@ public class AccountService {
 
         return wageRepo.findAllByOrderByWageValueAsc();
     }
+
+
+
 
 
 
@@ -99,6 +148,7 @@ public class AccountService {
                 new UserRegisterForm();
 
 
+
         form.setUserId(
                 userInfo.getUserId()
         );
@@ -109,12 +159,15 @@ public class AccountService {
         );
 
 
+
         form.setPosition(
                 userInfo.getPosition().name()
         );
 
 
+
         if (userInfo.getWage() != null) {
+
 
             form.setWageId(
                     userInfo.getWage().getWageId()
@@ -122,12 +175,16 @@ public class AccountService {
         }
 
 
+
+
         if (userInfo.getBirthDate() != null) {
+
 
             java.sql.Date sqlDate =
                     new java.sql.Date(
                             userInfo.getBirthDate().getTime()
                     );
+
 
             form.setBirthDate(
                     sqlDate.toLocalDate()
@@ -135,9 +192,12 @@ public class AccountService {
         }
 
 
+
+
         form.setEmploymentInsurance(
                 userInfo.isEmploymentInsurance()
         );
+
 
 
         form.setIsActive(
@@ -145,14 +205,22 @@ public class AccountService {
         );
 
 
-        // 表示用マスク
+
+        /*
+         * 表示用マスク
+         */
         form.setPassword(
                 "＊＊＊＊＊＊＊＊"
         );
 
 
+
         return form;
     }
+
+
+
+
 
 
 
@@ -165,11 +233,7 @@ public class AccountService {
 
         return userRepo.existsById(id);
     }
-
-
-
-
-
+    
     /**
      * 新規登録
      */
@@ -208,11 +272,13 @@ public class AccountService {
         );
 
 
+
         user.setPosition(
                 Position.valueOf(
                         form.getPosition()
                 )
         );
+
 
 
 
@@ -227,11 +293,14 @@ public class AccountService {
                 );
 
 
+
         user.setWage(wage);
 
 
 
+
         if (form.getBirthDate() != null) {
+
 
             user.setBirthDate(
                     java.sql.Date.valueOf(
@@ -242,12 +311,15 @@ public class AccountService {
 
 
 
+
         user.setAttendanceStatus(0);
+
 
 
         user.setEmploymentInsurance(
                 form.isEmploymentInsurance()
         );
+
 
 
         user.setIsActive(
@@ -256,7 +328,23 @@ public class AccountService {
 
 
 
+
+        /*
+         * ユーザー保存
+         */
         userRepo.save(user);
+
+
+
+
+        /*
+         * 新規ユーザー登録時
+         *
+         * 既存イベント分の
+         * シフト初期レコード作成
+         */
+        createShiftForNewUser(user);
+
     }
 
 
@@ -265,6 +353,220 @@ public class AccountService {
 
 
 
+
+    /**
+     * 新規登録ユーザー用
+     *
+     * 既存イベントのシフト初期データ作成
+     *
+     * 仕様：
+     *
+     * 登録日以前に終了したイベント
+     * → 作成しない
+     *
+     * 登録日を含むイベント
+     * → 登録日から作成
+     *
+     * 登録日より未来のイベント
+     * → 開始日から作成
+     */
+    private void createShiftForNewUser(UserInfo user) {
+
+
+        if (user == null
+                || user.getUserId() == null) {
+
+            return;
+        }
+
+
+
+        LocalDate registerDate =
+                LocalDate.now();
+
+
+
+        List<ShiftApplicationEvent> events =
+                shiftApplicationEventRepository.findAll();
+
+
+
+
+        System.out.println(
+                "対象イベント数：" 
+                + events.size()
+        );
+
+
+
+        List<Shift> shifts =
+                new ArrayList<>();
+
+
+
+
+        int createCount = 0;
+
+
+
+
+
+        for (ShiftApplicationEvent event : events) {
+
+
+
+            if (event.getTargetStartDate() == null
+                    || event.getTargetEndDate() == null) {
+
+                continue;
+            }
+
+
+
+
+
+            /*
+             * 登録日前に終了済みイベント
+             */
+            if (event.getTargetEndDate()
+                    .isBefore(registerDate)) {
+
+
+                continue;
+            }
+
+
+
+
+
+
+            LocalDate startDate =
+                    event.getTargetStartDate();
+
+
+
+
+
+            /*
+             * イベント途中で登録した場合
+             *
+             * 開始日ではなく登録日から作成
+             */
+            if (startDate.isBefore(registerDate)) {
+
+                startDate = registerDate;
+            }
+
+
+
+
+
+            LocalDate current =
+                    startDate;
+
+
+
+
+
+            while (!current.isAfter(
+                    event.getTargetEndDate())) {
+
+
+
+
+                /*
+                 * 二重作成防止
+                 */
+                boolean exists =
+                        shiftRepository
+                        .findByEventIdAndUserIdAndShiftDate(
+                                event.getEventId(),
+                                user.getUserId(),
+                                current)
+                        .isPresent();
+
+
+
+
+                if (!exists) {
+
+
+                    Shift shift =
+                            new Shift();
+
+
+
+                    shift.setEventId(
+                            event.getEventId()
+                    );
+
+
+
+                    shift.setUserId(
+                            user.getUserId()
+                    );
+
+
+
+                    shift.setShiftDate(
+                            current
+                    );
+
+
+
+                    /*
+                     * 初期状態
+                     *
+                     * 1 = 出勤可能
+                     */
+                    shift.setIsAvailable(1);
+
+
+
+
+                    shifts.add(shift);
+
+
+
+                    createCount++;
+
+                }
+
+
+
+
+                current =
+                        current.plusDays(1);
+            }
+
+
+
+        }
+
+
+
+
+
+        if (!shifts.isEmpty()) {
+
+
+            shiftRepository.saveAll(shifts);
+
+        }
+
+
+
+
+
+        System.out.println(
+                "新規ユーザーシフト作成:"
+                + user.getUserId()
+                + " 件数="
+                + createCount
+        );
+
+    }
+    
     /**
      * アカウント更新
      */
@@ -278,6 +580,7 @@ public class AccountService {
                 );
 
 
+
         if (userOpt.isEmpty()) {
 
             return false;
@@ -285,8 +588,10 @@ public class AccountService {
 
 
 
+
         UserInfo user =
                 userOpt.get();
+
 
 
 
@@ -301,9 +606,11 @@ public class AccountService {
                 && user.getAttendanceStatus() == 1) {
 
 
+
             attendanceService.forceClockOut(
                     user.getUserId()
             );
+
         }
 
 
@@ -315,11 +622,14 @@ public class AccountService {
         );
 
 
+
         user.setPosition(
                 Position.valueOf(
                         form.getPosition()
                 )
         );
+
+
 
 
 
@@ -334,19 +644,25 @@ public class AccountService {
                 );
 
 
+
         user.setWage(wage);
+
 
 
 
 
         if (form.getBirthDate() != null) {
 
+
             user.setBirthDate(
                     java.sql.Date.valueOf(
                             form.getBirthDate()
                     )
             );
+
         }
+
+
 
 
 
@@ -363,10 +679,15 @@ public class AccountService {
 
 
 
-        // パスワード変更時のみ更新
+
+
+        /*
+         * パスワード変更時のみ更新
+         */
         if (form.getPassword() != null
                 && !form.getPassword().trim().isEmpty()
                 && !form.getPassword().equals("＊＊＊＊＊＊＊＊")) {
+
 
 
             user.setPassword(
@@ -374,15 +695,22 @@ public class AccountService {
                             form.getPassword()
                     )
             );
+
         }
+
+
 
 
 
         userRepo.save(user);
 
 
+
         return true;
+
     }
+
+
 
 
 
@@ -397,31 +725,48 @@ public class AccountService {
     public void deactivateUsers(List<String> userIds) {
 
 
+
         List<UserInfo> users =
                 userRepo.findAllById(userIds);
+
+
 
 
 
         for (UserInfo user : users) {
 
 
+
+            /*
+             * 出勤中なら強制退勤
+             */
             if (user.getAttendanceStatus() == 1) {
+
 
 
                 attendanceService.forceClockOut(
                         user.getUserId()
                 );
+
             }
 
 
 
+
+
             user.setIsActive(0);
+
         }
 
 
 
+
+
         userRepo.saveAll(users);
+
     }
+
+
 
 
 
@@ -437,17 +782,31 @@ public class AccountService {
             String type) {
 
 
+
         if ("id".equals(type)) {
 
-            return userRepo.findByUserIdContaining(keyword);
+
+            return userRepo.findByUserIdContaining(
+                    keyword
+            );
+
+
 
         } else if ("name".equals(type)) {
 
-            return userRepo.findByUserNameContaining(keyword);
+
+
+            return userRepo.findByUserNameContaining(
+                    keyword
+            );
+
         }
 
 
+
+
         return userRepo.findAll();
+
     }
 
 }
