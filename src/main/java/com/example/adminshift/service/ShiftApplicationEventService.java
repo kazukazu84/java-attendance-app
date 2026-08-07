@@ -303,6 +303,68 @@ public class ShiftApplicationEventService {
         }
         return shifts;
     }
+    
+    /**
+     * 新規ユーザー登録時に、
+     * 登録日を含むイベントのShiftを自動作成する。
+     *
+     * 例）
+     * 今日：2026/09/20
+     * イベント：2026/09/17～2026/09/30
+     *
+     * ↓
+     *
+     * 2026/09/17～2026/09/30のShiftを作成する。
+     *
+     * @param userId 新規登録したユーザーID
+     */
+    @Transactional
+    public void createShiftForNewUser(String userId) {
+
+        LocalDate today = LocalDate.now();
+
+        // 今日を含むイベントのみ取得
+        List<ShiftApplicationEvent> events =
+                repository.findTargetEventsForAdminList(today);
+
+        if (events.isEmpty()) {
+            return;
+        }
+
+        List<Shift> shifts = new ArrayList<>();
+
+        for (ShiftApplicationEvent event : events) {
+
+            LocalDate current = event.getTargetStartDate();
+
+            while (!current.isAfter(event.getTargetEndDate())) {
+
+                // 二重登録防止
+                if (shiftRepository.findByEventIdAndUserIdAndShiftDate(
+                        event.getEventId(),
+                        userId,
+                        current).isEmpty()) {
+
+                    Shift shift = new Shift();
+
+                    shift.setEventId(event.getEventId());
+                    shift.setUserId(userId);
+                    shift.setShiftDate(current);
+
+                    // デフォルト値
+                    shift.setIsAvailable(1);
+
+                    shifts.add(shift);
+                }
+
+                current = current.plusDays(1);
+            }
+        }
+
+        if (!shifts.isEmpty()) {
+            shiftRepository.saveAll(shifts);
+        }
+    }
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public ShiftApplicationEvent getEvent(Integer eventId) {

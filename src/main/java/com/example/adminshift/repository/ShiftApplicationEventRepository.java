@@ -202,5 +202,34 @@ public interface ShiftApplicationEventRepository
     List<ShiftApplicationEvent> findEventsOverlappingPeriod(
             @Param("start") LocalDate start,
             @Param("end") LocalDate end);
+    
+    /**
+     * 指定日を含むイベント一覧を取得
+     *
+     * 新規ユーザー登録時に、
+     * 登録日時点で有効なイベントのShiftを自動生成するために使用します。
+     *
+     * 例：
+     * 今日 = 2026/09/20
+     * イベント = 2026/09/17～2026/09/30
+     * → このイベントを取得
+     *
+     * 今日 = 2026/10/05
+     * 上記イベント
+     * → 取得しない
+     *
+     * @param today 基準日
+     * @return 基準日を含むイベント一覧
+     */
+    @Query("""
+        SELECT e
+          FROM ShiftApplicationEvent e
+         WHERE e.targetStartDate <= :today
+           AND e.targetEndDate >= :today
+         ORDER BY e.targetStartDate ASC,
+                  e.eventId ASC
+    """)
+    List<ShiftApplicationEvent> findEventsContainingDate(
+            @Param("today") LocalDate today);
 
 }
