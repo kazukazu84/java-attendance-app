@@ -1,0 +1,224 @@
+/* ===============================
+   テーマカラー変数
+================================ */
+:root {
+    --themeColor: #4a90e2; /* 初期値（未登録時） */
+}
+
+/* ===============================
+   全体レイアウト
+================================ */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Noto Sans JP", sans-serif;
+    background: #f5f7fa;
+    color: #333;
+}
+
+/* ===============================
+   ナビバー
+================================ */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 12px 20px;
+    border-bottom: 2px solid var(--themeColor);
+}
+
+.nav-brand a {
+    color: var(--themeColor);
+    font-size: 20px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 16px;
+}
+
+.nav-item {
+    color: #ccc;
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    transition: 0.2s;
+}
+
+.nav-item:hover {
+    background: #fff;
+}
+
+.nav-item.active {
+    background: var(--themeColor);
+    color: #fff;
+}
+
+/* ===============================
+   メインコンテナ
+================================ */
+.main-container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+/* ===============================
+   カード
+================================ */
+.card {
+    background: #fff;
+    border: 1px solid var(--themeColor);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 0 12px var(--themeColor);
+}
+
+.card h3 {
+    margin-top: 0;
+    color: var(--themeColor);
+}
+
+/* 初期登録画面の文字を濃くする */
+.card p,
+.card label {
+    color: #111; /* ★ 白背景でも見やすい濃い黒 */
+}
+
+/* 入力欄の文字も濃くする */
+input {
+    color: #111;
+}
+
+/* ===============================
+   初期登録専用メッセージ
+================================ */
+.initial-message {
+    background: rgb(0, 0, 0);
+    border-left: 4px solid var(--themeColor);
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    color: rgb(64, 0, 64);
+}
+
+/* ===============================
+   フォーム
+================================ */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+label {
+    font-size: 14px;
+    color: #111;
+}
+
+input {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background: #fff;
+    color: #111;
+    font-size: 16px;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--themeColor);
+    box-shadow: 0 0 6px var(--themeColor);
+}
+
+/* ===============================
+   ボタン
+================================ */
+.btn {
+    background: var(--themeColor);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    text-align: center;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn:hover {
+    background: #357ab8;
+}
+
+.btn-secondary {
+    background: #555;
+}
+
+.btn-secondary:hover {
+    background: #666;
+}
+
+/* ===============================
+   アバター・ルーム表示（共通）
+================================ */
+.avatar-display,
+.room-display {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 20px;
+    min-height: 150px;
+    margin-bottom: 16px;
+}
+
+/* ===============================
+   バッジ
+================================ */
+.user-badge-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.user-id-badge {
+    background: #333;
+    padding: 6px 10px;
+    border-radius: 4px;
+    color: #fff;
+}
+
+.role-badge {
+    padding: 6px 10px;
+    border-radius: 4px;
+    color: #fff;
+}
+
+.role-badge.admin {
+    background: #e24a4a;
+}
+
+.role-badge.user {
+    background: var(--themeColor);
+}
+
+/* ===============================
+   セレクトボックス & カラーピッカー
+================================ */
+select, input[type="color"] {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #333;
+    font-size: 16px;
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--themeColor);
+}

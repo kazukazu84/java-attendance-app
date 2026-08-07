@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>プロフィール編集</title>
+    <link rel="stylesheet" th:href="@{/css/mypage_profile.css}">
+</head>
+<body th:style="|--themeColor:${profileForm.themeColor}|">
+
+<header class="navbar">
+    <div class="nav-brand">
+        <a th:href="@{${basePath + '/mypage'}}">プロフィール画面</a>
+    </div>
+
+    <nav class="nav-menu">
+        <a th:href="@{${basePath + '/mypage'}}" class="nav-item">マイページ</a>
+        <a th:href="@{${basePath + '/mypage/avatar/edit'}}" class="nav-item">アバター編集</a>
+        <a th:href="@{${basePath + '/mypage/room/edit'}}" class="nav-item">マイルーム編集</a>
+        <a th:href="@{${basePath + '/mypage/gacha'}}" class="nav-item">ガチャ</a>
+		<a th:href="@{${basePath + '/main'}}" class="nav-item">メイン画面へ</a>
+    </nav>
+</header>
+
+<main class="main-container">
+
+    <section class="card">
+        <h3>プロフィール編集</h3>
+
+        <form th:action="@{${basePath + '/mypage/profile'}}"
+              th:object="${profileForm}" method="post">
+
+            <label>ニックネーム</label>
+            <input th:field="*{nickname}" placeholder="ニックネーム" required>
+
+			<label>テーマカラー</label>
+
+			<select id="themeSelect">
+			    <option value="#4a90e2">ブルー</option>
+			    <option value="#e24a4a">レッド</option>
+			    <option value="#50e26d">グリーン</option>
+			    <option value="#e2d14a">イエロー</option>
+			    <option value="#b44ae2">パープル</option>
+			    <option value="custom">カスタム（自由選択）</option>
+			</select>
+
+			<input type="color" id="themePicker" style="margin-top:10px; display:none;">
+
+			<!-- ★ カスタム色を送信する hidden input（Thymeleaf と連携） -->
+			<input type="hidden" th:field="*{themeColor}" id="themeColorHidden">
+			
+			<!-- ▼ 外部JS参照 -->
+			<script src="/js/themeColorPicker.js"></script>
+
+            <button type="submit" class="btn">更新する</button>
+        </form>
+    </section>
+
+</main>
+
+</body>
+</html>

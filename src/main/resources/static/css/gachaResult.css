@@ -1,0 +1,12 @@
+@import url('gacha.css');
+
+/* ガチャ結果専用の追加装飾 */
+
+.gacha-result-display strong {
+    font-size: 22px;
+}
+
+.gacha-result-display div {
+    border: 2px solid #3498db;
+    border-radius: 10px;
+}

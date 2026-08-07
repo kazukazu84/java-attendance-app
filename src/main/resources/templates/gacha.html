@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ガチャ</title>
+    <link rel="stylesheet" th:href="@{/css/gacha.css}">
+</head>
+<body th:style="|--themeColor:${mypage.themeColor}|">
+
+<header class="navbar">
+    <div class="nav-brand">
+        <a th:href="@{${basePath + '/mypage'}}">マイページ</a>
+    </div>
+    <nav class="nav-menu">
+        <a th:href="@{${basePath + '/mypage'}}" class="nav-item">マイページ</a>
+        <a th:href="@{${basePath + '/mypage/avatar/edit'}}" class="nav-item">アバター編集</a>
+        <a th:href="@{${basePath + '/mypage/room/edit'}}" class="nav-item">マイルーム編集</a>
+        <a th:href="@{${basePath + '/main'}}" class="nav-item">メイン画面へ</a>
+    </nav>
+</header>
+
+<main class="main-container">
+
+    <section class="card">
+        <h3>ガチャ</h3>
+
+        <p>所持ポイント：<strong th:text="${points}"></strong> pt</p>
+
+        <div th:if="${errorMessage != null}" class="error-message" th:text="${errorMessage}"></div>
+
+        <form th:action="@{${basePath + '/mypage/gacha/roll'}}"
+              th:object="${gachaForm}" method="post">
+
+            <select th:field="*{gachaType}">
+                <option value="AVATAR">アバターガチャ</option>
+                <option value="ROOM">ルームガチャ</option>
+                <option value="THEME">テーマガチャ</option>
+            </select>
+
+            <div class="gacha-buttons">
+                <button type="submit" class="btn" th:attr="name='count',value=1">1回ガチャ</button>
+                <button type="submit" class="btn btn-multi" th:attr="name='count',value=10">10連ガチャ</button>
+            </div>
+        </form>
+
+        <h4>最近の結果</h4>
+        <div th:each="r : ${recentResults}" class="gacha-result-item">
+            <span th:text="${r.itemName}"></span>
+            <span th:text="${r.rarity}"></span>
+            <span th:text="${#temporals.format(r.obtainedAt, 'yyyy/MM/dd HH:mm')}"></span>
+        </div>
+
+    </section>
+
+</main>
+
+</body>
+</html>

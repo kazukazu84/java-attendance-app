@@ -1,0 +1,379 @@
+/* ============================
+   BASE（形状を色違いにもまとめて付与）
+============================ */
+.base-default-pink,
+.base-default-baby_pink,
+.base-default-cream,
+.base-default-beige,
+.base-default-light_blue,
+.base-default-sky_blue,
+.base-default-lavender,
+.base-default-mint,
+.base-default-lemon,
+.base-default-gray {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transform-origin: center;
+    width: 180px;
+    height: 150px;
+    border-radius: 80px 80px 70px 70px;
+	outline: 2px solid rgba(255, 182, 193, 0.6);
+	z-index: 1;
+}
+/* ============================
+   BASE 色違い（色だけ）
+============================ */
+.base-default-pink   { background: #ffb3c6; outline-color: rgba(255,182,193,0.6); }
+.base-default-baby_pink  { background: #ffd6e8; outline-color: rgba(255,182,193,0.6); }
+.base-default-cream      { background: #fff2cc; outline-color: rgba(255,182,193,0.6); }
+.base-default-beige      { background: #ffe8b3; outline-color: rgba(255,182,193,0.6); }
+.base-default-light_blue { background: #cce7ff; outline-color: rgba(173,216,230,0.6); }
+.base-default-sky_blue   { background: #a3d8ff; outline-color: rgba(135,206,250,0.6); }
+.base-default-lavender   { background: #e6ccff; outline-color: rgba(230,230,250,0.6); }
+.base-default-mint       { background: #ccffd6; outline-color: rgba(152,251,152,0.6); }
+.base-default-lemon      { background: #fff9a3; outline-color: rgba(255,255,153,0.6); }
+.base-default-gray       { background: #dcdcdc; outline-color: rgba(211,211,211,0.6); }
+/* ============================
+   EAR（形状を色違いにもまとめて付与）
+============================ */
+.ear-01-pink,
+.ear-01-baby_pink,
+.ear-01-cream,
+.ear-01-beige,
+.ear-01-light_blue,
+.ear-01-sky_blue,
+.ear-01-lavender,
+.ear-01-mint,
+.ear-01-lemon,
+.ear-01-gray {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    transform: translate(-80px, -100px);
+	outline: 2px solid rgba(255, 182, 193, 0.6);
+	z-index: 2;
+}
+
+/* 右耳（::after）も形状まとめ付与 */
+.ear-01-pink::after,
+.ear-01-baby_pink::after,
+.ear-01-cream::after,
+.ear-01-beige::after,
+.ear-01-light_blue::after,
+.ear-01-sky_blue::after,
+.ear-01-lavender::after,
+.ear-01-mint::after,
+.ear-01-lemon::after,
+.ear-01-gray::after {
+    content: "";
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    transform: translate(100px, 0);
+	outline: 2px solid rgba(255, 182, 193, 0.6);
+	z-index: 2;
+}
+/* ============================
+   EAR 色違い（色だけ）
+============================ */
+.ear-01-pink       { background: #ffb3c6; outline-color: rgba(255,182,193,0.6); }
+.ear-01-pink::after{ background: #ffb3c6; outline-color: rgba(255,182,193,0.6); }
+
+.ear-01-baby_pink       { background: #ffd6e8; outline-color: rgba(255,182,193,0.6); }
+.ear-01-baby_pink::after{ background: #ffd6e8; outline-color: rgba(255,182,193,0.6); }
+
+.ear-01-cream       { background: #fff2cc; outline-color: rgba(255,182,193,0.6); }
+.ear-01-cream::after{ background: #fff2cc; outline-color: rgba(255,182,193,0.6); }
+
+.ear-01-beige       { background: #ffe8b3; outline-color: rgba(255,182,193,0.6); }
+.ear-01-beige::after{ background: #ffe8b3; outline-color: rgba(255,182,193,0.6); }
+
+.ear-01-light_blue       { background: #cce7ff; outline-color: rgba(173,216,230,0.6); }
+.ear-01-light_blue::after{ background: #cce7ff; outline-color: rgba(173,216,230,0.6); }
+
+.ear-01-sky_blue       { background: #a3d8ff; outline-color: rgba(135,206,250,0.6); }
+.ear-01-sky_blue::after{ background: #a3d8ff; outline-color: rgba(135,206,250,0.6); }
+
+.ear-01-lavender       { background: #e6ccff; outline-color: rgba(230,230,250,0.6); }
+.ear-01-lavender::after{ background: #e6ccff; outline-color: rgba(230,230,250,0.6); }
+
+.ear-01-mint       { background: #ccffd6; outline-color: rgba(152,251,152,0.6); }
+.ear-01-mint::after{ background: #ccffd6; outline-color: rgba(152,251,152,0.6); }
+
+.ear-01-lemon       { background: #fff9a3; outline-color: rgba(255,255,153,0.6); }
+.ear-01-lemon::after{ background: #fff9a3; outline-color: rgba(255,255,153,0.6); }
+
+.ear-01-gray       { background: #dcdcdc; outline-color: rgba(211,211,211,0.6); }
+.ear-01-gray::after{ background: #dcdcdc; outline-color: rgba(211,211,211,0.6); }
+/* ============================
+   FACE（形状を色違いにもまとめて付与）
+============================ */
+.face-01-pink,
+.face-01-baby_pink,
+.face-01-cream,
+.face-01-beige,
+.face-01-light_blue,
+.face-01-sky_blue,
+.face-01-lavender,
+.face-01-mint,
+.face-01-lemon,
+.face-01-gray {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    transform: translate(-60px, 10px);
+	outline: 2px solid rgba(255, 182, 193, 0.6);
+	z-index: 3;
+}
+
+/* 右ほっぺ（::after）も形状まとめ付与 */
+.face-01-pink::after,
+.face-01-baby_pink::after,
+.face-01-cream::after,
+.face-01-beige::after,
+.face-01-light_blue::after,
+.face-01-sky_blue::after,
+.face-01-lavender::after,
+.face-01-mint::after,
+.face-01-lemon::after,
+.face-01-gray::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    transform: translate(110px, 0);
+	outline: 2px solid rgba(255, 182, 193, 0.6);
+	z-index: 3;
+}
+/* ============================
+   FACE 色違い（色だけ）
+============================ */
+.face-01-pink       { background: #ffb3c6; outline-color: rgba(255,182,193,0.6); }
+.face-01-pink::after{ background: #ffb3c6; outline-color: rgba(255,182,193,0.6); }
+
+.face-01-baby_pink       { background: #ffd6e8; outline-color: rgba(255,182,193,0.6); }
+.face-01-baby_pink::after{ background: #ffd6e8; outline-color: rgba(255,182,193,0.6); }
+
+.face-01-cream       { background: #fff2cc; outline-color: rgba(255,182,193,0.6); }
+.face-01-cream::after{ background: #fff2cc; outline-color: rgba(255,182,193,0.6); }
+
+.face-01-beige       { background: #ffe8b3; outline-color: rgba(255,182,193,0.6); }
+.face-01-beige::after{ background: #ffe8b3; outline-color: rgba(255,182,193,0.6); }
+
+.face-01-light_blue       { background: #cce7ff; outline-color: rgba(173,216,230,0.6); }
+.face-01-light_blue::after{ background: #cce7ff; outline-color: rgba(173,216,230,0.6); }
+
+.face-01-sky_blue       { background: #a3d8ff; outline-color: rgba(135,206,250,0.6); }
+.face-01-sky_blue::after{ background: #a3d8ff; outline-color: rgba(135,206,250,0.6); }
+
+.face-01-lavender       { background: #e6ccff; outline-color: rgba(230,230,250,0.6); }
+.face-01-lavender::after{ background: #e6ccff; outline-color: rgba(230,230,250,0.6); }
+
+.face-01-mint       { background: #ccffd6; outline-color: rgba(152,251,152,0.6); }
+.face-01-mint::after{ background: #ccffd6; outline-color: rgba(152,251,152,0.6); }
+
+.face-01-lemon       { background: #fff9a3; outline-color: rgba(255,255,153,0.6); }
+.face-01-lemon::after{ background: #fff9a3; outline-color: rgba(255,255,153,0.6); }
+
+.face-01-gray       { background: #dcdcdc; outline-color: rgba(211,211,211,0.6); }
+.face-01-gray::after{ background: #dcdcdc; outline-color: rgba(211,211,211,0.6); }
+/* ============================
+   BODY（形状を色違いにもまとめて付与）
+============================ */
+.body-01-pink,
+.body-01-baby_pink,
+.body-01-cream,
+.body-01-beige,
+.body-01-light_blue,
+.body-01-sky_blue,
+.body-01-lavender,
+.body-01-mint,
+.body-01-lemon,
+.body-01-gray {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 50px;
+    height: 30px;
+    border-radius: 20px;
+    transform: translate(-70px, 60px);
+	outline: 2px solid rgba(255, 182, 193, 0.6);
+	z-index: 5;
+}
+
+/* 右足（::after）も形状まとめ付与 */
+.body-01-pink::after,
+.body-01-baby_pink::after,
+.body-01-cream::after,
+.body-01-beige::after,
+.body-01-light_blue::after,
+.body-01-sky_blue::after,
+.body-01-lavender::after,
+.body-01-mint::after,
+.body-01-lemon::after,
+.body-01-gray::after {
+    content: "";
+    position: absolute;
+    width: 50px;
+    height: 30px;
+    border-radius: 20px;
+    transform: translate(90px, 0);
+	outline: 2px solid rgba(255, 182, 193, 0.6);
+	z-index: 5;
+}
+/* ============================
+   BODY 色違い（色だけ）
+============================ */
+.body-01-pink       { background: #ffb3c6; outline-color: rgba(255,182,193,0.6); }
+.body-01-pink::after{ background: #ffb3c6; outline-color: rgba(255,182,193,0.6); }
+
+.body-01-baby_pink       { background: #ffd6e8; outline-color: rgba(255,182,193,0.6); }
+.body-01-baby_pink::after{ background: #ffd6e8; outline-color: rgba(255,182,193,0.6); }
+
+.body-01-cream       { background: #fff2cc; outline-color: rgba(255,182,193,0.6); }
+.body-01-cream::after{ background: #fff2cc; outline-color: rgba(255,182,193,0.6); }
+
+.body-01-beige       { background: #ffe8b3; outline-color: rgba(255,182,193,0.6); }
+.body-01-beige::after{ background: #ffe8b3; outline-color: rgba(255,182,193,0.6); }
+
+.body-01-light_blue       { background: #cce7ff; outline-color: rgba(173,216,230,0.6); }
+.body-01-light_blue::after{ background: #cce7ff; outline-color: rgba(173,216,230,0.6); }
+
+.body-01-sky_blue       { background: #a3d8ff; outline-color: rgba(135,206,250,0.6); }
+.body-01-sky_blue::after{ background: #a3d8ff; outline-color: rgba(135,206,250,0.6); }
+
+.body-01-lavender       { background: #e6ccff; outline-color: rgba(230,230,250,0.6); }
+.body-01-lavender::after{ background: #e6ccff; outline-color: rgba(230,230,250,0.6); }
+
+.body-01-mint       { background: #ccffd6; outline-color: rgba(152,251,152,0.6); }
+.body-01-mint::after{ background: #ccffd6; outline-color: rgba(152,251,152,0.6); }
+
+.body-01-lemon       { background: #fff9a3; outline-color: rgba(255,255,153,0.6); }
+.body-01-lemon::after{ background: #fff9a3; outline-color: rgba(255,255,153,0.6); }
+
+.body-01-gray       { background: #dcdcdc; outline-color: rgba(211,211,211,0.6); }
+.body-01-gray::after{ background: #dcdcdc; outline-color: rgba(211,211,211,0.6); }
+/* ============================
+   ACCESSORY（形状を色違いにもまとめて付与）
+============================ */
+.accessory-01-pink,
+.accessory-01-baby_pink,
+.accessory-01-cream,
+.accessory-01-beige,
+.accessory-01-light_blue,
+.accessory-01-sky_blue,
+.accessory-01-lavender,
+.accessory-01-mint,
+.accessory-01-lemon,
+.accessory-01-gray {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transform: translate(60px, 20px);
+	outline: 2px solid rgba(255, 182, 193, 0.6);
+	z-index: 0;
+}
+/* ============================
+   ACCESSORY 色違い（色だけ）
+============================ */
+.accessory-01-pink       { background: #ffb3c6; outline-color: rgba(255,182,193,0.6); }
+.accessory-01-baby_pink  { background: #ffd6e8; outline-color: rgba(255,182,193,0.6); }
+.accessory-01-cream      { background: #fff2cc; outline-color: rgba(255,182,193,0.6); }
+.accessory-01-beige      { background: #ffe8b3; outline-color: rgba(255,182,193,0.6); }
+.accessory-01-light_blue { background: #cce7ff; outline-color: rgba(173,216,230,0.6); }
+.accessory-01-sky_blue   { background: #a3d8ff; outline-color: rgba(135,206,250,0.6); }
+.accessory-01-lavender   { background: #e6ccff; outline-color: rgba(230,230,250,0.6); }
+.accessory-01-mint       { background: #ccffd6; outline-color: rgba(152,251,152,0.6); }
+.accessory-01-lemon      { background: #fff9a3; outline-color: rgba(255,255,153,0.6); }
+.accessory-01-gray       { background: #dcdcdc; outline-color: rgba(211,211,211,0.6); }
+/* ============================
+   EYE（形状を色違いにもまとめて付与）
+============================ */
+.eye-01-pink,
+.eye-01-baby_pink,
+.eye-01-cream,
+.eye-01-beige,
+.eye-01-light_blue,
+.eye-01-sky_blue,
+.eye-01-lavender,
+.eye-01-mint,
+.eye-01-lemon,
+.eye-01-gray {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    transform: translate(-40px, -30px);
+    outline: 2px solid rgba(255, 182, 193, 0.6);
+    z-index: 4;
+}
+
+/* 右目（::after）も形状まとめ付与 */
+.eye-01-pink::after,
+.eye-01-baby_pink::after,
+.eye-01-cream::after,
+.eye-01-beige::after,
+.eye-01-light_blue::after,
+.eye-01-sky_blue::after,
+.eye-01-lavender::after,
+.eye-01-mint::after,
+.eye-01-lemon::after,
+.eye-01-gray::after {
+    content: "";
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    transform: translate(55px, 0);
+    outline: 2px solid rgba(255, 182, 193, 0.6);
+    z-index: 4;
+}
+
+/* ============================
+   EYE 色違い（黒目の色も変更）
+============================ */
+.eye-01-pink       { background: #ffb3c6; outline-color: rgba(255,182,193,0.6); }
+.eye-01-pink::after{ background: #ffb3c6; outline-color: rgba(255,182,193,0.6); }
+
+.eye-01-baby_pink       { background: #ffd6e8; outline-color: rgba(255,182,193,0.6); }
+.eye-01-baby_pink::after{ background: #ffd6e8; outline-color: rgba(255,182,193,0.6); }
+
+.eye-01-cream       { background: #fff2cc; outline-color: rgba(255,182,193,0.6); }
+.eye-01-cream::after{ background: #fff2cc; outline-color: rgba(255,182,193,0.6); }
+
+.eye-01-beige       { background: #ffe8b3; outline-color: rgba(255,182,193,0.6); }
+.eye-01-beige::after{ background: #ffe8b3; outline-color: rgba(255,182,193,0.6); }
+
+.eye-01-light_blue       { background: #cce7ff; outline-color: rgba(173,216,230,0.6); }
+.eye-01-light_blue::after{ background: #cce7ff; outline-color: rgba(173,216,230,0.6); }
+
+.eye-01-sky_blue       { background: #a3d8ff; outline-color: rgba(135,206,250,0.6); }
+.eye-01-sky_blue::after{ background: #a3d8ff; outline-color: rgba(135,206,250,0.6); }
+
+.eye-01-lavender       { background: #e6ccff; outline-color: rgba(230,230,250,0.6); }
+.eye-01-lavender::after{ background: #e6ccff; outline-color: rgba(230,230,250,0.6); }
+
+.eye-01-mint       { background: #ccffd6; outline-color: rgba(152,251,152,0.6); }
+.eye-01-mint::after{ background: #ccffd6; outline-color: rgba(152,251,152,0.6); }
+
+.eye-01-lemon       { background: #fff9a3; outline-color: rgba(255,255,153,0.6); }
+.eye-01-lemon::after{ background: #fff9a3; outline-color: rgba(255,255,153,0.6); }
+
+.eye-01-gray       { background: #dcdcdc; outline-color: rgba(211,211,211,0.6); }
+.eye-01-gray::after{ background: #dcdcdc; outline-color: rgba(211,211,211,0.6); }
+

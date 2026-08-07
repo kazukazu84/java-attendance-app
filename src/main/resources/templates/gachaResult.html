@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ガチャ結果</title>
+    <link rel="stylesheet" th:href="@{/css/gacha.css}">
+</head>
+
+<body th:style="|--themeColor:${mypage.themeColor}|">
+
+<header class="navbar">
+    <div class="nav-brand">
+        <a th:href="@{${basePath + '/mypage'}}">ガチャ結果</a>
+    </div>
+
+    <nav class="nav-menu">
+        <a th:href="@{${basePath + '/mypage'}}" class="nav-item">マイページ</a>
+        <a th:href="@{${basePath + '/mypage/avatar/edit'}}" class="nav-item">アバター編集</a>
+        <a th:href="@{${basePath + '/mypage/room/edit'}}" class="nav-item">マイルーム編集</a>
+        <a th:href="@{${basePath + '/main'}}" class="nav-item">メイン画面へ</a>
+    </nav>
+</header>
+
+<main class="main-container">
+
+    <section class="card">
+        <h3>ガチャ結果</h3>
+
+        <!-- ▼ 単発結果 -->
+        <div th:if="${gachaResult != null}" class="gacha-result-display">
+
+            <div class="result-info">
+                <p class="result-name">
+                    <strong th:text="${gachaResult.itemName}"></strong>
+                </p>
+                <p class="result-rarity" th:text="${gachaResult.rarity}"></p>
+            </div>
+
+            <div class="gacha-result-box" th:classappend="${gachaResult.animationClass}">
+                <div th:classappend="${gachaResult.cssClass}"></div>
+            </div>
+
+            <!-- ★ もう一度引く（単発） -->
+            <a th:href="@{${basePath + '/mypage/gacha'}}" class="btn">もう一度引く</a>
+        </div>
+
+        <!-- ▼ 10連結果 -->
+        <div th:if="${gachaResults != null}" class="gacha-result-grid">
+
+            <div th:each="r : ${gachaResults}" 
+                 class="gacha-result-box"
+                 th:classappend="${r.animationClass}">
+
+                <p class="result-name" th:text="${r.itemName}"></p>
+                <p class="result-rarity" th:text="${r.rarity}"></p>
+                <div th:classappend="${r.cssClass}"></div>
+            </div>
+
+            <!-- ★ もう一度引く（10連） -->
+            <a th:href="@{${basePath + '/mypage/gacha'}}" class="btn btn-multi">
+                もう一度引く
+            </a>
+        </div>
+
+        <!-- ▼ マイページへ戻る -->
+        <a th:href="@{${basePath + '/mypage'}}" class="btn">マイページへ戻る</a>
+    </section>
+
+</main>
+
+</body>
+</html>

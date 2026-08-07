@@ -1,0 +1,667 @@
+/* ============================
+   SR 犬ベース（中央）
+============================ */
+.base-sr-dog {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 180px;
+    height: 150px;
+    transform: translate(-50%, -50%);
+    border-radius: 80px 80px 70px 70px;
+    z-index: 1;
+
+    /* Layer 1〜4：毛並み＋影＋立体感 */
+    background:
+        radial-gradient(circle at 40% 30%, #ffe2c0, #e6b98a),              /* 外側の毛 */
+        radial-gradient(circle at 50% 40%, #fff0d8 40%, transparent 60%), /* 内側の柔らかい毛 */
+        radial-gradient(circle at 60% 70%, rgba(0,0,0,0.15), transparent), /* 下部の影 */
+        radial-gradient(circle at 50% 90%, rgba(0,0,0,0.25), transparent); /* 付け根の影 */
+
+    background-size:
+        100% 100%,
+        70% 70%,
+        100% 100%,
+        60% 40%;
+
+    background-position:
+        center,
+        center 20px,
+        center,
+        center 80px;
+
+    background-repeat: no-repeat;
+
+    /* Layer 5：弱発光（SRらしい映え） */
+    filter: drop-shadow(0 0 10px rgba(255,200,150,0.5));
+}
+
+
+/* ============================
+   SR 犬耳（左耳）
+============================ */
+.ear-sr-dog {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 70px;
+    height: 85px;
+
+    /* base-default の位置基準に合わせて調整済み */
+    transform: translate(-85px, -110px);
+
+    /* 多重背景で 4 レイヤー生成 */
+    background:
+        /* Layer 1：耳の外形（犬耳の形） */
+        radial-gradient(circle at 40% 30%, #e6b98a, #c89a6a),
+
+        /* Layer 2：毛の内側（淡いクリーム色） */
+        radial-gradient(circle at 50% 40%, #ffe7d0 40%, transparent 60%),
+
+        /* Layer 3：毛の縁の影（立体感） */
+        radial-gradient(circle at 50% 80%, rgba(0,0,0,0.18), transparent),
+
+        /* Layer 4：付け根の影（耳が生えている感） */
+        radial-gradient(circle at 50% 95%, rgba(0,0,0,0.25), transparent);
+
+    background-size:
+        100% 100%,   /* 外側の毛 */
+        60% 60%,     /* 内側の毛 */
+        100% 100%,   /* 縁の影 */
+        50% 40%;     /* 付け根の影 */
+
+    background-position:
+        center,
+        center 18px,
+        center,
+        center 60px;
+
+    background-repeat: no-repeat;
+
+    border-radius: 60% 60% 45% 45%;
+    filter: drop-shadow(0 0 10px rgba(255,200,150,0.6));
+	z-index: 2;
+}
+
+
+/* ============================
+   SR 犬耳（右耳）
+============================ */
+.ear-sr-dog::after {
+    content: "";
+    position: absolute;
+    width: 70px;
+    height: 85px;
+
+    /* 左耳の translate(-85px) に対して +100px → 15px */
+    transform: translate(100px, 0);
+
+    border-radius: 60% 60% 45% 45%;
+
+    /* 左耳と同じ多重背景（完全左右対称） */
+    background:
+        radial-gradient(circle at 40% 30%, #e6b98a, #c89a6a),
+        radial-gradient(circle at 50% 40%, #ffe7d0 40%, transparent 60%),
+        radial-gradient(circle at 50% 80%, rgba(0,0,0,0.18), transparent),
+        radial-gradient(circle at 50% 95%, rgba(0,0,0,0.25), transparent);
+
+    background-size:
+        100% 100%,
+        60% 60%,
+        100% 100%,
+        50% 40%;
+
+    background-position:
+        center,
+        center 18px,
+        center,
+        center 60px;
+
+    background-repeat: no-repeat;
+
+    filter: drop-shadow(0 0 10px rgba(255,200,150,0.6));
+	z-index: 2;
+}
+/* ============================
+   SR 犬目（左）
+============================ */
+.eye-sr-dog {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 26px;
+    height: 26px;
+    transform: translate(-40px, -30px);
+    border-radius: 50%;
+    z-index: 3;
+
+    background:
+        radial-gradient(circle at 50% 50%, #5a3b1e, #2e1a0d),              /* 瞳の本体 */
+        radial-gradient(circle at 40% 40%, rgba(255,255,255,0.4), transparent), /* 光沢 */
+        radial-gradient(circle at 50% 70%, rgba(255,200,150,0.4), transparent); /* 下部の光 */
+
+    background-size:
+        100% 100%,
+        40% 40%,
+        100% 100%;
+
+    background-position:
+        center,
+        8px 8px,
+        center;
+
+    background-repeat: no-repeat;
+
+    filter: drop-shadow(0 0 6px rgba(255,200,150,0.5));
+}
+
+/* ============================
+   SR 犬目（右）
+============================ */
+.eye-sr-dog::after {
+    content: "";
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    transform: translate(55px, 0);
+    border-radius: 50%;
+    z-index: 3;
+
+    background:
+        radial-gradient(circle at 50% 50%, #5a3b1e, #2e1a0d),
+        radial-gradient(circle at 40% 40%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(circle at 50% 70%, rgba(255,200,150,0.4), transparent);
+
+    background-size:
+        100% 100%,
+        40% 40%,
+        100% 100%;
+
+    background-position:
+        center,
+        8px 8px,
+        center;
+
+    background-repeat: no-repeat;
+
+    filter: drop-shadow(0 0 6px rgba(255,200,150,0.5));
+}
+/* ============================
+   SR 犬ほっぺ（左）
+============================ */
+.face-sr-dog {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    transform: translate(-60px, 10px);
+    border-radius: 50%;
+    z-index: 3;
+
+    background:
+        radial-gradient(circle at 50% 50%, #ffb3c6, #ff8fb0),              /* ほっぺ本体 */
+        radial-gradient(circle at 40% 40%, rgba(255,255,255,0.4), transparent), /* 光沢 */
+        radial-gradient(circle at 50% 70%, rgba(255,150,180,0.4), transparent); /* 下部の光 */
+
+    background-size:
+        100% 100%,
+        40% 40%,
+        100% 100%;
+
+    background-position:
+        center,
+        6px 6px,
+        center;
+
+    background-repeat: no-repeat;
+
+    filter: drop-shadow(0 0 6px rgba(255,150,180,0.6));
+}
+
+/* ============================
+   SR 犬ほっぺ（右）
+============================ */
+.face-sr-dog::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    transform: translate(110px, 0);
+    border-radius: 50%;
+    z-index: 3;
+
+    background:
+        radial-gradient(circle at 50% 50%, #ffb3c6, #ff8fb0),
+        radial-gradient(circle at 40% 40%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(circle at 50% 70%, rgba(255,150,180,0.4), transparent);
+
+    background-size:
+        100% 100%,
+        40% 40%,
+        100% 100%;
+
+    background-position:
+        center,
+        6px 6px,
+        center;
+
+    background-repeat: no-repeat;
+
+    filter: drop-shadow(0 0 6px rgba(255,150,180,0.6));
+}
+/* ============================
+   SR 犬足（左）
+============================ */
+.body-sr-dog {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 50px;
+    height: 30px;
+    transform: translate(-70px, 60px);
+    border-radius: 20px;
+    z-index: 2;
+
+    background:
+        radial-gradient(circle at 40% 30%, #ffe2c0, #e6b98a),              /* 毛並み */
+        radial-gradient(circle at 50% 80%, rgba(0,0,0,0.15), transparent); /* 影 */
+
+    background-size:
+        100% 100%,
+        100% 100%;
+
+    background-repeat: no-repeat;
+
+    filter: drop-shadow(0 0 8px rgba(255,200,150,0.5));
+}
+
+/* ============================
+   SR 犬足（右）
+============================ */
+.body-sr-dog::after {
+    content: "";
+    position: absolute;
+    width: 50px;
+    height: 30px;
+    transform: translate(90px, 0);
+    border-radius: 20px;
+    z-index: 2;
+
+    background:
+        radial-gradient(circle at 40% 30%, #ffe2c0, #e6b98a),
+        radial-gradient(circle at 50% 80%, rgba(0,0,0,0.15), transparent);
+
+    background-size:
+        100% 100%,
+        100% 100%;
+
+    background-repeat: no-repeat;
+
+    filter: drop-shadow(0 0 8px rgba(255,200,150,0.5));
+}
+/* ============================
+   SR 犬しっぽ
+============================ */
+.accessory-sr-dog {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 40px;
+    height: 40px;
+    transform: translate(60px, 20px);
+    border-radius: 50%;
+    z-index: 2;
+
+    background:
+        radial-gradient(circle at 40% 30%, #ffe2c0, #e6b98a),              /* 毛並み */
+        radial-gradient(circle at 50% 70%, rgba(0,0,0,0.15), transparent); /* 影 */
+
+    background-size:
+        100% 100%,
+        100% 100%;
+
+    background-repeat: no-repeat;
+
+    filter: drop-shadow(0 0 10px rgba(255,200,150,0.6));
+	z-index: 0;
+}
+
+/* ============================
+   SR 猫ベース
+============================ */
+.base-sr-cat {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 180px;
+    height: 150px;
+    transform: translate(-50%, -50%);
+    border-radius: 80px 80px 70px 70px;
+    z-index: 1;
+
+    background:
+        radial-gradient(circle at 40% 30%, #f5f5f5, #dcdcdc),               /* 毛並み（外側） */
+        radial-gradient(circle at 50% 40%, #ffffff 40%, transparent 60%), /* 毛並み（内側） */
+        radial-gradient(circle at 60% 70%, rgba(0,0,0,0.15), transparent), /* 下部影 */
+        radial-gradient(circle at 50% 90%, rgba(0,0,0,0.25), transparent); /* 付け根影 */
+
+    background-size:
+        100% 100%,
+        70% 70%,
+        100% 100%,
+        60% 40%;
+
+    background-position:
+        center,
+        center 20px,
+        center,
+        center 80px;
+
+    background-repeat: no-repeat;
+
+    filter: drop-shadow(0 0 12px rgba(180,180,255,0.5));
+}
+/* ============================
+   SR 猫耳（左）
+============================ */
+.ear-sr-cat {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 65px;     /* 犬耳より少し小さく */
+    height: 80px;    /* 縦長で三角形を強調 */
+    transform: translate(-80px, -110px);
+    z-index: 2;
+
+    /* 三角形の猫耳形状（丸耳と完全差別化） */
+    border-radius: 50% 50% 25% 25%; /* 上が尖り、下が丸い猫耳形状 */
+
+    /* 多重背景（レイヤー数：5） */
+    background:
+        /* Layer 1：外側の毛（白〜グレー） */
+        radial-gradient(circle at 50% 25%, #f7f7f7, #dcdcdc),
+
+        /* Layer 2：内側ピンク（猫耳の柔らかい部分） */
+        radial-gradient(circle at 50% 35%, #ffd6e8 35%, transparent 60%),
+
+        /* Layer 3：縁の影（シャープ） */
+        radial-gradient(circle at 50% 75%, rgba(0,0,0,0.22), transparent),
+
+        /* Layer 4：付け根影（耳が生えている感） */
+        radial-gradient(circle at 50% 95%, rgba(0,0,0,0.28), transparent),
+
+        /* Layer 5：青系の弱発光（猫らしいクールさ） */
+        radial-gradient(circle at 50% 50%, rgba(180,180,255,0.25), transparent);
+
+    background-size:
+        100% 100%,   /* 外側毛 */
+        55% 55%,     /* 内側ピンク（犬より小さめ） */
+        100% 100%,   /* 縁影 */
+        50% 35%,     /* 付け根影 */
+        100% 100%;   /* 発光 */
+
+    background-position:
+        center,
+        center 15px, /* ピンクは上寄せ（猫耳の特徴） */
+        center,
+        center 65px,
+        center;
+
+    background-repeat: no-repeat;
+
+    filter: drop-shadow(0 0 10px rgba(180,180,255,0.7));
+}
+
+/* ============================
+   SR 猫耳（右）
+============================ */
+.ear-sr-cat::after {
+    content: "";
+    position: absolute;
+    width: 65px;
+    height: 80px;
+
+    /* 左耳の translate(-80px) に対して +100px → 20px */
+    transform: translate(100px, 0);
+    z-index: 2;
+
+    border-radius: 50% 50% 25% 25%;
+
+    background:
+        radial-gradient(circle at 50% 25%, #f7f7f7, #dcdcdc),
+        radial-gradient(circle at 50% 35%, #ffd6e8 35%, transparent 60%),
+        radial-gradient(circle at 50% 75%, rgba(0,0,0,0.22), transparent),
+        radial-gradient(circle at 50% 95%, rgba(0,0,0,0.28), transparent),
+        radial-gradient(circle at 50% 50%, rgba(180,180,255,0.25), transparent);
+
+    background-size:
+        100% 100%,
+        55% 55%,
+        100% 100%,
+        50% 35%,
+        100% 100%;
+
+    background-position:
+        center,
+        center 15px,
+        center,
+        center 65px,
+        center;
+
+    background-repeat: no-repeat;
+
+    filter: drop-shadow(0 0 10px rgba(180,180,255,0.7));
+}
+
+
+/* ============================
+   SR 猫目（左）
+============================ */
+.eye-sr-cat {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 26px;
+    height: 36px; /* 縦長瞳孔 */
+    transform: translate(-40px, -35px);
+    border-radius: 50%;
+    z-index: 3;
+
+    background:
+        radial-gradient(circle at 50% 50%, #cfd3ff, #8f9aff), /* クールブルー */
+        linear-gradient(#000 40%, #222 60%),                 /* 瞳孔（縦長） */
+        radial-gradient(circle at 40% 40%, rgba(255,255,255,0.4), transparent), /* 光沢 */
+        radial-gradient(circle at 50% 70%, rgba(180,180,255,0.4), transparent); /* 下部光 */
+
+    background-size:
+        100% 100%,
+        40% 100%,
+        40% 40%,
+        100% 100%;
+
+    background-position:
+        center,
+        center,
+        8px 8px,
+        center;
+
+    background-repeat: no-repeat;
+
+    filter: drop-shadow(0 0 8px rgba(180,180,255,0.7));
+}
+
+/* ============================
+   SR 猫目（右）
+============================ */
+.eye-sr-cat::after {
+    content: "";
+    position: absolute;
+    width: 26px;
+    height: 36px;
+    transform: translate(55px, 0);
+    border-radius: 50%;
+    z-index: 3;
+
+    background:
+        radial-gradient(circle at 50% 50%, #cfd3ff, #8f9aff),
+        linear-gradient(#000 40%, #222 60%),
+        radial-gradient(circle at 40% 40%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(circle at 50% 70%, rgba(180,180,255,0.4), transparent);
+
+    background-size:
+        100% 100%,
+        40% 100%,
+        40% 40%,
+        100% 100%;
+
+    background-position:
+        center,
+        center,
+        8px 8px,
+        center;
+
+    background-repeat: no-repeat;
+
+    filter: drop-shadow(0 0 8px rgba(180,180,255,0.7));
+}
+/* ============================
+   SR 猫ほっぺ（左）
+============================ */
+.face-sr-cat {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    transform: translate(-60px, 10px);
+    border-radius: 50%;
+    z-index: 3;
+
+    background:
+        radial-gradient(circle at 50% 50%, #ffd6e8, #ffb3d9),
+        radial-gradient(circle at 40% 40%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(circle at 50% 70%, rgba(255,180,220,0.4), transparent);
+
+    background-size:
+        100% 100%,
+        40% 40%,
+        100% 100%;
+
+    background-position:
+        center,
+        6px 6px,
+        center;
+
+    background-repeat: no-repeat;
+
+    filter: drop-shadow(0 0 6px rgba(180,180,255,0.6));
+}
+
+/* ============================
+   SR 猫ほっぺ（右）
+============================ */
+.face-sr-cat::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    transform: translate(110px, 0);
+    border-radius: 50%;
+    z-index: 3;
+
+    background:
+        radial-gradient(circle at 50% 50%, #ffd6e8, #ffb3d9),
+        radial-gradient(circle at 40% 40%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(circle at 50% 70%, rgba(255,180,220,0.4), transparent);
+
+    background-size:
+        100% 100%,
+        40% 40%,
+        100% 100%;
+
+    background-position:
+        center,
+        6px 6px,
+        center;
+
+    background-repeat: no-repeat;
+
+    filter: drop-shadow(0 0 6px rgba(180,180,255,0.6));
+}
+/* ============================
+   SR 猫足（左）
+============================ */
+.body-sr-cat {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 50px;
+    height: 30px;
+    transform: translate(-70px, 60px);
+    border-radius: 20px;
+    z-index: 2;
+
+    background:
+        radial-gradient(circle at 40% 30%, #f5f5f5, #dcdcdc),
+        radial-gradient(circle at 50% 80%, rgba(0,0,0,0.15), transparent);
+
+    background-size:
+        100% 100%,
+        100% 100%;
+
+    background-repeat: no-repeat;
+
+    filter: drop-shadow(0 0 8px rgba(180,180,255,0.5));
+}
+
+/* ============================
+   SR 猫足（右）
+============================ */
+.body-sr-cat::after {
+    content: "";
+    position: absolute;
+    width: 50px;
+    height: 30px;
+    transform: translate(90px, 0);
+    border-radius: 20px;
+    z-index: 2;
+
+    background:
+        radial-gradient(circle at 40% 30%, #f5f5f5, #dcdcdc),
+        radial-gradient(circle at 50% 80%, rgba(0,0,0,0.15), transparent);
+
+    background-size:
+        100% 100%,
+        100% 100%;
+
+    background-repeat: no-repeat;
+
+    filter: drop-shadow(0 0 8px rgba(180,180,255,0.5));
+}
+/* ============================
+   SR 猫しっぽ
+============================ */
+.accessory-sr-cat {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 35px;
+    height: 55px;
+    transform: translate(60px, 15px);
+    border-radius: 50% 50% 60% 60%;
+    z-index: 0;
+
+    background:
+        radial-gradient(circle at 40% 30%, #f5f5f5, #dcdcdc),
+        radial-gradient(circle at 50% 70%, rgba(0,0,0,0.15), transparent);
+
+    background-size:
+        100% 100%,
+        100% 100%;
+
+    background-repeat: no-repeat;
+
+    filter: drop-shadow(0 0 12px rgba(180,180,255,0.6));
+}
+
