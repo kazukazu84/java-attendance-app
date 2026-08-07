@@ -477,4 +477,31 @@ public class ShiftApplicationEventService {
             // 例外発生時はスキップ
         }
     }
+    
+    /**
+     * shift_application_setting の初期データを作成する
+     *
+     * テーブル生成直後など、
+     * データが存在しない場合のみ登録する。
+     */
+    @Transactional
+    public void initializeSetting() {
+
+        // ID=1 が既に存在する場合は何もしない
+        if (settingRepository.existsById(1)) {
+            return;
+        }
+
+        ShiftApplicationSetting setting =
+                new ShiftApplicationSetting();
+
+        setting.setSettingId(1);
+
+        // デフォルト値
+        setting.setTargetWeeks(2);
+        setting.setApplicationStartDays(30);
+        setting.setApplicationEndDays(14);
+
+        settingRepository.save(setting);
+    }
 }
