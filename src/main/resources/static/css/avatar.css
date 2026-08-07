@@ -1,0 +1,195 @@
+@import url('mypage.css');
+@import url('avatar_parts.css');
+@import url('avatar_parts_sr.css');
+@import url('avatar_colors.css');
+
+/* ============================
+   レイヤー順（奥 → 手前）
+============================ */
+
+/* 背面（尻尾） */
+.accessory-01, .accessory-02 { 
+    z-index: 0; 
+}
+
+/* 体（ベース） */
+.base-default { 
+    z-index: 1; 
+}
+
+/* 足（体の前） */
+.body-01, .body-02 { 
+    z-index: 2; 
+}
+
+/* 耳（頭の上） */
+.ear-01, .ear-02 { 
+    z-index: 3; 
+}
+
+/* 目（顔の前） */
+.eye-01, .eye-02 { 
+    z-index: 4; 
+}
+
+/* ほっぺ・口（最前面の表情） */
+.face-01, .face-02 { 
+    z-index: 5; 
+}
+
+/* アクセサリ（帽子・リボンなど） */
+.accessory-front { 
+    z-index: 6; 
+}
+
+/* ============================
+   アバター編集ページ
+============================ */
+
+/* プレビュー領域（かわいく強化） */
+.avatar-preview {
+    position: relative;
+    width: 360px;
+    height: 300px;
+    margin: 0 auto 25px auto;
+    background: #fff;
+    border: 3px solid var(--themeColor);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+/* パーツアニメーション（ふわっと反映） */
+.avatar-preview div {
+    position: absolute;
+    transition: 0.25s ease;
+}
+
+/* ============================
+   部位カード UI（新仕様）
+============================ */
+.item-group {
+    background: #fff;
+    border: 2px solid var(--themeColor);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 18px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    transition: 0.2s ease;
+}
+
+/* ホバー時の軽い浮き上がり */
+.item-group:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+}
+
+/* 部位タイトル（data-css-class を表示） */
+.item-group::before {
+    content: attr(data-css-class);
+    display: block;
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #ddd;
+    color: #333;
+}
+
+/* ラベル（横並び） */
+.item-group label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 0;
+}
+
+/* パーツ名 */
+.item-name {
+    font-size: 14px;
+    color: #333;
+}
+
+/* ============================
+   ラジオボタン（かわいい丸ボタン）
+============================ */
+.item-group input[type="radio"] {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--themeColor);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.item-group input[type="radio"]:checked {
+    background: var(--themeColor);
+    box-shadow: 0 0 6px var(--themeColor);
+}
+
+/* ============================
+   更新ボタン
+============================ */
+.btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background: var(--themeColor);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    margin-top: 20px;
+}
+
+.btn:hover {
+    opacity: 0.85;
+    transform: translateY(-2px);
+}
+
+/* ============================
+   スクロール領域（縦長対策）
+============================ */
+form {
+    max-height: 420px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+/* スクロールバー（エヴァ風に細く） */
+form::-webkit-scrollbar {
+    width: 6px;
+}
+
+form::-webkit-scrollbar-thumb {
+    background: var(--themeColor);
+    border-radius: 3px;
+}
+
+form::-webkit-scrollbar-track {
+    background: #f0f0f0;
+}
+
+/* ============================
+   フェードアニメーション
+============================ */
+.avatar-anim-enter {
+    animation: avatarFadeIn 0.3s ease-out;
+}
+
+@keyframes avatarFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.avatar-anim-leave {
+    animation: avatarFadeOut 0.2s ease-in;
+}
+
+@keyframes avatarFadeOut {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}

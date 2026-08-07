@@ -1,0 +1,144 @@
+@import url('mypage.css');
+
+/* ============================
+   ガチャページ（共通）
+============================ */
+
+.main-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.card {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+/* ============================
+   最近のガチャ結果一覧
+============================ */
+
+.gacha-result-item {
+    padding: 10px;
+    border-left: 4px solid var(--themeColor); /* ★テーマカラー適用 */
+    margin-bottom: 10px;
+    background: #fafafa;
+    border-radius: 6px;
+}
+
+.gacha-result-item span {
+    margin-right: 10px;
+}
+
+/* ============================
+   セレクトボックス
+============================ */
+
+select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
+    background: #fff;
+    color: #333;
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--themeColor); /* ★テーマカラー適用 */
+}
+
+/* ============================
+   ガチャボタン
+============================ */
+
+.gacha-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.btn {
+    padding: 10px 16px;
+    border-radius: 6px;
+    border: none;
+    background-color: var(--themeColor); /* ★テーマカラー適用 */
+    color: #fff;
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+}
+
+.btn-multi {
+    background-color: #b56cff; /* 10連は紫系で差別化 */
+}
+
+/* ============================
+   単発ガチャ結果表示
+============================ */
+
+.gacha-result-display {
+    text-align: center;
+    padding: 20px;
+}
+
+.gacha-result-display .gacha-result-box {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    border-radius: 8px;
+    padding: 10px;
+    background: #fafafa;
+}
+
+/* ============================
+   10連ガチャ結果（横5×2段）
+============================ */
+
+.gacha-result-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.gacha-result-box {
+    width: 120px;
+    height: 140px;
+    border-radius: 8px;
+    background: #fafafa;
+    padding: 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* ============================
+   レアリティ演出（シンプル）
+============================ */
+
+.rarity-r {
+    border: 2px solid #4da3ff; /* 青 */
+}
+
+.rarity-sr {
+    border: 2px solid #b56cff; /* 紫 */
+}
+
+.rarity-ssr {
+    border: 2px solid #ffd700; /* 金 */
+}
+
+/* ============================
+   エラーメッセージ
+============================ */
+
+.error-message {
+    color: #ff4d4d;
+    margin-bottom: 10px;
+}

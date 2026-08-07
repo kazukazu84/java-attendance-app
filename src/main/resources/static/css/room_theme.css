@@ -1,0 +1,135 @@
+/* =========================================
+   基本テーマ（シンプル）
+========================================= */
+.theme-basic {
+    background: linear-gradient(135deg, #fafafa, #e6e6e6);
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow:
+        inset 0 0 8px rgba(255,255,255,0.6),
+        inset 0 0 12px rgba(0,0,0,0.05);
+}
+
+
+/* =========================================
+   モダンテーマ（グレー＋斜線）
+========================================= */
+.theme-modern {
+    background: repeating-linear-gradient(
+        45deg,
+        #2c3e50,
+        #2c3e50 10px,
+        #34495e 10px,
+        #34495e 20px
+    );
+}
+
+
+/* =========================================
+   森テーマ（緑のグラデーション）
+========================================= */
+.theme-forest {
+    background: linear-gradient(180deg, #2ecc71, #27ae60);
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.3);
+}
+
+
+/* =========================================
+   夜空テーマ（星空）
+========================================= */
+.theme-night {
+    background: radial-gradient(circle at 50% 20%, #34495e, #2c3e50 70%);
+    position: relative;
+}
+
+.theme-night::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle, rgba(255,255,255,0.8) 2px, transparent 2px),
+        radial-gradient(circle, rgba(255,255,255,0.6) 2px, transparent 2px),
+        radial-gradient(circle, rgba(255,255,255,0.4) 2px, transparent 2px);
+    background-size: 80px 80px, 120px 120px, 160px 160px;
+    background-position: 0 0, 40px 60px, 100px 20px;
+}
+
+
+/* =========================================
+   サイバーテーマ（エヴァ風）
+========================================= */
+.theme-cyber {
+    background: linear-gradient(135deg, #0a0f1f, #111a2b);
+    position: relative;
+}
+
+.theme-cyber::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(90deg, rgba(0,255,255,0.2) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(0,255,255,0.2) 1px, transparent 1px);
+    background-size: 20px 20px;
+    animation: cyber-scan 4s linear infinite;
+}
+
+@keyframes cyber-scan {
+    0% { background-position: 0 0; }
+    100% { background-position: 100px 100px; }
+}
+
+
+/* =========================================
+   ホログラムテーマ（虹色の揺らぎ）
+========================================= */
+.theme-hologram {
+    background: linear-gradient(135deg, #ffffff, #dfe9f3);
+    position: relative;
+}
+
+.theme-hologram::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: conic-gradient(
+        from 0deg,
+        rgba(255,0,255,0.3),
+        rgba(0,255,255,0.3),
+        rgba(255,255,0,0.3),
+        rgba(255,0,255,0.3)
+    );
+    mix-blend-mode: overlay;
+    animation: holo-spin 6s linear infinite;
+}
+
+@keyframes holo-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+/* =========================================
+   魔法陣テーマ（円形模様）
+========================================= */
+.theme-magic {
+    background: radial-gradient(circle, #1b1b2f, #0f0f1a);
+    position: relative;
+}
+
+.theme-magic::after {
+    content: "";
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background:
+        radial-gradient(circle, transparent 40%, rgba(255,255,255,0.2) 42%, transparent 44%),
+        radial-gradient(circle, transparent 60%, rgba(255,255,255,0.2) 62%, transparent 64%);
+    animation: magic-rotate 10s linear infinite;
+}
+
+@keyframes magic-rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

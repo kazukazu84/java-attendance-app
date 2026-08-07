@@ -1,0 +1,172 @@
+/* ============================
+   CHAIR（形状を色違いにもまとめて付与）
+============================ */
+.furniture-chair-01-brown,
+.furniture-chair-01-dark_brown,
+.furniture-chair-01-white,
+.furniture-chair-01-gray,
+.furniture-chair-01-olive {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+}
+
+/* ============================
+   CHAIR 色違い（色だけ）
+============================ */
+.furniture-chair-01-brown {
+    background: #c49a6c;
+    box-shadow: 0 10px 0 #a67c52, 0 20px 0 #8b6f47;
+}
+
+.furniture-chair-01-dark_brown {
+    background: #8b6f47;
+    box-shadow: 0 10px 0 #6f5638, 0 20px 0 #5a452d;
+}
+
+.furniture-chair-01-white {
+    background: #f2f2f2;
+    box-shadow: 0 10px 0 #dcdcdc, 0 20px 0 #c0c0c0;
+}
+
+.furniture-chair-01-gray {
+    background: #dcdcdc;
+    box-shadow: 0 10px 0 #bfbfbf, 0 20px 0 #a6a6a6;
+}
+
+.furniture-chair-01-olive {
+    background: #b7c59a;
+    box-shadow: 0 10px 0 #9eac82, 0 20px 0 #87956d;
+}
+/* ============================
+   DESK（形状を色違いにもまとめて付与）
+============================ */
+.furniture-desk-01-brown,
+.furniture-desk-01-dark_brown,
+.furniture-desk-01-white,
+.furniture-desk-01-gray,
+.furniture-desk-01-olive {
+    position: absolute;
+    width: 120px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+/* ============================
+   DESK 色違い（色だけ）
+============================ */
+.furniture-desk-01-brown {
+    background: #c49a6c;
+    box-shadow: 0 10px 0 #a67c52, 0 20px 0 #8b6f47;
+}
+
+.furniture-desk-01-dark_brown {
+    background: #8b6f47;
+    box-shadow: 0 10px 0 #6f5638, 0 20px 0 #5a452d;
+}
+
+.furniture-desk-01-white {
+    background: #f2f2f2;
+    box-shadow: 0 10px 0 #dcdcdc, 0 20px 0 #c0c0c0;
+}
+
+.furniture-desk-01-gray {
+    background: #dcdcdc;
+    box-shadow: 0 10px 0 #bfbfbf, 0 20px 0 #a6a6a6;
+}
+
+.furniture-desk-01-olive {
+    background: #b7c59a;
+    box-shadow: 0 10px 0 #9eac82, 0 20px 0 #87956d;
+}
+/* ============================
+   BED（形状を色違いにもまとめて付与）
+============================ */
+.furniture-bed-01-brown,
+.furniture-bed-01-dark_brown,
+.furniture-bed-01-white,
+.furniture-bed-01-gray,
+.furniture-bed-01-olive {
+    position: absolute;
+    width: 140px;
+    height: 60px;
+    border-radius: 12px;
+}
+
+/* ============================
+   BED 色違い（色だけ）
+============================ */
+.furniture-bed-01-brown {
+    background: linear-gradient(135deg, #d8c2a0, #c49a6c);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.2), 0 10px 0 #a67c52;
+}
+
+.furniture-bed-01-dark_brown {
+    background: linear-gradient(135deg, #a8926f, #8b6f47);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.2), 0 10px 0 #6f5638;
+}
+
+.furniture-bed-01-white {
+    background: linear-gradient(135deg, #ffffff, #f2f2f2);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.2), 0 10px 0 #dcdcdc;
+}
+
+.furniture-bed-01-gray {
+    background: linear-gradient(135deg, #e6e6e6, #dcdcdc);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.2), 0 10px 0 #bfbfbf;
+}
+
+.furniture-bed-01-olive {
+    background: linear-gradient(135deg, #cdd9b3, #b7c59a);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.2), 0 10px 0 #9eac82;
+}
+/* ============================
+   PLANT（形状を色違いにもまとめて付与）
+============================ */
+.furniture-plant-01-brown,
+.furniture-plant-01-dark_brown,
+.furniture-plant-01-white,
+.furniture-plant-01-gray,
+.furniture-plant-01-olive {
+    position: absolute;
+    width: 40px;
+    height: 80px;
+}
+
+.furniture-plant-01-brown::before,
+.furniture-plant-01-dark_brown::before,
+.furniture-plant-01-white::before,
+.furniture-plant-01-gray::before,
+.furniture-plant-01-olive::before {
+    content: "";
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: radial-gradient(circle, #2ecc71, #27ae60);
+    border-radius: 50%;
+    top: 0;
+}
+
+.furniture-plant-01-brown::after,
+.furniture-plant-01-dark_brown::after,
+.furniture-plant-01-white::after,
+.furniture-plant-01-gray::after,
+.furniture-plant-01-olive::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 40px;
+    border-radius: 10px;
+    top: 40px;
+    left: 10px;
+}
+
+/* ============================
+   PLANT 色違い（鉢の色だけ）
+============================ */
+.furniture-plant-01-brown::after { background: #c49a6c; }
+.furniture-plant-01-dark_brown::after { background: #8b6f47; }
+.furniture-plant-01-white::after { background: #f2f2f2; }
+.furniture-plant-01-gray::after { background: #dcdcdc; }
+.furniture-plant-01-olive::after { background: #b7c59a; }

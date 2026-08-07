@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マイページ</title>
+	<link rel="stylesheet" th:href="@{/css/avatar.css}">
+    <link rel="stylesheet" th:href="@{/css/mypage.css}">
+</head>
+<body th:style="|--themeColor:${mypage.themeColor}|">
+
+<header class="navbar">
+    <div class="nav-brand">
+        <a th:href="@{${basePath + '/main'}}">マイページ</a>
+    </div>
+
+    <nav class="nav-menu">
+        <a th:href="@{${basePath + '/mypage/avatar/edit'}}" class="nav-item">アバター編集</a>
+        <a th:href="@{${basePath + '/mypage/room/edit'}}" class="nav-item">マイルーム編集</a>
+        <a th:href="@{${basePath + '/mypage/gacha'}}" class="nav-item">ガチャ</a>
+        <a th:href="@{${basePath + '/main'}}" class="nav-item">メイン画面へ</a>
+    </nav>
+
+    <div class="user-badge-container">
+        <span class="user-id-badge" th:text="${currentUser.username}">user01</span>
+        <span class="role-badge"
+              th:classappend="${#lists.contains(currentUser.authorities.![authority], 'ROLE_ADMIN')} ? 'admin' : 'user'"
+              th:text="${#lists.contains(currentUser.authorities.![authority], 'ROLE_ADMIN')} ? '管理者' : '一般'">
+        </span>
+    </div>
+</header>
+
+<main class="main-container">
+
+    <!-- ▼ アバター表示 -->
+    <section class="card avatar-card">
+        <h3>あなたのアバター</h3>
+
+        <div class="avatar-display">
+            <div th:each="cls : ${mypage.avatarCssClasses}"
+                 th:classappend="${cls}">
+            </div>
+        </div>
+
+        <div class="avatar-actions">
+            <a th:href="@{${basePath + '/mypage/avatar/edit'}}" class="btn">アバターを編集する</a>
+        </div>
+    </section>
+
+	<!-- ▼ マイルーム表示 -->
+	<section class="card room-card">
+	    <h3>あなたのマイルーム</h3>
+
+		<div class="room-preview" th:classappend="${mypage.roomThemeCssClass}">
+			
+			<!-- ★ 家具の描画（新仕様：6スロット） -->
+			<div th:each="slot : ${#numbers.sequence(1,6)}"
+			     class="furniture-slot"
+			     th:attr="data-slot=${slot}">
+
+			    <div th:if="${mypage.slotCssClasses[slot] != null}"
+			         th:classappend="${mypage.slotCssClasses[slot]}"
+			         class="furniture-anim-enter">
+			    </div>
+			</div>
+			
+	        <!-- ★ アバター表示（ON/OFF） -->
+	        <div class="room-avatar"
+	             th:if="${mypage.avatarVisible}">
+	            <div th:each="cls : ${mypage.avatarCssClasses}"
+	                 th:classappend="${cls}">
+	            </div>
+	        </div>
+
+	    </div>
+
+	    <div class="room-actions">
+	        <a th:href="@{${basePath + '/mypage/room/edit'}}" class="btn">マイルームを編集する</a>
+	    </div>
+	</section>
+
+    <!-- ▼ プロフィール -->
+    <section class="card profile-card">
+        <h3>プロフィール</h3>
+
+        <p><strong>ニックネーム：</strong> <span th:text="${mypage.nickname}"></span></p>
+        <p><strong>テーマカラー：</strong> <span th:text="${mypage.themeColor}"></span></p>
+        <p><strong>ポイント：</strong> <span th:text="${mypage.currentPoints}"></span> pt</p>
+
+        <div class="profile-actions">
+            <a th:href="@{${basePath + '/mypage/profile'}}" class="btn">プロフィールを編集する</a>
+        </div>
+    </section>
+
+</main>
+
+</body>
+</html>

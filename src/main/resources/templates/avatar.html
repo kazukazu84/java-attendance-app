@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>アバター編集</title>
+
+    <!-- 強化版 CSS -->
+    <link rel="stylesheet" th:href="@{/css/avatar.css}">
+    <link rel="stylesheet" th:href="@{/css/avatar_parts.css}">
+    
+    <script th:src="@{/js/avatar.js}" defer></script>
+</head>
+
+<body th:style="|--themeColor:${mypage.themeColor}|">
+
+<header class="navbar">
+    <div class="nav-brand">
+        <a th:href="@{${basePath + '/mypage'}}">アバター編集</a>
+    </div>
+    <nav class="nav-menu">
+        <a th:href="@{${basePath + '/mypage'}}" class="nav-item">マイページ</a>
+        <a th:href="@{${basePath + '/mypage/room/edit'}}" class="nav-item">マイルーム編集</a>
+        <a th:href="@{${basePath + '/mypage/gacha'}}" class="nav-item">ガチャ</a>
+        <a th:href="@{${basePath + '/main'}}" class="nav-item">メイン画面へ</a>
+    </nav>
+</header>
+
+<main class="main-container">
+
+    <section class="card">
+        <h3>アバター編集</h3>
+
+        <!-- ▼ プレビュー（元の構造を維持しつつ共通クラスを追加） -->
+        <div class="avatar-preview">
+            <div th:each="cls, iterStat : ${avatarClasses}"
+                 class="avatar-part"
+                 th:classappend="${cls}"
+                 th:attr="data-part=${iterStat.index == 0 ? 'BASE' :
+                                     iterStat.index == 1 ? 'EAR' :
+                                     iterStat.index == 2 ? 'EYE' :
+                                     iterStat.index == 3 ? 'FACE' :
+                                     iterStat.index == 4 ? 'BODY' :
+                                     'ACCESSORY'}">
+            </div>
+        </div>
+
+        <form th:action="@{${basePath + '/mypage/avatar/update'}}"
+              th:object="${avatarForm}" method="post">
+
+            <!-- ▼ 最新仕様：部位ごとにカード化 -->
+            <div th:each="entry : ${groupedItems}" class="item-group">
+
+                <!-- 部位タイトル -->
+                <div class="item-title" th:text="${entry.key}"></div>
+
+                <!-- パーツ一覧（元の構造を維持しつつ data-css-class を追加） -->
+                <div class="item-list">
+                    <label th:each="item : ${entry.value}"
+                           th:data-css-class="${item.cssClass}"> <!-- ★ JSが読む値 -->
+
+                        <input type="radio"
+                               th:name="${#strings.toLowerCase(item.type) == 'base' ? 'baseItemId' :
+                                        #strings.toLowerCase(item.type) == 'ear' ? 'earItemId' :
+                                        #strings.toLowerCase(item.type) == 'eye' ? 'eyeItemId' :
+                                        #strings.toLowerCase(item.type) == 'face' ? 'faceItemId' :
+                                        #strings.toLowerCase(item.type) == 'body' ? 'bodyItemId' :
+                                        #strings.toLowerCase(item.type) == 'accessory' ? 'accessoryItemId' :
+                                        'unknown'}"
+                               th:value="${item.itemId}"
+                               th:checked="${item.equipped}">
+
+                        <span class="item-name" th:text="${item.name}"></span>
+                    </label>
+                </div>
+
+            </div>
+
+            <button type="submit" class="btn">更新する</button>
+        </form>
+    </section>
+
+</main>
+
+</body>
+</html>

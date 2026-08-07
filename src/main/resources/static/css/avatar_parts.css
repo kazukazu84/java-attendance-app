@@ -1,0 +1,143 @@
+/* ============================
+   体（中央）
+============================ */
+.base-default {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transform-origin: center;
+    width: 180px;
+    height: 150px;
+    background: #ffe8b3;
+    border-radius: 80px 80px 70px 70px;
+	outline: 2px solid rgba(255, 182, 193, 0.6);
+}
+
+/* ============================
+   耳（左右実体化）
+============================ */
+/* 左耳（実体） */
+.ear-01 {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 60px;
+    height: 60px;
+    background: #ffe8b3;
+    border-radius: 50%;
+    transform: translate(-80px, -100px);
+	outline: 2px solid rgba(255, 182, 193, 0.6);
+}
+
+/* 右耳（CSSで自動生成：-80px + 100px = 20px） */
+.ear-01::after {
+    content: "";
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: #ffe8b3;
+    border-radius: 50%;
+    transform: translate(100px, 0);
+	outline: 2px solid rgba(255, 182, 193, 0.6);
+}
+
+/* ============================
+   目（左右実体化）
+============================ */
+/* 左目 */
+.eye-01 {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 26px;
+    height: 26px;
+    background: #000;
+    border-radius: 50%;
+    transform: translate(-40px, -30px);
+	outline: 2px solid rgba(255, 182, 193, 0.6);
+}
+
+/* 右目（-40px + 55px = 15px） */
+.eye-01::after {
+    content: "";
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    background: #000;
+    border-radius: 50%;
+    transform: translate(55px, 0);
+	outline: 2px solid rgba(255, 182, 193, 0.6);
+}
+
+/* ============================
+   ほっぺ（左右実体化）
+============================ */
+/* 左ほっぺ */
+.face-01 {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    background: #ffb3c6;
+    border-radius: 50%;
+    transform: translate(-60px, 10px);
+	outline: 2px solid rgba(255, 182, 193, 0.6);
+}
+
+/* 右ほっぺ（-60px + 110px = 50px） */
+.face-01::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #ffb3c6;
+    border-radius: 50%;
+    transform: translate(110px, 0);
+	outline: 2px solid rgba(255, 182, 193, 0.6);
+}
+
+/* ============================
+   足（左右実体化）
+============================ */
+/* 左足 */
+.body-01 {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 50px;
+    height: 30px;
+    background: #ffe8b3;
+    border-radius: 20px;
+    transform: translate(-70px, 60px);
+	outline: 2px solid rgba(255, 182, 193, 0.6);
+}
+
+/* 右足（-70px + 90px = 20px） */
+.body-01::after {
+    content: "";
+    position: absolute;
+    width: 50px;
+    height: 30px;
+    background: #ffe8b3;
+    border-radius: 20px;
+    transform: translate(90px, 0);
+	outline: 2px solid rgba(255, 182, 193, 0.6);
+}
+
+/* ============================
+   尻尾（右側固定）
+============================ */
+.accessory-01 {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform-origin: center;
+    width: 40px;
+    height: 40px;
+    background: #ffe8b3;
+    border-radius: 50%;
+    transform: translate(60px, 20px);
+	outline: 2px solid rgba(255, 182, 193, 0.6);
+}

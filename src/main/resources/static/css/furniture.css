@@ -1,0 +1,118 @@
+/* =========================================
+   家具スロット（位置のみ）
+========================================= */
+
+.furniture-slot {
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+/* ▼ スロット位置（自由に調整可能） */
+.furniture-slot[data-slot="1"] { top: 40px; left: 40px; }
+.furniture-slot[data-slot="2"] { top: 40px; left: calc(50% - 30px); }
+.furniture-slot[data-slot="3"] { top: 40px; left: calc(100% - 80px); }
+
+.furniture-slot[data-slot="4"] { top: 160px; left: 40px; }
+.furniture-slot[data-slot="5"] { top: 160px; left: calc(50% - 30px); }
+.furniture-slot[data-slot="6"] { top: 160px; left: calc(100% - 80px); }
+
+.furniture-chair-01 {
+    width: 60px;
+    height: 60px;
+    background: #bdc3c7;
+    border-radius: 10px;
+    box-shadow:
+        0 10px 0 #95a5a6,
+        0 20px 0 #7f8c8d;
+}
+
+.furniture-desk-01 {
+    width: 120px;
+    height: 20px;
+    background: #2c3e50;
+    border-radius: 4px;
+    box-shadow:
+        0 10px 0 #34495e,
+        0 20px 0 #2c3e50;
+}
+
+.furniture-bed-01 {
+    width: 140px;
+    height: 60px;
+    background: linear-gradient(135deg, #ecf0f1, #bdc3c7);
+    border-radius: 12px;
+    box-shadow:
+        inset 0 0 10px rgba(0,0,0,0.2),
+        0 10px 0 #95a5a6;
+}
+
+.furniture-plant-01 {
+    width: 40px;
+    height: 80px;
+    position: relative;
+}
+
+.furniture-plant-01::before {
+    content: "";
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: radial-gradient(circle, #2ecc71, #27ae60);
+    border-radius: 50%;
+    top: 0;
+}
+
+.furniture-plant-01::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 40px;
+    background: #8e5f3a;
+    border-radius: 10px;
+    top: 40px;
+    left: 10px;
+}
+
+.furniture-monitor-01 {
+    width: 120px;
+    height: 70px;
+    background: #0a0f1f;
+    border: 2px solid #00ffff;
+    border-radius: 6px;
+    box-shadow: 0 0 12px rgba(0,255,255,0.6);
+    position: relative;
+}
+
+.furniture-monitor-01::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(90deg, rgba(0,255,255,0.2) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(0,255,255,0.2) 1px, transparent 1px);
+    background-size: 10px 10px;
+    animation: monitor-scan 3s linear infinite;
+}
+
+@keyframes monitor-scan {
+    0% { background-position: 0 0; }
+    100% { background-position: 50px 50px; }
+}
+
+.furniture-crystal-01 {
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, #ffffff, #a29bfe);
+    border-radius: 50%;
+    box-shadow:
+        0 0 20px #a29bfe,
+        0 0 40px #6c5ce7;
+    animation: crystal-glow 4s ease-in-out infinite alternate;
+}
+
+@keyframes crystal-glow {
+    0% { transform: scale(1); box-shadow: 0 0 20px #a29bfe; }
+    100% { transform: scale(1.2); box-shadow: 0 0 40px #6c5ce7; }
+}

@@ -1,0 +1,175 @@
+@import url('mypage.css');
+@import url('avatar.css');
+@import url('furniture.css');
+@import url('furniture_colors.css');
+@import url('room_theme.css');
+
+/* ============================
+   マイルーム編集ページ
+============================ */
+
+/* ▼ プレビュー（そのまま） */
+.room-preview {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 2px solid var(--themeColor);
+    box-shadow: 0 0 12px var(--themeColor);
+}
+
+.room-preview div {
+    position: absolute;
+}
+
+/* ▼ アバター表示（そのまま） */
+.room-avatar {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 140px;
+    height: 140px;
+    transform: translate(-50%, -60%);
+    pointer-events: none;
+	z-index: 10;
+}
+
+.room-avatar > div {
+    position: absolute;
+}
+
+/* 家具の奥行きを前にする */
+.furniture-slot {
+    position: absolute;
+    z-index: 5;
+}
+
+.furniture-slot > div {
+    position: absolute;
+    z-index: 5;
+}
+
+/* ▼ 家具スロット（そのまま） */
+.furniture-slot {
+    position: absolute;
+}
+
+/* ▼ 家具アニメーション（そのまま） */
+.furniture-anim-enter {
+    animation: furnitureFadeIn 0.4s ease forwards;
+}
+@keyframes furnitureFadeIn {
+    0% { opacity: 0; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.furniture-anim-leave {
+    animation: furnitureFadeOut 0.5s ease forwards;
+}
+@keyframes furnitureFadeOut {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.9); }
+    100% { opacity: 0; transform: scale(0.7); }
+}
+
+/* ============================
+   ▼ カード UI（縦余白縮小・最新仕様）
+============================ */
+
+.item-group {
+    margin-bottom: 10px;      /* ★ 縦余白縮小 */
+    padding: 8px 10px;        /* ★ コンパクト化 */
+    background: #fff;
+    border: 2px solid var(--themeColor);
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    transition: 0.2s ease;
+}
+
+/* ▼ item-group の hover を少し控えめに（統一感UP） */
+.item-group:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0,0,0,0.12);
+}
+
+.item-title {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #ddd;
+    color: #333;
+}
+
+.item-list label {
+    display: flex;
+    align-items: center;
+    gap: 8px;                 /* ★ 余白縮小 */
+    padding: 4px 0;           /* ★ 余白縮小 */
+}
+
+.item-list input[type="radio"] {
+    appearance: none;
+    width: 16px;              /* ★ 少し小さく */
+    height: 16px;
+    border: 2px solid var(--themeColor);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.item-list input[type="radio"]:checked {
+    background: var(--themeColor);
+    box-shadow: 0 0 4px var(--themeColor);
+}
+
+/* ▼ スクロール領域（縦長対策） */
+form {
+    max-height: 380px;        /* ★ コンパクト化 */
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+form::-webkit-scrollbar {
+    width: 6px;
+}
+form::-webkit-scrollbar-thumb {
+    background: var(--themeColor);
+    border-radius: 3px;
+}
+form::-webkit-scrollbar-track {
+    background: #f0f0f0;
+}
+
+/* ============================
+   家具配置パターン
+============================ */
+
+/* ▼ 左寄せ */
+.layout-left .furniture-slot {
+    left: 10%;
+}
+
+/* ▼ 中央 */
+.layout-center .furniture-slot {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* ▼ 右寄せ */
+.layout-right .furniture-slot {
+    left: 90%;
+    transform: translateX(-100%);
+}
+
+/* ▼ 散らす（ランダム配置） */
+.layout-scatter .furniture-slot {
+    left: calc(10% + (80% * var(--rand-x)));
+    top: calc(10% + (60% * var(--rand-y)));
+}
+
+.hidden {
+    display: none !important;
+}
+

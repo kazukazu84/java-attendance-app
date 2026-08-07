@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>マイルーム編集</title>
+    <link rel="stylesheet" th:href="@{/css/room.css}">
+    <script th:src="@{/js/room.js}" defer></script>
+</head>
+
+<body th:style="|--themeColor:${mypage.themeColor}|">
+
+<header class="navbar">
+    <div class="nav-brand">
+        <a th:href="@{${basePath + '/mypage'}}">マイルーム編集</a>
+    </div>
+    <nav class="nav-menu">
+        <a th:href="@{${basePath + '/mypage'}}" class="nav-item">マイページ</a>
+        <a th:href="@{${basePath + '/mypage/avatar/edit'}}" class="nav-item">アバター編集</a>
+        <a th:href="@{${basePath + '/mypage/gacha'}}" class="nav-item">ガチャ</a>
+        <a th:href="@{${basePath + '/main'}}" class="nav-item">メイン画面へ</a>
+    </nav>
+</header>
+
+<main class="main-container">
+
+    <!-- ▼ プレビュー枠（アバター最新仕様と統一） -->
+    <section class="card room-preview-card">
+        <h3>プレビュー</h3>
+
+        <div class="room-preview"
+             th:classappend="${mypage.roomThemeCssClass}"
+             id="roomPreview">
+
+            <!-- 家具スロット 1〜6 -->
+            <div th:each="slot : ${#numbers.sequence(1,6)}"
+                 class="furniture-slot"
+                 th:attr="data-slot=${slot}">
+
+                <div th:if="${mypage.slotCssClasses[slot] != null}"
+                     th:classappend="${mypage.slotCssClasses[slot]}"
+                     class="furniture-anim-enter">
+                </div>
+            </div>
+
+            <!-- アバター表示（ON/OFF） -->
+            <div class="room-avatar"
+                 th:classappend="${mypage.avatarVisible} ? '' : 'hidden'"
+                 id="roomAvatar">
+                <div th:each="cls : ${mypage.avatarCssClasses}"
+                     th:classappend="${cls}">
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- ▼ 編集フォーム（最新仕様：カード化） -->
+    <section class="card">
+        <h3>マイルーム編集</h3>
+
+        <form th:action="@{${basePath + '/mypage/room/update'}}"
+              th:object="${roomForm}" method="post">
+
+            <!-- ▼ テーマ（カード化） -->
+            <div class="item-group" data-css-class="THEME">
+                <div class="item-title">テーマ</div>
+
+                <div class="item-list">
+                    <label th:each="item : ${items.?[type == 'THEME']}"
+                           th:data-css-class="${item.cssClass}">
+                        <input type="radio"
+                               th:field="*{themeItemId}"
+                               th:value="${item.itemId}"
+                               th:checked="${item.equipped}">
+                        <span th:text="${item.name}"></span>
+                    </label>
+                </div>
+            </div>
+
+			<!-- ▼ 家具（6スロット × カード化） -->
+			<div th:each="slot : ${#numbers.sequence(1,6)}"
+			     class="item-group"
+			     th:data-css-class="${'SLOT ' + slot}">
+
+			    <div class="item-title">家具 [[${slot}]]</div>
+
+			    <div class="item-list">
+
+			        <!-- ▼ 家具一覧（未配置は JS の再クリックで対応） -->
+			        <label th:each="item : ${items.?[type == 'FURNITURE']}"
+			               th:data-css-class="${item.cssClass}">
+			            <input type="radio"
+			                   th:name="${'slotItemId_' + slot}"
+			                   th:value="${item.itemId}"
+			                   th:checked="${item.slotIndex != null and item.slotIndex.contains(slot)}">
+			            <span th:text="${item.name}"></span>
+			        </label>
+
+			    </div>
+			</div>
+
+            <!-- ▼ アバター表示 -->
+            <div class="item-group" data-css-class="AVATAR">
+                <div class="item-title">アバター表示</div>
+
+                <label>
+                    <input type="checkbox"
+                           th:field="*{avatarVisible}"
+                           th:checked="${mypage.avatarVisible}">
+                    アバターを中央に表示する
+                </label>
+            </div>
+
+            <!-- ▼ 配置パターン -->
+            <div class="item-group" data-css-class="LAYOUT">
+                <div class="item-title">配置パターン</div>
+
+                <select th:field="*{layoutPattern}">
+					<option value="DEFAULT">標準配置</option>
+                    <option value="LEFT">左寄せ</option>
+                    <option value="CENTER">中央</option>
+                    <option value="RIGHT">右寄せ</option>
+                    <option value="SCATTER">散らす</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn">更新する</button>
+        </form>
+    </section>
+
+</main>
+
+</body>
+</html>

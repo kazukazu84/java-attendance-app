@@ -1,0 +1,226 @@
+@import url('room.css');
+@import url('avatar.css');
+
+/* ============================
+   テーマカラー変数
+============================ */
+:root {
+    --themeColor: #3498db; /* 初期値（未登録時） */
+}
+
+/* ============================
+   共通レイアウト
+============================ */
+body {
+    margin: 0;
+    font-family: "Noto Sans JP", sans-serif;
+    background: #f5f7fa;
+    color: #333;
+}
+
+/* ============================
+   ナビバー
+============================ */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--themeColor);
+    padding: 12px 20px;
+    color: #fff;
+}
+
+.nav-brand a {
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-item {
+    color: #fff;
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+}
+
+.nav-item.active,
+.nav-item:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* ============================
+   バッジ
+============================ */
+.user-badge-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.user-id-badge {
+    background: var(--themeColor);
+    padding: 4px 10px;
+    border-radius: 4px;
+    color: #fff;
+}
+
+.role-badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    color: #fff;
+}
+
+.role-badge.admin {
+    background: #e74c3c;
+}
+
+.role-badge.user {
+    background: var(--themeColor);
+}
+
+/* ============================
+   メインコンテナ
+============================ */
+.main-container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* ============================
+   カード
+============================ */
+.card {
+    background: #fff;
+    padding: 20px;
+    margin-bottom: 25px;
+    border-radius: 10px;
+    border-left: 6px solid var(--themeColor);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* ============================
+   アバター表示
+============================ */
+/* 枠（固定） */
+.avatar-display {
+	position: relative;
+	width: 360px;
+	height: 300px;
+	margin: 0 auto;
+	background: #f8f9fa;
+	border: 2px solid #ccc;
+}
+
+/* 全パーツ共通：中心基準 */
+.avatar-display div {
+    position: absolute;
+}
+
+/* ============================
+   マイルーム表示（mypage）
+============================ */
+.room-display {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    border-radius: 20px;
+    overflow: hidden;
+
+    /* ▼ テーマカラー枠（枠だけ残す） */
+    border: 2px solid var(--themeColor);
+    box-shadow: 0 0 12px var(--themeColor);
+
+    /* ★ 背景はテーマに任せる（重要） */
+    background: none !important;
+}
+
+/* ▼ 家具パーツの配置（絶対配置） */
+.room-display div {
+    position: absolute;
+}
+
+/* ▼ アバター表示（マイページ用） */
+.room-avatar {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 140px;
+    height: 140px;
+    transform: translate(-50%, -60%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+	z-index: 10;
+}
+
+.room-avatar > div {
+    position: absolute;
+}
+
+/* ▼ 家具アニメーション（mypage でも使える） */
+.furniture-anim-enter {
+    animation: furnitureFadeIn 0.4s ease forwards;
+}
+
+@keyframes furnitureFadeIn {
+    0% { opacity: 0; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+/* ============================
+   プロフィールフォーム
+============================ */
+.profile-card input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.profile-card input:focus {
+    border-color: var(--themeColor);
+    box-shadow: 0 0 6px var(--themeColor);
+}
+
+/* ============================
+   ボタン
+============================ */
+.btn {
+    display: inline-block;
+    padding: 10px 16px;
+    background: var(--themeColor);
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #2980b9;
+}
+
+/* ============================
+   セレクトボックス & カラーピッカー
+============================ */
+select, input[type="color"] {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #333;
+    font-size: 16px;
+}
+
+select:focus {
+    border-color: var(--themeColor);
+}
